@@ -1,4 +1,4 @@
-import {useEffect} from 'react'
+import React, {useEffect, Fragment} from 'react'
 import {tns} from 'tiny-slider'
 import '../../../public/assets/css/LineIcons.2.0.css'
 import '../../../public/assets/css/animate.css'
@@ -6,42 +6,43 @@ import '../../../public/assets/css/bootstrap.min.css'
 import '../../../public/assets/css/glightbox.min.css'
 import '../../../public/assets/css/main.css'
 import '../../../public/assets/css/tiny-slider.css'
+import Footer from '../../components/common/Footer'; 
+
 
 export function List() {
+  useEffect(() => {
+    tns({
+      container: '.category-slider',
+      items: 3,
+      slideBy: 'page',
+      autoplay: false,
+      mouseDrag: true,
+      gutter: 0,
+      nav: false,
+      controls: true,
+      controlsText: [
+        '<i className="lni lni-chevron-left"></i>',
+        '<i className="lni lni-chevron-right"></i>'
+      ],
+      responsive: {
+        0: {items: 1},
+        540: {items: 2},
+        768: {items: 4},
+        992: {items: 5},
+        1170: {items: 6}
+      }
+    })
+  }, [])
+
   return (
-    <>
+    <React.Fragment>
       <div>
         <title>모르는 개 산책 - Classified Ads and Listing Website Template.</title>
         <meta name="description" content="" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.svg" />
       </div>
-      export default function CategorySlider(){' '}
-      {useEffect(() => {
-        tns({
-          container: '.category-slider',
-          items: 3,
-          slideBy: 'page',
-          autoplay: false,
-          mouseDrag: true,
-          gutter: 0,
-          nav: false,
-          controls: true,
-          controlsText: [
-            '<i className="lni lni-chevron-left"></i>',
-            '<i className="lni lni-chevron-right"></i>'
-          ],
-
-          responsive: {
-            0: {items: 1},
-            540: {items: 2},
-            768: {items: 4},
-            992: {items: 5},
-            1170: {items: 6}
-          }
-        })
-      }, [])}
-      ;{/* ======= scroll-top ======== */}
+      export default function CategorySlider() ;{/* ======= scroll-top ======== */}
       <a href="#" className="scroll-top btn-hover">
         <i className="lni lni-chevron-up"></i>
       </a>
@@ -505,6 +506,7 @@ export function List() {
         </section>
         {/* /End Items Grid Area */}
       </div>
-    </>
+<Footer />
+    </React.Fragment>
   )
 }
