@@ -1,32 +1,23 @@
 export default function Footer() {
   return (
-    <footer className="footer" style={{ 
-      fontSize: '0.8rem', 
-      padding: '0.5rem 0',
-      transform: 'scale(0.7)',
-      transformOrigin: 'top center',
-      width: '142.857%',
-      marginLeft: '-21.4285%',
-      marginRight: '-21.4285%',
-      marginBottom: '0'
-    }}>
-      <div className="footer-top" style={{ padding: '0.5rem 0' }}>
+    <footer className="footer">
+      <div className="footer-top">
         <div className="container">
           <div className="row">
             <div className="col-lg-3 col-md-6 col-12">
-              <div className="single-footer mobile-app" style={{ marginBottom: '0.3rem' }}>
-                <h3 style={{ fontSize: '1rem', marginBottom: '0.3rem' }}>Mobile Apps</h3>
+              <div className="single-footer mobile-app">
+                <h3>Mobile Apps</h3>
                 <div className="app-button">
-                  <a href="javascript:void(0)" className="btn" style={{ padding: '0.2rem 0.3rem' }}>
+                  <a href="javascript:void(0)" className="btn">
                     <i className="lni lni-play-store"></i>
-                    <span className="text" style={{ fontSize: '0.7rem' }}>
+                    <span className="text">
                       <span className="small-text">Get It On</span>
                       Google Play
                     </span>
                   </a>
-                  <a href="javascript:void(0)" className="btn" style={{ padding: '0.2rem 0.3rem' }}>
+                  <a href="javascript:void(0)" className="btn">
                     <i className="lni lni-apple"></i>
-                    <span className="text" style={{ fontSize: '0.7rem' }}>
+                    <span className="text">
                       <span className="small-text">Get It On</span>
                       App Store
                     </span>
@@ -35,11 +26,11 @@ export default function Footer() {
               </div>
             </div>
             <div className="col-lg-3 col-md-6 col-12">
-              <div className="single-footer f-link" style={{ marginBottom: '0.3rem' }}>
-                <h3 style={{ fontSize: '1rem', marginBottom: '0.3rem' }}>Locations</h3>
+              <div className="single-footer f-link">
+                <h3>Locations</h3>
                 <div className="row">
                   <div className="col-lg-6 col-md-6 col-12">
-                    <ul style={{ lineHeight: '1.3' }}>
+                    <ul>
                       <li>
                         <a href="javascript:void(0)">Chicago</a>
                       </li>
@@ -58,7 +49,7 @@ export default function Footer() {
                     </ul>
                   </div>
                   <div className="col-lg-6 col-md-6 col-12">
-                    <ul style={{ lineHeight: '1.3' }}>
+                    <ul>
                       <li>
                         <a href="javascript:void(0)">Los Angeles</a>
                       </li>
@@ -77,9 +68,9 @@ export default function Footer() {
               </div>
             </div>
             <div className="col-lg-3 col-md-6 col-12">
-              <div className="single-footer f-link" style={{ marginBottom: '0.3rem' }}>
-                <h3 style={{ fontSize: '1rem', marginBottom: '0.3rem' }}>Quick Links</h3>
-                <ul style={{ lineHeight: '1.3' }}>
+              <div className="single-footer f-link">
+                <h3>Quick Links</h3>
+                <ul>
                   <li>
                     <a href="javascript:void(0)">About Us</a>
                   </li>
@@ -95,13 +86,19 @@ export default function Footer() {
                   <li>
                     <a href="javascript:void(0)">Help & Support</a>
                   </li>
+                  <li>
+                    <a href="/dashboard">My Page</a>
+                  </li>
+                  <li>
+                    <a href="/member/profile">회원 프로필</a>
+                  </li>
                 </ul>
               </div>
             </div>
             <div className="col-lg-3 col-md-6 col-12">
-              <div className="single-footer f-contact" style={{ marginBottom: '0.3rem' }}>
-                <h3 style={{ fontSize: '1rem', marginBottom: '0.3rem' }}>Contact</h3>
-                <ul style={{ lineHeight: '1.3' }}>
+              <div className="single-footer f-contact">
+                <h3>Contact</h3>
+                <ul>
                   <li>
                     23 New Design Str, Lorem Upsum 10
                     <br />
@@ -118,13 +115,13 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="footer-bottom" style={{ padding: '0.3rem 0' }}>
+      <div className="footer-bottom">
         <div className="container">
           <div className="inner">
             <div className="row">
               <div className="col-12">
                 <div className="content">
-                  <ul className="footer-bottom-links" style={{ lineHeight: '1.3', marginBottom: '0.3rem' }}>
+                  <ul className="footer-bottom-links">
                     <li>
                       <a href="javascript:void(0)">Terms of use</a>
                     </li>
@@ -141,13 +138,13 @@ export default function Footer() {
                       <a href="javascript:void(0)">Information</a>
                     </li>
                   </ul>
-                  <p className="copyright-text" style={{ fontSize: '0.7rem', marginBottom: '0.3rem' }}>
+                  <p className="copyright-text">
                     Designed and Developed by
                     <a href="https://graygrids.com/" rel="nofollow" target="_blank">
                       GrayGrids
                     </a>
                   </p>
-                  <ul className="footer-social" style={{ marginTop: '0.3rem' }}>
+                  <ul className="footer-social">
                     <li>
                       <a href="javascript:void(0)">
                         <i className="lni lni-facebook-filled"></i>

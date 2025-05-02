@@ -87,15 +87,15 @@
 
 .dashboard-menu ul li a:hover {
   background: #f8f9fa;
-  color: #5830e0;
+  color: #32ade6;
 }
 
 .dashboard-menu ul li a:hover i {
-  color: #5830e0;
+  color: #32ade6;
 }
 
 .dashboard-menu ul li a.active {
-  background: #5830e0;
+  background: #32ade6;
   color: #fff;
 }
 
@@ -168,7 +168,7 @@
 .form-group input[type='password']:focus,
 .form-group input[type='tel']:focus,
 .form-group textarea:focus {
-  border-color: #5830e0;
+  border-color: #32ade6;
   outline: none;
   box-shadow: 0 0 0 3px rgba(88, 48, 224, 0.1);
 }
@@ -198,7 +198,7 @@
 }
 
 .update-profile-btn {
-  background: #5830e0;
+  background: #32ade6;
   color: #fff;
   padding: 12px 30px;
   border: none;
@@ -252,7 +252,7 @@
   line-height: 60px;
   text-align: center;
   border-radius: 50%;
-  background: #5830e0;
+  background: #32ade6;
   color: #fff;
   font-size: 24px;
 }
@@ -330,13 +330,13 @@
 }
 
 .toggle-button.active {
-  background: #5830e0;
+  background: #32ade6;
   color: #fff;
-  border-color: #5830e0;
+  border-color: #32ade6;
 }
 
 .update-password-btn {
-  background: #5830e0;
+  background: #32ade6;
   color: #fff;
   padding: 12px 30px;
   border: none;
@@ -392,7 +392,7 @@
 
 .chat-search-form input:focus {
   outline: none;
-  border-color: #5830e0;
+  border-color: #32ade6;
   background: #fff;
 }
 
@@ -473,7 +473,7 @@
 }
 
 .message-count {
-  background: #5830e0;
+  background: #32ade6;
   color: white;
   padding: 2px 8px;
   border-radius: 12px;
@@ -564,7 +564,7 @@
 }
 
 .message.sent .message-content {
-  background: #5830e0;
+  background: #32ade6;
   color: white;
 }
 
@@ -609,7 +609,7 @@
 }
 
 .btn-attachment:hover {
-  color: #5830e0;
+  color: #32ade6;
 }
 
 .input-group input {
@@ -630,7 +630,7 @@
 }
 
 .btn-send {
-  background: #5830e0;
+  background: #32ade6;
   border: none;
   width: 40px;
   height: 40px;
@@ -704,7 +704,7 @@
 }
 
 .accordion-button:not(.collapsed) {
-  background: #5830e0;
+  background: #32ade6;
   color: #fff;
 }
 
@@ -806,12 +806,12 @@
   align-items: center;
   justify-content: center;
   margin-right: 15px;
-  background: rgba(88, 48, 224, 0.1);
+  background: rgba(50, 173, 230, 0.1);
 }
 
 .stat-icon i {
   font-size: 24px;
-  color: #5830e0;
+  color: #32ade6;
 }
 
 .stat-card.featured .stat-icon {
@@ -863,7 +863,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(88, 48, 224, 0.1);
+  background: rgba(50, 173, 230, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -871,7 +871,7 @@
 }
 
 .activity-icon i {
-  color: #5830e0;
+  color: #32ade6;
   font-size: 18px;
 }
 
@@ -981,4 +981,271 @@
   margin-bottom: 20px;
   color: #333;
   font-weight: 600;
+}
+
+.favourite-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.favourite-count {
+  background: #32ade6;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.favourite-count .featured {
+  font-weight: 500;
+}
+
+.item-list-title {
+  padding: 12px 20px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.item-list-title p {
+  margin: 0;
+  font-size: 13px;
+  color: #999;
+  font-weight: 400;
+  text-transform: capitalize;
+}
+
+.single-item-list {
+  background: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+  border: 1px solid #eee;
+}
+
+.single-item-list:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.item-image {
+  display: flex;
+  align-items: center;
+}
+
+.item-image img {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-right: 15px;
+}
+
+.item-image .content {
+  flex: 1;
+}
+
+.item-image .title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.item-image .title a {
+  color: #333;
+  text-decoration: none;
+}
+
+.item-image .title a:hover {
+  color: #32ade6;
+}
+
+.item-image .price {
+  display: block;
+  font-size: 14px;
+  color: #32ade6;
+  margin-top: 3px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.action-buttons a {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: #666;
+  transition: all 0.3s ease;
+}
+
+.action-buttons .view-btn:hover {
+  background: #e8f3ff;
+  color: #0066ff;
+}
+
+.action-buttons .delete-btn:hover {
+  background: #fff0f0;
+  color: #ff3333;
+}
+
+.pagination {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.pagination-list {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 5px;
+}
+
+.pagination-list li a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  color: #666;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.pagination-list li a:hover {
+  background: #f0f0f0;
+}
+
+.pagination-list li a.active {
+  background: #32ade6;
+  color: white;
+}
+
+/* 회원 탈퇴 섹션 스타일 */
+.delete-account-section {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  margin-top: 30px;
+}
+
+.delete-account-section h2 {
+  font-size: 24px;
+  margin-bottom: 30px;
+  font-weight: 500;
+  color: #333;
+}
+
+.warning-text {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.delete-account-btn {
+  background: #fff0f0;
+  color: #ff0000;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.delete-account-btn:hover {
+  background: #ffe0e0;
+}
+
+/* 모달 스타일 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content h3 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  color: #333;
+}
+
+.modal-content p {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.modal-warning {
+  color: #ff0000;
+  font-size: 14px;
+  margin: 15px 0;
+  line-height: 1.6;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.modal-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-btn.confirm {
+  background: #fff0f0;
+  color: #ff0000;
+}
+
+.modal-btn.confirm:hover {
+  background: #ffe0e0;
+}
+
+.modal-btn.cancel {
+  background: #f8f9fa;
+  color: #666;
+}
+
+.modal-btn.cancel:hover {
+  background: #f0f0f0;
 }
