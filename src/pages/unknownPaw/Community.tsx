@@ -10,783 +10,220 @@ export function Community() {
   const [rangeValue, setRangeValue] = useState(10)
 
   return (
-    <>
-      <div className="breadcrumbs">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-6 col-md-6 col-12">
-              <div className="breadcrumbs-content">
-                <h1 className="page-title">커뮤니티 중고거래</h1>
-              </div>
+    <section className="section latest-news-area blog-list">
+      <div className="container">
+        {/* 상단 제목 및 네비게이션 */}
+        <div className="row align-items-center mb-4">
+          <div className="col-lg-6 col-md-6 col-12">
+            <div className="breadcrumbs-content">
+              <h2 className="page-title">커뮤니티</h2>
             </div>
-            <div className="col-lg-6 col-md-6 col-12">
-              <ul className="breadcrumb-nav">
+          </div>
+          <div className="col-lg-6 col-md-6 col-12">
+            <ul className="breadcrumb-nav">
+              <li>
+                <a href="index.html">Home</a>
+              </li>
+              <li>Community</li>
+            </ul>
+          </div>
+        </div>
+
+        {/* 메인 콘텐츠 영역 */}
+        <div className="row">
+          {/* 게시물 영역 (왼쪽 8컬럼) */}
+          <div className="col-lg-8 col-md-7 col-12">
+            <div className="row">
+              {/* 게시물 아이템 */}
+              <div className="col-lg-4 col-md-6 col-12 mb-4">
+                <div className="single-news wow fadeInUp" data-wow-delay=".2s">
+                  <div className="image">
+                    <a href="blog-single-sidebar.html">
+                      <img
+                        className="thumb"
+                        src="\src\assets\123.png"
+                        alt="귀여운 강아지"
+                      />
+                    </a>
+                  </div>
+                  <div className="content-body">
+                    <h4 className="title">
+                      <a href="blog-single-sidebar.html">두발로 걸었어요!</a>
+                    </h4>
+                    <p>
+                      저희집 강아지가 두발로 걸었어요!! 쓸개골이 걱정되긴 하지만 너무
+                      신기하지 않나요!? 🐾
+                    </p>
+                    <div className="meta-details">
+                      <ul>
+                        <li>
+                          <a href="#">2025.05.02</a>
+                        </li>
+                        <li>
+                          <a href="#">일상이야기</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 게시물 아이템 */}
+              <div className="col-lg-4 col-md-6 col-12 mb-4">
+                <div className="single-news wow fadeInUp" data-wow-delay=".2s">
+                  <div className="image">
+                    <a href="blog-single-sidebar.html">
+                      <img
+                        className="thumb"
+                        src="\src\assets\피카츄 군침싹.jpg"
+                        alt="귀여운 강아지"
+                      />
+                    </a>
+                  </div>
+                  <div className="content-body">
+                    <h4 className="title">
+                      <a href="blog-single-sidebar.html">
+                        저희집 공주가 사료를 안먹어요..
+                      </a>
+                    </h4>
+                    <p>
+                      호불호 없는 강아지 사료 아시는 분 있나요.. 저희집 공주가 사료를
+                      안먹어요.. 뭐가 문제일까요..?
+                    </p>
+                    <div className="meta-details">
+                      <ul>
+                        <li>
+                          <a href="#">2025.05.02</a>
+                        </li>
+                        <li>
+                          <a href="#">일상이야기</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 게시물 아이템 */}
+              <div className="col-lg-4 col-md-6 col-12 mb-4">
+                <div className="single-news wow fadeInUp" data-wow-delay=".2s">
+                  <div className="image">
+                    <a href="blog-single-sidebar.html">
+                      <img
+                        className="thumb"
+                        src="\src\assets\무료나눔.png"
+                        alt="귀여운 강아지"
+                      />
+                    </a>
+                  </div>
+                  <div className="content-body">
+                    <h4 className="title">
+                      <a href="blog-single-sidebar.html">무료나눔 마감임박!😀</a>
+                    </h4>
+                    <p>
+                      시즌 오프 강아지 패딩, 신발 나눔중입니다. 댓글에 강아지 자랑
+                      남겨주시면 채팅 드릴게요 :)
+                    </p>
+                    <div className="meta-details">
+                      <ul>
+                        <li>
+                          <a href="#">2025.05.01</a>
+                        </li>
+                        <li>
+                          <a href="#">일상이야기</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* 추가 게시물은 위 div 복사해서 붙여넣기! */}
+            </div>
+
+            {/* 페이지네이션 */}
+            <div className="pagination left blog-grid-page mt-4">
+              <ul className="pagination-list">
                 <li>
-                  <a href="index.html">Home</a>
+                  <a href="javascript:void(0)">
+                    <i className="lni lni-chevron-left"></i>
+                  </a>
                 </li>
-                <li>Community</li>
+                <li className="active">
+                  <a href="javascript:void(0)">1</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0)">2</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0)">3</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0)">
+                    <i className="lni lni-chevron-right"></i>
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div>
-        <section className="category-page section">
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-3 col-md-4 col-12">
-                <div className="category-sidebar">
-                  <div className="single-widget search">
-                    <h3>Search Ads</h3>
-                    <form action="#">
-                      <input type="text" placeholder="Search Here..." />
-                      <button type="submit">
-                        <i className="lni lni-search-alt"></i>
-                      </button>
-                    </form>
-                  </div>
-
-                  <div className="single-widget">
-                    <h3>All Categories</h3>
-                    <ul className="list">
-                      <li>
-                        <a href="javascript:void(0)">
-                          <i className="lni lni-dinner"></i> Hotel & Travels
-                          <span>15</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="javascript:void(0)">
-                          <i className="lni lni-control-panel"></i> Services{' '}
-                          <span>20</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="javascript:void(0)">
-                          <i className="lni lni-bullhorn"></i> Marketing <span>55</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="javascript:void(0)">
-                          <i className="lni lni-home"></i> Real Estate<span>35</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="javascript:void(0)">
-                          <i className="lni lni-bolt"></i> Electronics <span>60</span>
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div className="single-widget range">
-                    <h3>Price Range</h3>
-                    <input
-                      type="range"
-                      className="form-range"
-                      name="range"
-                      step="1"
-                      min="100"
-                      max="10000"
-                      value={rangeValue}
-                      onChange={e => setRangeValue(Number(e.target.value))}
-                    />
-                    <div className="range-inner">
-                      <label>$</label>
-                      <input
-                        type="text"
-                        id="rangePrimary"
-                        placeholder="100"
-                        value={rangeValue}
-                        readOnly
-                      />
-                    </div>
-                  </div>
-
-                  <div className="single-widget condition">
-                    <h3>Condition</h3>
-                    <div className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        value=""
-                        id="flexCheckDefault1"
-                      />
-                      <label className="form-check-label" htmlFor="flexCheckDefault1">
-                        All
-                      </label>
-                    </div>
-                    <div className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        value=""
-                        id="flexCheckDefault2"
-                      />
-                      <label className="form-check-label" htmlFor="flexCheckDefault2">
-                        New
-                      </label>
-                    </div>
-                    <div className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        value=""
-                        id="flexCheckDefault3"
-                      />
-                      <label className="form-check-label" htmlFor="flexCheckDefault3">
-                        Used
-                      </label>
-                    </div>
-                  </div>
-
-                  <div className="single-widget banner">
-                    <h3>Advertisement</h3>
-                    <a href="javascript:void(0)">
-                      <img src="assets/images/items-grid/img1.jpg" alt="#" />
-                    </a>
-                  </div>
-                </div>
+          {/* 사이드바 영역 (오른쪽 4컬럼) */}
+          <aside className="col-lg-4 col-md-5 col-12">
+            <div className="sidebar blog-grid-page">
+              {/* 검색 위젯 */}
+              <div className="widget search-widget">
+                <h5 className="widget-title">
+                  <span>게시글 검색</span>
+                </h5>
+                <form action="#">
+                  <input type="text" placeholder="검색어를 입력하세요." />
+                  <button type="submit">
+                    <i className="lni lni-search-alt"></i>
+                  </button>
+                </form>
               </div>
-              <div className="col-lg-9 col-md-8 col-12">
-                <div className="category-grid-list">
-                  <div className="row">
-                    <div className="col-12">
-                      <div className="category-grid-topbar">
-                        <div className="row align-items-center">
-                          <div className="col-lg-6 col-md-6 col-12">
-                            <h3 className="title">Showing 1-12 of 21 ads found</h3>
-                          </div>
-                          <div className="col-lg-6 col-md-6 col-12">
-                            <nav>
-                              <div className="nav nav-tabs" id="nav-tab" role="tablist">
-                                <button
-                                  className="nav-link active"
-                                  id="nav-grid-tab"
-                                  data-bs-toggle="tab"
-                                  data-bs-target="#nav-grid"
-                                  type="button"
-                                  role="tab"
-                                  aria-controls="nav-grid"
-                                  aria-selected="true">
-                                  <i className="lni lni-grid-alt"></i>
-                                </button>
-                                <button
-                                  className="nav-link"
-                                  id="nav-list-tab"
-                                  data-bs-toggle="tab"
-                                  data-bs-target="#nav-list"
-                                  type="button"
-                                  role="tab"
-                                  aria-controls="nav-list"
-                                  aria-selected="false">
-                                  <i className="lni lni-list"></i>
-                                </button>
-                              </div>
-                            </nav>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="tab-content" id="nav-tabContent">
-                        <div
-                          className="tab-pane fade show active"
-                          id="nav-grid"
-                          role="tabpanel"
-                          aria-labelledby="nav-grid-tab">
-                          <div className="row">
-                            <div className="col-lg-4 col-md-6 col-12">
-                              <div className="single-item-grid">
-                                <div className="image">
-                                  <a href="item-details.html">
-                                    <img
-                                      src="assets/images/items-grid/img1.jpg"
-                                      alt="#"
-                                    />
-                                  </a>
-                                  <i className=" cross-badge lni lni-bolt"></i>
-                                  <span className="flat-badge sale">Sale</span>
-                                </div>
-                                <div className="content">
-                                  <a href="javascript:void(0)" className="tag">
-                                    Mobile
-                                  </a>
-                                  <h3 className="title">
-                                    <a href="item-details.html">Apple Iphone X</a>
-                                  </h3>
-                                  <p className="location">
-                                    <a href="javascript:void(0)">
-                                      <i className="lni lni-map-marker"></i>Boston
-                                    </a>
-                                  </p>
-                                  <ul className="info">
-                                    <li className="price">$890.00</li>
-                                    <li className="like">
-                                      <a href="javascript:void(0)">
-                                        <i className="lni lni-heart"></i>
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-4 col-md-6 col-12">
-                              <div className="single-item-grid">
-                                <div className="image">
-                                  <a href="item-details.html">
-                                    <img
-                                      src="assets/images/items-grid/img1.jpg"
-                                      alt="#"
-                                    />
-                                  </a>
-                                  <i className=" cross-badge lni lni-bolt"></i>
-                                  <span className="flat-badge sale">Sale</span>
-                                </div>
-                                <div className="content">
-                                  <a href="javascript:void(0)" className="tag">
-                                    Others
-                                  </a>
-                                  <h3 className="title">
-                                    <a href="item-details.html">Travel Kit</a>
-                                  </h3>
-                                  <p className="location">
-                                    <a href="javascript:void(0)">
-                                      <i className="lni lni-map-marker"></i>San Francisco
-                                    </a>
-                                  </p>
-                                  <ul className="info">
-                                    <li className="price">$580.00</li>
-                                    <li className="like">
-                                      <a href="javascript:void(0)">
-                                        <i className="lni lni-heart"></i>
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-4 col-md-6 col-12">
-                              <div className="single-item-grid">
-                                <div className="image">
-                                  <a href="item-details.html">
-                                    <img
-                                      src="assets/images/items-grid/img1.jpg"
-                                      alt="#"
-                                    />
-                                  </a>
-                                  <i className=" cross-badge lni lni-bolt"></i>
-                                  <span className="flat-badge sale">Sale</span>
-                                </div>
-                                <div className="content">
-                                  <a href="javascript:void(0)" className="tag">
-                                    Electronic
-                                  </a>
-                                  <h3 className="title">
-                                    <a href="item-details.html">Nikon DSLR Camera</a>
-                                  </h3>
-                                  <p className="location">
-                                    <a href="javascript:void(0)">
-                                      <i className="lni lni-map-marker"></i>Alaska, USA
-                                    </a>
-                                  </p>
-                                  <ul className="info">
-                                    <li className="price">$560.00</li>
-                                    <li className="like">
-                                      <a href="javascript:void(0)">
-                                        <i className="lni lni-heart"></i>
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-4 col-md-6 col-12">
-                              <div className="single-item-grid">
-                                <div className="image">
-                                  <a href="item-details.html">
-                                    <img
-                                      src="assets/images/items-grid/img1.jpg"
-                                      alt="#"
-                                    />
-                                  </a>
-                                  <i className=" cross-badge lni lni-bolt"></i>
-                                  <span className="flat-badge sale">Sale</span>
-                                </div>
-                                <div className="content">
-                                  <a href="javascript:void(0)" className="tag">
-                                    Furniture
-                                  </a>
-                                  <h3 className="title">
-                                    <a href="item-details.html">Poster Paint</a>
-                                  </h3>
-                                  <p className="location">
-                                    <a href="javascript:void(0)">
-                                      <i className="lni lni-map-marker"></i>Las Vegas
-                                    </a>
-                                  </p>
-                                  <ul className="info">
-                                    <li className="price">$85.00</li>
-                                    <li className="like">
-                                      <a href="javascript:void(0)">
-                                        <i className="lni lni-heart"></i>
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-4 col-md-6 col-12">
-                              <div className="single-item-grid">
-                                <div className="image">
-                                  <a href="item-details.html">
-                                    <img
-                                      src="assets/images/items-grid/img1.jpg"
-                                      alt="#"
-                                    />
-                                  </a>
-                                  <i className=" cross-badge lni lni-bolt"></i>
-                                  <span className="flat-badge sale">Sale</span>
-                                </div>
-                                <div className="content">
-                                  <a href="javascript:void(0)" className="tag">
-                                    Furniture
-                                  </a>
-                                  <h3 className="title">
-                                    <a href="item-details.html">Official Metting Chair</a>
-                                  </h3>
-                                  <p className="location">
-                                    <a href="javascript:void(0)">
-                                      <i className="lni lni-map-marker"></i>Alaska, USA
-                                    </a>
-                                  </p>
-                                  <ul className="info">
-                                    <li className="price">$750.00</li>
-                                    <li className="like">
-                                      <a href="javascript:void(0)">
-                                        <i className="lni lni-heart"></i>
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-4 col-md-6 col-12">
-                              <div className="single-item-grid">
-                                <div className="image">
-                                  <a href="item-details.html">
-                                    <img
-                                      src="assets/images/items-grid/img1.jpg"
-                                      alt="#"
-                                    />
-                                  </a>
-                                  <i className=" cross-badge lni lni-bolt"></i>
-                                  <span className="flat-badge rent">Rent</span>
-                                </div>
-                                <div className="content">
-                                  <a href="javascript:void(0)" className="tag">
-                                    Books & Magazine
-                                  </a>
-                                  <h3 className="title">
-                                    <a href="item-details.html">Story Book</a>
-                                  </h3>
-                                  <p className="location">
-                                    <a href="javascript:void(0)">
-                                      <i className="lni lni-map-marker"></i>New York, USA
-                                    </a>
-                                  </p>
-                                  <ul className="info">
-                                    <li className="price">$120.00</li>
-                                    <li className="like">
-                                      <a href="javascript:void(0)">
-                                        <i className="lni lni-heart"></i>
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-4 col-md-6 col-12">
-                              <div className="single-item-grid">
-                                <div className="image">
-                                  <a href="item-details.html">
-                                    <img
-                                      src="assets/images/items-grid/img1.jpg"
-                                      alt="#"
-                                    />
-                                  </a>
-                                  <i className=" cross-badge lni lni-bolt"></i>
-                                  <span className="flat-badge sale">Sale</span>
-                                </div>
-                                <div className="content">
-                                  <a href="javascript:void(0)" className="tag">
-                                    Electronic
-                                  </a>
-                                  <h3 className="title">
-                                    <a href="item-details.html">Cctv camera</a>
-                                  </h3>
-                                  <p className="location">
-                                    <a href="javascript:void(0)">
-                                      <i className="lni lni-map-marker"></i>Delhi, India
-                                    </a>
-                                  </p>
-                                  <ul className="info">
-                                    <li className="price">$350.00</li>
-                                    <li className="like">
-                                      <a href="javascript:void(0)">
-                                        <i className="lni lni-heart"></i>
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-4 col-md-6 col-12">
-                              <div className="single-item-grid">
-                                <div className="image">
-                                  <a href="item-details.html">
-                                    <img
-                                      src="assets/images/items-grid/img1.jpg"
-                                      alt="#"
-                                    />
-                                  </a>
-                                  <i className=" cross-badge lni lni-bolt"></i>
-                                  <span className="flat-badge sale">Sale</span>
-                                </div>
-                                <div className="content">
-                                  <a href="javascript:void(0)" className="tag">
-                                    Mobile
-                                  </a>
-                                  <h3 className="title">
-                                    <a href="item-details.html">Apple Iphone X</a>
-                                  </h3>
-                                  <p className="location">
-                                    <a href="javascript:void(0)">
-                                      <i className="lni lni-map-marker"></i>Boston
-                                    </a>
-                                  </p>
-                                  <ul className="info">
-                                    <li className="price">$890.00</li>
-                                    <li className="like">
-                                      <a href="javascript:void(0)">
-                                        <i className="lni lni-heart"></i>
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-4 col-md-6 col-12">
-                              <div className="single-item-grid">
-                                <div className="image">
-                                  <a href="item-details.html">
-                                    <img
-                                      src="assets/images/items-grid/img1.jpg"
-                                      alt="#"
-                                    />
-                                  </a>
-                                  <i className=" cross-badge lni lni-bolt"></i>
-                                  <span className="flat-badge sale">Sale</span>
-                                </div>
-                                <div className="content">
-                                  <a href="javascript:void(0)" className="tag">
-                                    Mobile
-                                  </a>
-                                  <h3 className="title">
-                                    <a href="item-details.html">Samsung Glalaxy S8</a>
-                                  </h3>
-                                  <p className="location">
-                                    <a href="javascript:void(0)">
-                                      <i className="lni lni-map-marker"></i>Delaware, USA
-                                    </a>
-                                  </p>
-                                  <ul className="info">
-                                    <li className="price">$299.00</li>
-                                    <li className="like">
-                                      <a href="javascript:void(0)">
-                                        <i className="lni lni-heart"></i>
-                                      </a>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-12">
-                              <div className="pagination left">
-                                <ul className="pagination-list">
-                                  <li>
-                                    <a href="javascript:void(0)">1</a>
-                                  </li>
-                                  <li className="active">
-                                    <a href="javascript:void(0)">2</a>
-                                  </li>
-                                  <li>
-                                    <a href="javascript:void(0)">3</a>
-                                  </li>
-                                  <li>
-                                    <a href="javascript:void(0)">4</a>
-                                  </li>
-                                  <li>
-                                    <a href="javascript:void(0)">
-                                      <i className="lni lni-chevron-right"></i>
-                                    </a>
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          className="tab-pane fade"
-                          id="nav-list"
-                          role="tabpanel"
-                          aria-labelledby="nav-list-tab">
-                          <div className="row">
-                            <div className="col-lg-12 col-md-12 col-12">
-                              <div className="single-item-grid">
-                                <div className="row align-items-center">
-                                  <div className="col-lg-5 col-md-7 col-12">
-                                    <div className="image">
-                                      <a href="item-details.html">
-                                        <img
-                                          src="assets/images/items-grid/img1.jpg"
-                                          alt="#"
-                                        />
-                                      </a>
-                                      <i className=" cross-badge lni lni-bolt"></i>
-                                      <span className="flat-badge sale">Sale</span>
-                                    </div>
-                                  </div>
-                                  <div className="col-lg-7 col-md-5 col-12">
-                                    <div className="content">
-                                      <a href="javascript:void(0)" className="tag">
-                                        Others
-                                      </a>
-                                      <h3 className="title">
-                                        <a href="item-details.html">Travel Kit</a>
-                                      </h3>
-                                      <p className="location">
-                                        <a href="javascript:void(0)">
-                                          <i className="lni lni-map-marker"></i>San
-                                          Francisco
-                                        </a>
-                                      </p>
-                                      <ul className="info">
-                                        <li className="price">$580.00</li>
-                                        <li className="like">
-                                          <a href="javascript:void(0)">
-                                            <i className="lni lni-heart"></i>
-                                          </a>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-12 col-md-12 col-12">
-                              <div className="single-item-grid">
-                                <div className="row align-items-center">
-                                  <div className="col-lg-5 col-md-7 col-12">
-                                    <div className="image">
-                                      <a href="item-details.html">
-                                        <img
-                                          src="assets/images/items-grid/img1.jpg"
-                                          alt="#"
-                                        />
-                                      </a>
-                                      <i className=" cross-badge lni lni-bolt"></i>
-                                      <span className="flat-badge sale">Sale</span>
-                                    </div>
-                                  </div>
-                                  <div className="col-lg-7 col-md-5 col-12">
-                                    <div className="content">
-                                      <a href="javascript:void(0)" className="tag">
-                                        Electronic
-                                      </a>
-                                      <h3 className="title">
-                                        <a href="item-details.html">Nikon DSLR Camera</a>
-                                      </h3>
-                                      <p className="location">
-                                        <a href="javascript:void(0)">
-                                          <i className="lni lni-map-marker"></i>Alaska,
-                                          USA
-                                        </a>
-                                      </p>
-                                      <ul className="info">
-                                        <li className="price">$560.00</li>
-                                        <li className="like">
-                                          <a href="javascript:void(0)">
-                                            <i className="lni lni-heart"></i>
-                                          </a>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-12 col-md-12 col-12">
-                              <div className="single-item-grid">
-                                <div className="row align-items-center">
-                                  <div className="col-lg-5 col-md-7 col-12">
-                                    <div className="image">
-                                      <a href="item-details.html">
-                                        <img
-                                          src="assets/images/items-grid/img1.jpg"
-                                          alt="#"
-                                        />
-                                      </a>
-                                      <i className=" cross-badge lni lni-bolt"></i>
-                                      <span className="flat-badge sale">Sale</span>
-                                    </div>
-                                  </div>
-                                  <div className="col-lg-7 col-md-5 col-12">
-                                    <div className="content">
-                                      <a href="javascript:void(0)" className="tag">
-                                        Mobile
-                                      </a>
-                                      <h3 className="title">
-                                        <a href="item-details.html">Apple Iphone X</a>
-                                      </h3>
-                                      <p className="location">
-                                        <a href="javascript:void(0)">
-                                          <i className="lni lni-map-marker"></i>Boston
-                                        </a>
-                                      </p>
-                                      <ul className="info">
-                                        <li className="price">$890.00</li>
-                                        <li className="like">
-                                          <a href="javascript:void(0)">
-                                            <i className="lni lni-heart"></i>
-                                          </a>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-12 col-md-12 col-12">
-                              <div className="single-item-grid">
-                                <div className="row align-items-center">
-                                  <div className="col-lg-5 col-md-7 col-12">
-                                    <div className="image">
-                                      <a href="item-details.html">
-                                        <img
-                                          src="assets/images/items-grid/img1.jpg"
-                                          alt="#"
-                                        />
-                                      </a>
-                                      <i className=" cross-badge lni lni-bolt"></i>
-                                      <span className="flat-badge sale">Sale</span>
-                                    </div>
-                                  </div>
-                                  <div className="col-lg-7 col-md-5 col-12">
-                                    <div className="content">
-                                      <a href="javascript:void(0)" className="tag">
-                                        Furniture
-                                      </a>
-                                      <h3 className="title">
-                                        <a href="item-details.html">Poster Paint</a>
-                                      </h3>
-                                      <p className="location">
-                                        <a href="javascript:void(0)">
-                                          <i className="lni lni-map-marker"></i>Las Vegas
-                                        </a>
-                                      </p>
-                                      <ul className="info">
-                                        <li className="price">$85.00</li>
-                                        <li className="like">
-                                          <a href="javascript:void(0)">
-                                            <i className="lni lni-heart"></i>
-                                          </a>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-12 col-md-12 col-12">
-                              <div className="single-item-grid">
-                                <div className="row align-items-center">
-                                  <div className="col-lg-5 col-md-7 col-12">
-                                    <div className="image">
-                                      <a href="item-details.html">
-                                        <img
-                                          src="assets/images/items-grid/img1.jpg"
-                                          alt="#"
-                                        />
-                                      </a>
-                                      <i className=" cross-badge lni lni-bolt"></i>
-                                      <span className="flat-badge rent">Rent</span>
-                                    </div>
-                                  </div>
-                                  <div className="col-lg-7 col-md-5 col-12">
-                                    <div className="content">
-                                      <a href="javascript:void(0)" className="tag">
-                                        Books & Magazine
-                                      </a>
-                                      <h3 className="title">
-                                        <a href="item-details.html">Story Book</a>
-                                      </h3>
-                                      <p className="location">
-                                        <a href="javascript:void(0)">
-                                          <i className="lni lni-map-marker"></i>New York,
-                                          USA
-                                        </a>
-                                      </p>
-                                      <ul className="info">
-                                        <li className="price">$120.00</li>
-                                        <li className="like">
-                                          <a href="javascript:void(0)">
-                                            <i className="lni lni-heart"></i>
-                                          </a>
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-12">
-                              <div className="pagination left">
-                                <ul className="pagination-list">
-                                  <li>
-                                    <a href="javascript:void(0)">1</a>
-                                  </li>
-                                  <li className="active">
-                                    <a href="javascript:void(0)">2</a>
-                                  </li>
-                                  <li>
-                                    <a href="javascript:void(0)">3</a>
-                                  </li>
-                                  <li>
-                                    <a href="javascript:void(0)">4</a>
-                                  </li>
-                                  <li>
-                                    <a href="javascript:void(0)">
-                                      <i className="lni lni-chevron-right"></i>
-                                    </a>
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+
+              {/* 인기글 위젯 */}
+              <div className="widget popular-feeds mt-5">
+                <h5 className="widget-title">
+                  <span>인기 게시물</span>
+                </h5>
+                <div className="popular-feed-loop">
+                  <div className="single-popular-feed">
+                    <div className="feed-desc">
+                      <h6 className="post-title">
+                        <a href="#">강아지가 고양이같아요..</a>
+                      </h6>
+                      <span className="time">
+                        <i className="lni lni-calendar"></i> 2025.04.24
+                      </span>
+                    </div>
+                  </div>
+                  <div className="single-popular-feed">
+                    <div className="feed-desc">
+                      <h6 className="post-title">
+                        <a href="#">#OOTD 오늘의 댕일리룩.jpg</a>
+                      </h6>
+                      <span className="time">
+                        <i className="lni lni-calendar"></i> 2025.04.22
+                      </span>
+                    </div>
+                  </div>
+                  <div className="single-popular-feed">
+                    <div className="feed-desc">
+                      <h6 className="post-title">
+                        <a href="#">님들 님들 님들 이거 봐보셈 급함!!!!</a>
+                      </h6>
+                      <span className="time">
+                        <i className="lni lni-calendar"></i> 2025.05.01
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </aside>
+        </div>
       </div>
-    </>
+    </section>
   )
 }
