@@ -1,6 +1,18 @@
-import { Link } from 'react-router-dom';
+import React from 'react'
+import {Link} from 'react-router-dom'
+import '../../../public/assets/css/LineIcons.2.0.css'
+import '../../../public/assets/css/animate.css'
+import '../../../public/assets/css/bootstrap.min.css'
+import '../../../public/assets/css/glightbox.min.css'
+import '../../../public/assets/css/main.css'
+import '../../../public/assets/css/tiny-slider.css'
 
 export function PetOwner() {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    // Add your click handler logic here
+  }
+
   return (
     <div className="pet-owner-page">
       {/* <!-- Start Items Grid Area --> */}
@@ -39,9 +51,9 @@ export function PetOwner() {
                   </div>
                   <div className="content">
                     <div className="top-content">
-                      <a href="javascript:void(0)" className="tag">
+                      <span onClick={handleClick} className="tag">
                         산책
-                      </a>
+                      </span>
                       <h3 className="title">
                         <Link to="/item/1">푸들 산책 시켜주실분</Link>
                       </h3>
@@ -63,19 +75,19 @@ export function PetOwner() {
                           <i className="lni lni-star-filled"></i>
                         </li>
                         <li>
-                          <a href="javascript:void(0)">(35)</a>
+                          <span onClick={handleClick}>(35)</span>
                         </li>
                       </ul>
                       <ul className="info-list">
                         <li>
-                          <a href="javascript:void(0)">
+                          <span onClick={handleClick}>
                             <i className="lni lni-map-marker"></i> 서울시 강남구
-                          </a>
+                          </span>
                         </li>
                         <li>
-                          <a href="javascript:void(0)">
+                          <span onClick={handleClick}>
                             <i className="lni lni-timer"></i> May 2, 2025
-                          </a>
+                          </span>
                         </li>
                       </ul>
                     </div>
@@ -83,9 +95,9 @@ export function PetOwner() {
                       <p className="price">
                         시급: <span>10,000원</span>
                       </p>
-                      <a href="javascript:void(0)" className="like">
+                      <span onClick={handleClick} className="like">
                         <i className="lni lni-heart"></i>
-                      </a>
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -190,7 +202,7 @@ export function PetOwner() {
                       <h3 className="title">
                         <Link to="/item/3">산책좋아하는 비글이랑 놀아요</Link>
                       </h3>
-                      <p className="update-time">3시간 전</p> 
+                      <p className="update-time">3시간 전</p>
                       <ul className="rating">
                         <li>
                           <i className="lni lni-star-filled"></i>
@@ -259,7 +271,9 @@ export function PetOwner() {
                         돌봄
                       </a>
                       <h3 className="title">
-                        <Link to="/item/4">쪼그만 요크셔테리어 2시간정도만 돌봐주세요</Link>
+                        <Link to="/item/4">
+                          쪼그만 요크셔테리어 2시간정도만 돌봐주세요
+                        </Link>
                       </h3>
                       <p className="update-time">4시간 전</p>
                       <ul className="rating">
@@ -359,7 +373,7 @@ export function PetOwner() {
                       <ul className="info-list">
                         <li>
                           <a href="javascript:void(0)">
-                            <i className="lni lni-map-marker"></i> 부산시 기장군  
+                            <i className="lni lni-map-marker"></i> 부산시 기장군
                           </a>
                         </li>
                         <li>
@@ -458,5 +472,5 @@ export function PetOwner() {
       </section>
       {/* <!-- /End Items Grid Area --> */}
     </div>
-  );
+  )
 }

@@ -13,19 +13,16 @@ export function Community() {
     <section className="section latest-news-area blog-list">
       <div className="container">
         {/* 상단 제목 및 네비게이션 */}
-        <div className="row align-items-center mb-4">
-          <div className="col-lg-6 col-md-6 col-12">
-            <div className="breadcrumbs-content">
-              <h2 className="page-title">커뮤니티</h2>
+        <div className="row">
+          <div className="col-12">
+            <div className="section-title">
+              <h2 className="wow fadeInUp" data-wow-delay=".4s">
+                Community
+              </h2>
+              <p className="wow fadeInUp" data-wow-delay=".6s">
+                서비스를 요청하고 제안을 받아보세요!
+              </p>
             </div>
-          </div>
-          <div className="col-lg-6 col-md-6 col-12">
-            <ul className="breadcrumb-nav">
-              <li>
-                <a href="index.html">Home</a>
-              </li>
-              <li>Community</li>
-            </ul>
           </div>
         </div>
 
@@ -38,7 +35,7 @@ export function Community() {
               <div className="col-lg-4 col-md-6 col-12 mb-4">
                 <div className="single-news wow fadeInUp" data-wow-delay=".2s">
                   <div className="image">
-                    <a href="blog-single-sidebar.html">
+                    <a href="/communitypost">
                       <img
                         className="thumb"
                         src="\src\assets\123.png"
@@ -48,7 +45,7 @@ export function Community() {
                   </div>
                   <div className="content-body">
                     <h4 className="title">
-                      <a href="blog-single-sidebar.html">두발로 걸었어요!</a>
+                      <a href="/communitypost">두발로 걸었어요!</a>
                     </h4>
                     <p>
                       저희집 강아지가 두발로 걸었어요!! 쓸개골이 걱정되긴 하지만 너무
