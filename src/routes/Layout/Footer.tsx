@@ -86,6 +86,9 @@ export default function Footer() {
                   <li>
                     <a href="javascript:void(0)">Help & Support</a>
                   </li>
+                  <li>
+                    <a href="/dashboard">My Page</a>
+                  </li>
                 </ul>
               </div>
             </div>
