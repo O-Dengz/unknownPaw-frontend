@@ -17,51 +17,51 @@ export default function Dashboard() {
   const [activityLogs] = useState<ActivityLog[]>([
     {
       icon: 'lni lni-alarm',
-      title: 'Your Profile Updated!',
-      time: '12 Minutes Ago'
+      title: '프로필 정보가 업데이트되었습니다',
+      time: '12분 전'
     },
     {
       icon: 'lni lni-alarm',
-      title: 'You change your password',
-      time: '59 Minutes Ago'
+      title: '비밀번호가 변경되었습니다',
+      time: '59분 전'
     },
     {
       icon: 'lni lni-alarm',
-      title: 'Your ads approved!',
-      time: '5 Hours Ago'
+      title: '펫호텔 예약이 확정되었습니다',
+      time: '5시간 전'
     },
     {
       icon: 'lni lni-alarm',
-      title: 'You submit a new ads',
-      time: '8 hours Ago'
+      title: '새로운 미용 예약이 등록되었습니다',
+      time: '8시간 전'
     },
     {
       icon: 'lni lni-alarm',
-      title: 'You subscribe as a pro user!',
-      time: '1 day Ago'
+      title: '프리미엄 회원으로 업그레이드되었습니다',
+      time: '1일 전'
     }
   ])
 
   const [recentAds] = useState<RecentAd[]>([
     {
       image: '/assets/images/items-grid/item1.jpg',
-      title: 'iPhone 11 Pro Max',
-      time: '12 Minutes Ago'
+      title: '강아지 미용 서비스',
+      time: '12분 전'
     },
     {
       image: '/assets/images/items-grid/item2.jpg',
-      title: 'Polaris 600 Assault 144',
-      time: '5 days Ago'
+      title: '고양이 호텔 예약',
+      time: '5일 전'
     },
     {
       image: '/assets/images/items-grid/item3.jpg',
-      title: 'Brand New Bagpack',
-      time: '1 week Ago'
+      title: '강아지 훈련 서비스',
+      time: '1주일 전'
     },
     {
       image: '/assets/images/items-grid/item4.jpg',
-      title: 'Honda Civic VTi 2023',
-      time: '3 week Ago'
+      title: '고양이 미용 서비스',
+      time: '3주일 전'
     }
   ])
 
@@ -76,15 +76,15 @@ export default function Dashboard() {
           <div className="row align-items-center">
             <div className="col-lg-6 col-md-6 col-12">
               <div className="breadcrumbs-content">
-                <h1 className="page-title">Dashboard</h1>
+                <h1 className="page-title">대시보드</h1>
               </div>
             </div>
             <div className="col-lg-6 col-md-6 col-12">
               <ul className="breadcrumb-nav">
                 <li>
-                  <a href="/">Home</a>
+                  <a href="/">홈</a>
                 </li>
-                <li>Dashboard</li>
+                <li>대시보드</li>
               </ul>
             </div>
           </div>
@@ -107,8 +107,8 @@ export default function Dashboard() {
                           <i className="lni lni-checkmark-circle"></i>
                         </div>
                         <div className="stat-info">
-                          <h3>340</h3>
-                          <p>Total Ad Posted</p>
+                          <h3>12</h3>
+                          <p>총 예약 건수</p>
                         </div>
                       </div>
                     </div>
@@ -118,8 +118,8 @@ export default function Dashboard() {
                           <i className="lni lni-bolt"></i>
                         </div>
                         <div className="stat-info">
-                          <h3>23</h3>
-                          <p>Featured Ads</p>
+                          <h3>3</h3>
+                          <p>진행중인 예약</p>
                         </div>
                       </div>
                     </div>
@@ -129,8 +129,8 @@ export default function Dashboard() {
                           <i className="lni lni-emoji-sad"></i>
                         </div>
                         <div className="stat-info">
-                          <h3>45</h3>
-                          <p>Expired Ads</p>
+                          <h3>2</h3>
+                          <p>만료된 예약</p>
                         </div>
                       </div>
                     </div>
@@ -140,7 +140,7 @@ export default function Dashboard() {
                 <div className="row">
                   <div className="col-lg-6 col-md-12 col-12">
                     <div className="activity-log dashboard-block">
-                      <h3 className="block-title">My Activity Log</h3>
+                      <h3 className="block-title">활동 내역</h3>
                       <ul>
                         {activityLogs.map((log, index) => (
                           <li key={index} className="activity-item">
@@ -163,12 +163,15 @@ export default function Dashboard() {
                   </div>
                   <div className="col-lg-6 col-md-12 col-12">
                     <div className="recent-ads dashboard-block">
-                      <h3 className="block-title">Recent Ads</h3>
+                      <h3 className="block-title">최근 예약</h3>
                       <ul>
                         {recentAds.map((ad, index) => (
                           <li key={index} className="ad-item">
                             <div className="ad-image">
-                              <img src={ad.image} alt={ad.title} />
+                              <img
+                                src={'/assets/images/items-grid/img2.jpg'}
+                                alt={ad.title}
+                              />
                             </div>
                             <div className="ad-content">
                               <h4>{ad.title}</h4>

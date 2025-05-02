@@ -48,9 +48,7 @@ export function DashboardSidebar({
             </a>
           </li>
           <li>
-            <a
-              className={isActive('/favourite-items') ? 'active' : ''}
-              href="/favourite-items">
+            <a className={isActive('/myfavourite') ? 'active' : ''} href="/myfavourite">
               <i className="lni lni-heart"></i> 찜한 게시글
             </a>
           </li>
@@ -69,13 +67,6 @@ export function DashboardSidebar({
           <li>
             <a className={isActive('/chatting') ? 'active' : ''} href="/chatting">
               <i className="lni lni-envelope"></i> 채팅
-            </a>
-          </li>
-          <li>
-            <a
-              className={isActive('/delete-account') ? 'active' : ''}
-              href="/delete-account">
-              <i className="lni lni-close"></i> 회원 탈퇴
             </a>
           </li>
           <li>

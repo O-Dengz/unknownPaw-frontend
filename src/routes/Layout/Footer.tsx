@@ -89,6 +89,9 @@ export default function Footer() {
                   <li>
                     <a href="/dashboard">My Page</a>
                   </li>
+                  <li>
+                    <a href="/member/profile">회원 프로필</a>
+                  </li>
                 </ul>
               </div>
             </div>
