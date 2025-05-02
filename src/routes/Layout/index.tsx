@@ -10,6 +10,8 @@ import {ProfileSettings} from '../../pages/myPage/ProfileSettings'
 import Chatting from '../../pages/myPage/Chatting'
 import Faq from '../../pages/myPage/Faq'
 import Dashboard from '../../pages/myPage/Dashboard'
+import {ItemDetails} from '../../pages/unknownPaw/ItemDetails'
+
 
 export default function Layout() {
   return (
@@ -26,6 +28,7 @@ export default function Layout() {
         <Route path="/profile-settings" element={<ProfileSettings />} />
         <Route path="/chatting" element={<Chatting />} />
         <Route path="/faq" element={<Faq />} />
+        <Route path="/item/:id" element={<ItemDetails />} />
         {/* <Route path="/post" element={<Post />} />
         <Route path="/modify" element={<Modify />} />
         <Route path="/contact" element={<Contact />} />
