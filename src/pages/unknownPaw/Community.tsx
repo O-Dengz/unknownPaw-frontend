@@ -211,7 +211,7 @@ export function Community() {
                   <div className="single-popular-feed">
                     <div className="feed-desc">
                       <h6 className="post-title">
-                        <a href="#">님들 님들 이거 봐보셈 급함!!!</a>
+                        <a href="#">님들 님들 님들 이거 봐보셈 급함!!!!</a>
                       </h6>
                       <span className="time">
                         <i className="lni lni-calendar"></i> 2025.05.01
