@@ -1,3 +1,4 @@
+/* 기본 대시보드 스타일 */
 .dashboard-sidebar {
   background: #fff;
   padding: 20px;
@@ -39,7 +40,7 @@
 }
 
 .dashboard-sidebar .user-info .username:hover {
-  color: #007bff;
+  color: #32ade6;
 }
 
 .dashboard-sidebar .user-image .username a {
@@ -48,7 +49,7 @@
 }
 
 .dashboard-sidebar .user-image .username a:hover {
-  color: #007bff;
+  color: #32ade6;
 }
 
 .dashboard-sidebar .user-image span a {
@@ -125,7 +126,7 @@
   background: #ffe0e0;
 }
 
-/* Profile Settings Form Styles */
+/* 프로필 설정 폼 */
 .profile-settings {
   background: #fff;
   padding: 30px;
@@ -170,7 +171,7 @@
 .form-group textarea:focus {
   border-color: #32ade6;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(88, 48, 224, 0.1);
+  box-shadow: 0 0 0 3px rgba(50, 173, 230, 0.1);
 }
 
 .form-group textarea {
@@ -213,7 +214,7 @@
   background: #1f97cd;
 }
 
-/* Profile Image Preview */
+/* 프로필 이미지 미리보기 */
 .profile-image-preview {
   width: 120px;
   height: 120px;
@@ -228,7 +229,7 @@
   object-fit: cover;
 }
 
-/* Main Content Styles */
+/* 메인 콘텐츠 */
 .main-content {
   background: #fff;
   padding: 30px;
@@ -236,6 +237,7 @@
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
+/* 상세 목록 */
 .details-lists .single-list {
   position: relative;
   padding-left: 80px;
@@ -271,7 +273,7 @@
   margin-top: 5px;
 }
 
-/* Pet Profile & Password Change Section */
+/* 반려견 프로필 & 비밀번호 변경 */
 .pet-profile-settings,
 .password-change {
   background: #fff;
@@ -405,14 +407,14 @@
   cursor: pointer;
 }
 
-/* Messages Content */
+/* 메시지 콘텐츠 */
 .messages-content {
   display: flex;
   height: calc(100% - 80px);
   background: #fff;
 }
 
-/* Users List */
+/* 사용자 목록 */
 .users-list {
   width: 320px;
   border-right: 1px solid #eee;
@@ -487,7 +489,7 @@
   white-space: nowrap;
 }
 
-/* Chat Container */
+/* 채팅 컨테이너 */
 .chat-container {
   flex: 1;
   display: flex;
@@ -521,7 +523,7 @@
   font-weight: 500;
 }
 
-/* Chat Messages */
+/* 채팅 메시지 */
 .chat-messages {
   flex: 1;
   padding: 20px;
@@ -584,7 +586,7 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* Chat Input */
+/* 채팅 입력 */
 .chat-input {
   padding: 15px 20px;
   background: white;
@@ -646,12 +648,12 @@
 }
 
 .btn-send:hover {
-  background: ##0b83ba;
+  background: #1f97cd;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(50, 173, 230, 0.3);
 }
 
-/* Scrollbar Styling */
+/* 스크롤바 스타일링 */
 .users-list-inner::-webkit-scrollbar,
 .chat-messages::-webkit-scrollbar {
   width: 6px;
@@ -678,7 +680,7 @@
   padding-bottom: 60px;
 }
 
-/* FAQ Styles */
+/* FAQ 스타일 */
 .accordion {
   margin-bottom: 40px;
 }
@@ -738,7 +740,7 @@
   margin-bottom: 0;
 }
 
-/* Contact Section Styles */
+/* 연락처 섹션 */
 .contact-section {
   margin-top: 40px;
   padding-top: 40px;
@@ -779,7 +781,7 @@
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Dashboard Stats */
+/* 대시보드 통계 */
 .dashboard-stats {
   margin-bottom: 30px;
 }
@@ -815,11 +817,11 @@
 }
 
 .stat-card.featured .stat-icon {
-  background: rgba(255, 193, 7, 0.1);
+  background: rgba(241, 168, 82, 0.1);
 }
 
 .stat-card.featured .stat-icon i {
-  color: #ffc107;
+  color: #f1a852;
 }
 
 .stat-card.expired .stat-icon {
@@ -843,7 +845,7 @@
   font-size: 14px;
 }
 
-/* Activity Log */
+/* 활동 로그 */
 .activity-item {
   display: flex;
   align-items: center;
@@ -891,7 +893,7 @@
   color: #666;
 }
 
-/* Recent Ads */
+/* 최근 광고 */
 .ad-item {
   display: flex;
   align-items: center;
@@ -937,7 +939,7 @@
   color: #666;
 }
 
-/* Remove Button */
+/* 삭제 버튼 */
 .remove-btn {
   opacity: 0;
   position: absolute;
@@ -967,7 +969,7 @@
   color: #fff;
 }
 
-/* Dashboard Block */
+/* 대시보드 블록 */
 .dashboard-block {
   background: #fff;
   padding: 25px;
@@ -983,269 +985,219 @@
   font-weight: 600;
 }
 
-.favourite-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
+/* MyItems 게시판 */
+.service-list {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
 }
 
-.favourite-count {
-  background: #32ade6;
-  color: white;
-  padding: 5px 15px;
-  border-radius: 20px;
+.service-header {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.header-info {
+  display: flex;
+  gap: 15px;
   font-size: 14px;
 }
 
-.favourite-count .featured {
-  font-weight: 500;
+.header-info span {
+  padding: 5px 10px;
+  border-radius: 15px;
+  background: #f8f9fa;
+  color: #666;
 }
 
-.item-list-title {
-  padding: 12px 20px;
-  margin-bottom: 15px;
+.service-items {
+  border-top: 2px solid #32ade6;
+}
+
+.service-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
   border-bottom: 1px solid #eee;
 }
 
-.item-list-title p {
+.service-item .row {
+  width: 100%;
   margin: 0;
-  font-size: 13px;
-  color: #999;
-  font-weight: 400;
-  text-transform: capitalize;
-}
-
-.single-item-list {
-  background: white;
-  padding: 15px 20px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  transition: all 0.3s ease;
-  border: 1px solid #eee;
-}
-
-.single-item-list:hover {
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  transform: translateY(-2px);
-}
-
-.item-image {
-  display: flex;
   align-items: center;
 }
 
-.item-image img {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
-  object-fit: cover;
-  margin-right: 15px;
+.service-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-.item-image .content {
+.service-title img {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.title-info {
   flex: 1;
 }
 
-.item-image .title {
+.title-info h3 {
   margin: 0;
   font-size: 15px;
   font-weight: 500;
-}
-
-.item-image .title a {
   color: #333;
-  text-decoration: none;
 }
 
-.item-image .title a:hover {
-  color: #32ade6;
-}
-
-.item-image .price {
-  display: block;
+.title-info .price {
+  margin: 4px 0 0 0;
   font-size: 14px;
   color: #32ade6;
-  margin-top: 3px;
 }
 
-.action-buttons {
+.title-info .location {
+  margin: 2px 0 0 0;
+  font-size: 12px;
+  color: #888;
+}
+
+.service-category {
+  text-align: center;
+}
+
+.service-category span {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 13px;
+  background: #f0f7ff;
+  color: #32ade6;
+}
+
+.service-status {
+  text-align: center;
+}
+
+.service-status span {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 13px;
+}
+
+.service-status .status-text.진행중 {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.service-status .status-text.완료 {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.service-status .status-text.예약중 {
+  background: #fff3e0;
+  color: #f1a852;
+}
+
+.service-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 6px;
 }
 
-.action-buttons a {
-  width: 32px;
-  height: 32px;
+.action-btn {
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: 4px;
   color: #666;
-  transition: all 0.3s ease;
+  background: #f8f9fa;
+  transition: all 0.2s ease;
 }
 
-.action-buttons .view-btn:hover {
-  background: #e8f3ff;
-  color: #0066ff;
+.action-btn:hover {
+  background: #32ade6;
+  color: #fff;
 }
 
-.action-buttons .delete-btn:hover {
-  background: #fff0f0;
-  color: #ff3333;
+.action-btn i {
+  font-size: 14px;
 }
 
+/* 페이지네이션 */
 .pagination {
-  margin-top: 30px;
+  margin-top: 20px;
   display: flex;
   justify-content: center;
 }
 
 .pagination-list {
   display: flex;
-  list-style: none;
+  gap: 5px;
   padding: 0;
   margin: 0;
-  gap: 5px;
+  list-style: none;
 }
 
 .pagination-list li a {
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 35px;
-  height: 35px;
-  border-radius: 8px;
-  color: #666;
-  text-decoration: none;
-  transition: all 0.3s ease;
+  border-radius: 4px;
   font-size: 14px;
+  color: #666;
+  background: #f8f9fa;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.pagination-list li.active a {
+  background: #32ade6;
+  color: #fff;
 }
 
 .pagination-list li a:hover {
-  background: #f0f0f0;
-}
-
-.pagination-list li a.active {
   background: #32ade6;
-  color: white;
+  color: #fff;
 }
 
-/* 회원 탈퇴 섹션 스타일 */
-.delete-account-section {
-  background: #fff;
-  padding: 30px;
-  border-radius: 10px;
-  border: 1px solid #eee;
-  margin-top: 30px;
-}
+/* 반응형 */
+@media (max-width: 768px) {
+  .service-item {
+    padding: 12px 0;
+  }
 
-.delete-account-section h2 {
-  font-size: 24px;
-  margin-bottom: 30px;
-  font-weight: 500;
-  color: #333;
-}
+  .service-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
 
-.warning-text {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 20px;
-  line-height: 1.6;
-}
+  .service-category,
+  .service-status {
+    text-align: left;
+    margin-top: 8px;
+  }
 
-.delete-account-btn {
-  background: #fff0f0;
-  color: #ff0000;
-  border: none;
-  padding: 12px 30px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
+  .service-actions {
+    justify-content: flex-start;
+    margin-top: 8px;
+  }
 
-.delete-account-btn:hover {
-  background: #ffe0e0;
-}
+  .header-info {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 
-/* 모달 스타일 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: #fff;
-  padding: 30px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-}
-
-.modal-content h3 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  font-weight: 500;
-  color: #333;
-}
-
-.modal-content p {
-  color: #666;
-  font-size: 14px;
-  line-height: 1.6;
-  margin-bottom: 15px;
-}
-
-.modal-warning {
-  color: #ff0000;
-  font-size: 14px;
-  margin: 15px 0;
-  line-height: 1.6;
-}
-
-.modal-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  margin-top: 25px;
-}
-
-.modal-btn {
-  padding: 12px 30px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.modal-btn.confirm {
-  background: #fff0f0;
-  color: #ff0000;
-}
-
-.modal-btn.confirm:hover {
-  background: #ffe0e0;
-}
-
-.modal-btn.cancel {
-  background: #f8f9fa;
-  color: #666;
-}
-
-.modal-btn.cancel:hover {
-  background: #f0f0f0;
+  .service-item .row > [class*='col-'] {
+    margin-bottom: 8px;
+  }
 }
