@@ -47,7 +47,7 @@ export default function Navigation() {
             <div className="nav-inner">
               <nav className="navbar navbar-expand-lg">
                 <Link className="navbar-brand" to="/">
-                  <img src="/assets/images/logo/logo.svg" alt="Logo" />
+                  <img src="/assets/images/logo/모개로고.png" alt="Logo" />
                 </Link>
                 <button className={`navbar-toggler mobile-menu-btn ${
                     isMenuOpen ? 'active' : '' }`}
@@ -84,7 +84,7 @@ export default function Navigation() {
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link"to="/about"onClick={() => setIsMenuOpen(false)}>
+                      <Link className="nav-link"to="/about" onClick={() => setIsMenuOpen(false)}>
                         About
                       </Link>
                     </li>
@@ -99,14 +99,14 @@ export default function Navigation() {
                     </li>
                     <li>
                       <Link to="/register">
-                        <i className="lni lni-user"></i> Register
+                        <i className="lni lni-user"></i> Join
                       </Link>
                     </li>
                   </ul>
                 </div>
                 <div className="button header-button">
                   <Link to="/post" className="btn">
-                    Post an Ad
+                    Post
                   </Link>
                 </div>
               </nav>
