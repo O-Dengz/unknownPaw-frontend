@@ -6,43 +6,12 @@ import '../../../public/assets/css/bootstrap.min.css';
 import '../../../public/assets/css/glightbox.min.css';
 import '../../../public/assets/css/main.css';
 import '../../../public/assets/css/tiny-slider.css';
-
-// 스타일 정의
-const styles = {
-  mainImageSection: {
-    marginBottom: '30px',
-    borderRadius: '8px',
-    overflow: 'hidden',
-    boxShadow: '0 0 10px rgba(0,0,0,0.1)'
-  },
-  imageContainer: {
-    width: '100%',
-    height: '400px',
-    position: 'relative' as const
-  },
-  mainImage: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover' as const
-  },
-  authorInfo: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: '20px',
-    padding: '15px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px'
-  },
-  authorImage: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px'
-  }
-};
+import './Post.css';
+import { Div } from '../../components';
 
 export function ItemDetails() {
   const { id } = useParams();
+  const [liked, setLiked] = React.useState(false);
 
   // 정적 데이터
   const item = {
@@ -67,190 +36,88 @@ export function ItemDetails() {
   };
 
   return (
-    <div className="item-details" style={{ marginTop: '60px', marginBottom: '80px' }}>
-      <div className="container">
-        <div className="row">
-          <div className="col-lg-8 col-12">
-            <div className="single-grid wow fadeInUp" data-wow-delay=".2s">
-              {/* 배경 이미지 섹션 */}
-              <div className="image" style={{ position: 'relative' }}>
-                <div className="thumbnail">
-                  <img src={item.imageUrl} alt="#" style={{ width: '100%', height: '400px', objectFit: 'cover' }} />
-                </div>
+    <>
+<div className="breadcrumbs">
+        <div className="container">
+          <div className="row align-items-center">
+            <div className="col-lg-6 col-md-6 col-12">
+              <div className="breadcrumbs-content">
+                <h1 className="page-title">자리 채우기 용</h1>
               </div>
-
-              {/* 프로필 및 정보 섹션 */}
-              <div className="content" style={{ padding: '20px' }}>
-                <div className="row">
-                  {/* 왼쪽: 프로필 정보 */}
-                  <div className="col-md-6">
-                    <div className="profile-section">
-                      <div className="author-info" style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'space-between',
-                        marginBottom: '15px' 
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                          <img src={item.authorImage} alt="#" style={{ 
-                            width: '50px', 
-                            height: '50px', 
-                            borderRadius: '50%',
-                            marginRight: '10px'
-                          }} />
-                          <div>
-                            <h4 style={{ margin: '0' }}>{item.writer}</h4>
-                          </div>
-                        </div>
-                        <div style={{ 
-                          textAlign: 'right',
-                          color: '#2563eb',
-                          fontWeight: 'bold',
-                          fontSize: '1.2rem'
-                        }}>
-                          {item.footprint}
-                          <div style={{ 
-                            fontSize: '0.9rem',
-                            marginTop: '5px'
-                          }}>
-                            Paw Rate
-                          </div>
-                        </div>
-                      </div>
-                      <div className="title-section">
-                        <h2 style={{ margin: '0 0 10px 0' }}>{item.title}</h2>
-                        <div style={{ color: '#666' }}>
-                          <span className="tag">{item.tag}</span>
-                          <span style={{ margin: '0 10px' }}>|</span>
-                          <span>{item.createdAt}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 오른쪽: 빈 공간 */}
-                  <div className="col-md-6">
-                  </div>
-                </div>
-
-                {/* 글 내용 */}
-                <div className="item-content" style={{ margin: '30px 0' }}>
-                  {item.content.split('\n').map((line, index) => (
-                    <p key={index}>{line}</p>
-                  ))}
-                </div>
-
-                {/* 조회수 및 신고하기 */}
-                <div style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  gap: '10px',
-                  marginBottom: '15px',
-                  color: '#666'
-                }}>
-                  <div style={{ 
-                    width: '100%',
-                    height: '200px',
-                    backgroundColor: '#f5f5f5',
-                    borderRadius: '8px',
-                    overflow: 'hidden',
-                    position: 'relative'
-                  }}>
-                    <img 
-                      src={item.imageUrl} 
-                      alt="위치 사진" 
-                      style={{ 
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover'
-                      }}
-                    />
-                    <div style={{
-                      position: 'absolute',
-                      top: '10px',
-                      left: '10px',
-                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                      color: 'white',
-                      padding: '5px 10px',
-                      borderRadius: '4px',
-                      fontSize: '0.9rem'
-                    }}>
-                      위치사진예시
-                    </div>
-                  </div>
-                  <div className="views">
-                    조회수: {item.views}
-                  </div>
-                  <button style={{
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    color: '#666',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '5px'
-                  }}>
-                    <i className="lni lni-flag"></i>
-                    게시글 신고하기
-                  </button>
-                </div>
-              </div>
+            </div>
+            <div className="col-lg-6 col-md-6 col-12">
+              <ul className="breadcrumb-nav">
+                <li>
+                  <a href="/">홈</a>
+                </li>
+                <li>포스트 자리 채우기 용 (헤더 이슈)</li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
-
-      {/* 고정된 하단 액션 박스 */}
-      <div style={{
-        position: 'fixed',
-        bottom: '0',
-        left: '0',
-        right: '0',
-        backgroundColor: 'white',
-        padding: '15px 0',
-        boxShadow: '0 -2px 10px rgba(0,0,0,0.1)',
-        zIndex: '1000'
-      }}>
-        <div className="container">
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <span className="like" onClick={handleClick} style={{ 
-              cursor: 'pointer',
-              fontSize: '1.2rem',
-              color: '#666',
-              flex: '1',
-              textAlign: 'left'
-            }}>
-              <i className="lni lni-heart"></i>
-            </span>
-            <span className="price" style={{ 
-              fontWeight: 'bold',
-              fontSize: '1.1rem',
-              flex: '1',
-              textAlign: 'center'
-            }}>
-              시급: {item.price}
-            </span>
-            <button className="btn btn-primary" style={{ 
-              backgroundColor: '#2563eb',
-              color: 'white',
-              border: 'none',
-              padding: '8px 20px',
-              borderRadius: '5px',
-              cursor: 'pointer',
-              fontSize: '1rem',
-              flex: '1',
-              textAlign: 'center',
-              maxWidth: '120px'
-            }}>
-              예약하기
-            </button>
+    
+    
+    <div className="item-details">
+      <div className="container">
+        <div className="item-main-row">
+          {/* 좌측: 이미지 + 셀러 정보 */}
+          <div className="item-left-area" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <img src={item.imageUrl} alt="상품 이미지" className="main-image" />
+            {/* 판매자 정보 - 이미지 아래 */}
+            <div className="author-info-area">
+              <div className="post-author-profile">
+                <img src={item.authorImage} alt="프로필" className="post-author-image" />
+                <div className="author-meta">
+                  <div className="author-name">{item.writer}</div>
+                  <div className="author-location">{item.location}</div>
+                </div>
+              </div>
+              <div className="author-temp-box">
+                <div className="author-temp-row">
+                  <span className="author-temp-value">{item.footprint}°C</span>
+                  <span className="author-temp-emoji" role="img" aria-label="paw">🐾</span>
+                </div>
+                <div className="author-paw-label">발자국 지수</div>
+              </div>
+            </div>
           </div>
+          {/* 우측: 정보 */}
+          <div className="item-right-area">
+            <h2 className="item-title">{item.title}</h2>
+            <div className="item-price">{item.price}</div>
+            <div className="item-notice">
+            우리 푸들과 함께 산책해주실 분을 찾습니다. <br/>
+            - 요구사항<br/>
+            * 주 3회 이상 산책 가능<br/>
+            * 강아지 경험자 우대<br/>
+            * 오후 시간대 가능<br/><br/>
+            
+            - 급여: 시간당 10,000원<br/>
+            - 위치: 서울시 강남구<br/>
+            </div>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '12px', alignItems: 'center' }}>
+              <button className="reserve-button">예약하기</button>
+              <button className="reserve-button"><i className="lni lni-heart"></i></button>
+            </div>
+            </div>
+        </div>
+        {/* 지도 영역 */}
+        <div className="map-area">
+          {/* 지도 컴포넌트가 들어갈 자리 */}
+          <iframe
+            id="gmap_canvas"
+            src="https://maps.google.com/maps?q=부산광역시+부산진구+부전동+163-1&t=&z=15&ie=UTF8&iwloc=&output=embed"
+            height={300}
+            width={1300}
+            frameBorder="0"
+            scrolling="no"
+            marginHeight={0}
+            marginWidth={0}
+            />
         </div>
       </div>
     </div>
+    </>
   );
-} 
+}

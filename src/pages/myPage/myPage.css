@@ -1040,6 +1040,11 @@
   border-radius: 4px;
   object-fit: cover;
 }
+.item-list-title  {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  color: #00000;
+}
 
 .title-info {
   flex: 1;
