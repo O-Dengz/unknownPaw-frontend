@@ -86,6 +86,10 @@ export function ItemDetails() {
           <div className="item-right-area">
             <h2 className="item-title">{item.title}</h2>
             <div className="item-price">{item.price}</div>
+           <div className="post-service-category" style={{ display: 'flex', alignItems: 'center', }}> 
+              <p style={{ marginRight: '6px' }}>산책</p>
+              <span style={{ color: '#888' }}> · 2시간 전</span>
+            </div>
             <div className="item-notice">
             우리 푸들과 함께 산책해주실 분을 찾습니다. <br/>
             - 요구사항<br/>
@@ -95,6 +99,13 @@ export function ItemDetails() {
             
             - 급여: 시간당 10,000원<br/>
             - 위치: 서울시 강남구<br/>
+            </div>
+            <div className="post-summary">
+              <span>조회수 123</span>
+              <p>· </p>
+              <span>채팅 4</span>
+              <p>· </p>
+              <span>좋아요 12</span>
             </div>
             <div style={{ display: 'flex', gap: '10px', marginTop: '12px', alignItems: 'center' }}>
               <button className="reserve-button">예약하기</button>
@@ -116,6 +127,7 @@ export function ItemDetails() {
             marginWidth={0}
             />
         </div>
+        <button className="report-button">🚨 신고하기</button>
       </div>
     </div>
     </>
