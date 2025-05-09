@@ -69,7 +69,7 @@ export default function Navigation() {
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/petowner"onClick={() => setIsMenuOpen(false)}>
+                      <Link className="nav-link" to="/petowner/list"onClick={() => setIsMenuOpen(false)}>
                         Pet Owner
                       </Link>
                     </li>
