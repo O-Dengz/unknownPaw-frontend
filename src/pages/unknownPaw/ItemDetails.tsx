@@ -126,6 +126,9 @@ export function ItemDetails() {
   if (error) return <div>{error}</div>
   if (!postDTO) return <div>게시글을 찾을 수 없습니다.</div>
 
+  // 이미지 및 프로필 정보 상세 로그
+  console.log('postDTO.image:', postDTO.image);
+  console.log('postDTO.member:', postDTO.member);
   return (
     <>
       <div className="breadcrumbs">
@@ -156,7 +159,9 @@ export function ItemDetails() {
               style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
               {postDTO.image && postDTO.image.length > 0 && (
                 <img
-                  src={postDTO.image[0].imagePath}
+                  src={
+                    postDTO.image[0].imagePath || 
+                    '../assets/images/items-grid/img2.jpg'}
                   alt="상품 이미지"
                   className="main-image"
                 />
@@ -167,16 +172,16 @@ export function ItemDetails() {
                     <>
                       {postDTO.member.profileImagePath && (
                         <img
-                          src={postDTO.member.profileImagePath}
+                          src={postDTO.member.profileImagePath || '../assets/images/items-grid/author-1.jpg'}
                           alt="프로필"
                           className="post-author-image"
                         />
                       )}
                       <div className="author-meta">
-                        <div className="author-name">{postDTO.member.nickname}</div>
-                        <div className="author-location">{postDTO.defaultLocation}</div>
+                        <div className="author-name">{postDTO.member.nickname || 'nickname'}</div>
+                        <div className="author-location">{postDTO.defaultLocation || '부산시'}</div>
                         <div className="author-rating">
-                          <span>🐾 {postDTO.member.pawRate.toFixed(1)}</span>
+                          <span>🐾 {postDTO.member.pawRate.toFixed(1) || '1.4'}</span>
                         </div>
                       </div>
                     </>

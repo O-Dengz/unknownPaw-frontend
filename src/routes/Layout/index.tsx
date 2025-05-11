@@ -8,6 +8,7 @@ import {List} from '../../pages/unknownPaw/List'
 import {About} from '../../pages/unknownPaw/About'
 import {PetOwner} from '../../pages/unknownPaw/PetOwner'
 import {PetSitter} from '../../pages/unknownPaw/PetSitter'
+
 import {Community} from '../../pages/unknownPaw/Community'
 import {ItemDetails} from '../../pages/unknownPaw/ItemDetails'
 
@@ -35,7 +36,7 @@ export default function Layout() {
         <Route path="/list" element={<List />} />
         <Route path="/about" element={<About />} />
         <Route path="/petowner/list" element={<PetOwner />} />
-        <Route path="/petsitter" element={<PetSitter />} />
+        <Route path="/petsitter/list" element={<PetSitter />} />
         <Route path="/community" element={<Community />} />
         <Route path="/communityPost" element={<CommunityPost />} />
 
