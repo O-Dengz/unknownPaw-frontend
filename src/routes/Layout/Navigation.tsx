@@ -98,14 +98,14 @@ export default function Navigation() {
                       </Link>
                     </li>
                     <li>
-                      <Link to="/register">
+                      <Link to="/join">
                         <i className="lni lni-user"></i> Join
                       </Link>
                     </li>
                   </ul>
                 </div>
                 <div className="button header-button">
-                  <Link to="/post" className="btn">
+                  <Link to="/postAd" className="btn">
                     Post
                   </Link>
                 </div>

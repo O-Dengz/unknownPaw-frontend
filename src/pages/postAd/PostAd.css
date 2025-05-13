@@ -1,0 +1,572 @@
+/* =======================================================
+   공통 색상 변수
+   기본 테마  : 하늘( #32ade6 )
+   팀원 테마 : 보라( #5830e0 ) → body.theme-purple 로 적용
+======================================================= */
+:root {
+  --primary: #32ade6;
+  --primary-dark: #4920c0;
+  --primary-light: rgba(50, 173, 230, 0.1);
+}
+
+.theme-purple {
+  --primary: #5830e0;
+  --primary-dark: #4920c0; /* hover 색은 가져다 씀 */
+  --primary-light: rgba(88, 48, 224, 0.1);
+}
+
+/* ======================================================
+   DASHBOARD SIDEBAR
+====================================================== */
+.dashboard-sidebar {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.dashboard-sidebar .user-image {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.dashboard-sidebar .user-image img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.dashboard-sidebar .user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-sidebar .user-info h3 {
+  font-size: 16px;
+  margin: 0;
+  color: #333;
+  font-weight: 500;
+}
+
+.dashboard-sidebar .user-info .username {
+  font-size: 14px;
+  color: #666;
+  text-decoration: none;
+  margin-top: 2px;
+}
+
+.dashboard-sidebar .user-info .username:hover {
+  color: #007bff;
+}
+
+.dashboard-sidebar .user-image .username a,
+.dashboard-sidebar .user-image span a {
+  color: #666;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.dashboard-sidebar .user-image span a:hover,
+.dashboard-sidebar .user-image .username a:hover {
+  color: #007bff;
+}
+
+/* ======================================================
+   DASHBOARD MENU
+====================================================== */
+.dashboard-menu ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.dashboard-menu ul li {
+  margin-bottom: 5px;
+}
+
+.dashboard-menu ul li a {
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.dashboard-menu ul li a i {
+  margin-right: 10px;
+  font-size: 18px;
+  width: 20px;
+  color: #666;
+}
+
+.dashboard-menu ul li a:hover {
+  background: #f8f9fa;
+  color: var(--primary);
+}
+
+.dashboard-menu ul li a:hover i {
+  color: var(--primary);
+}
+
+.dashboard-menu ul li a.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.dashboard-menu ul li a.active i {
+  color: #fff;
+}
+
+.dashboard-menu .button {
+  margin-top: 20px;
+  padding: 0 15px;
+}
+
+.dashboard-menu .button .btn {
+  width: 100%;
+  padding: 12px;
+  background: #fff0f0;
+  color: #ff0000;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dashboard-menu .button .btn:hover {
+  background: #ffe0e0;
+}
+
+/* ======================================================
+   PROFILE SETTINGS FORM
+====================================================== */
+.profile-settings,
+.pet-profile-settings,
+.password-change,
+.delete-account-section {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.profile-settings h2,
+.pet-profile-settings h2,
+.password-change h2,
+.delete-account-section h2 {
+  font-size: 24px;
+  margin-bottom: 30px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.form-group input[type='text'],
+.form-group input[type='email'],
+.form-group input[type='password'],
+.form-group input[type='tel'],
+.form-group textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.form-group input[type='text']:focus,
+.form-group input[type='email']:focus,
+.form-group input[type='password']:focus,
+.form-group input[type='tel']:focus,
+.form-group textarea:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.form-group textarea {
+  height: 120px;
+  resize: none;
+}
+
+.form-group input[type='file'] {
+  display: none;
+}
+
+.form-group .file-upload {
+  display: inline-block;
+  padding: 12px 20px;
+  background: #f8f9fa;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+}
+
+.form-group .file-upload:hover {
+  background: #f0f0f0;
+}
+
+.update-profile-btn,
+.update-password-btn {
+  background: var(--primary);
+  color: #fff;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.update-profile-btn:hover,
+.update-password-btn:hover {
+  background: var(--primary-dark);
+}
+
+/* ======================================================
+   MAIN CONTENT (공통 카드·리스트 등)
+====================================================== */
+.main-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* list-icon · details-list */
+.details-lists .single-list {
+  position: relative;
+  padding-left: 80px;
+  margin-bottom: 30px;
+}
+
+.details-lists .single-list .list-icon {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 24px;
+}
+
+.details-lists .single-list h3 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.details-lists .single-list h3 span {
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+  color: #888;
+  margin-top: 5px;
+}
+
+/* ======================================================
+   CHAT / MESSAGES
+====================================================== */
+.messages-container {
+  background: #fff;
+  border-radius: 8px;
+  height: calc(100vh - 300px);
+  display: flex;
+  flex-direction: column;
+}
+
+.messages-header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+}
+
+.messages-header h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+/* 검색 */
+.chat-search-form input {
+  width: 100%;
+  padding: 12px 40px 12px 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #f8f9fa;
+}
+
+.chat-search-form input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: #fff;
+}
+
+/* Users List */
+.user-item:hover {
+  background: #f8f9fa;
+}
+.user-item.active {
+  background: #f0f2f5;
+}
+
+.message-count,
+.favourite-count {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* Chat Message Balloons */
+.message.sent .message-content {
+  background: var(--primary);
+}
+.message.sent .message-content .time {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* 보내기 버튼 */
+.btn-send,
+.toggle-button.active {
+  background: var(--primary);
+  color: #fff;
+}
+.btn-send:hover {
+  background: var(--primary-dark);
+}
+
+/* ======================================================
+   DASHBOARD STAT CARD
+====================================================== */
+.stat-card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  transition: 0.3s;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  background: var(--primary-light);
+}
+.stat-icon i {
+  font-size: 24px;
+  color: var(--primary);
+}
+
+/* ======================================================
+   MY ITEMS  (팀원 전용 섹션)
+====================================================== */
+.service-list {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+}
+.service-header {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+.header-info {
+  display: flex;
+  gap: 15px;
+  font-size: 14px;
+}
+.header-info span {
+  padding: 5px 10px;
+  border-radius: 15px;
+  background: #f8f9fa;
+  color: #666;
+}
+
+.service-items {
+  border-top: 2px solid var(--primary);
+}
+.service-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+.service-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.service-title img {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.title-info h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+}
+.title-info .price {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--primary);
+}
+.title-info .location {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #888;
+}
+
+.service-category {
+  text-align: center;
+}
+.service-category span {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 13px;
+  background: #f0f7ff;
+  color: #1976d2;
+}
+
+.service-status {
+  text-align: center;
+}
+.service-status .status-text {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 13px;
+}
+.status-text.진행중 {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+.status-text.완료 {
+  background: #f5f5f5;
+  color: #666;
+}
+.status-text.대기중 {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.service-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.action-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: #666;
+  background: #f8f9fa;
+  transition: 0.2s;
+}
+.action-btn:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+.pagination-list li a {
+  background: #f8f9fa;
+}
+.pagination-list li a:hover,
+.pagination-list li.active a {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .service-item {
+    padding: 12px 0;
+  }
+  .service-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .service-category,
+  .service-status,
+  .service-actions {
+    text-align: left;
+    margin-top: 8px;
+  }
+  .header-info {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .service-item .row > [class*='col-'] {
+    margin-bottom: 8px;
+  }
+}
+
+/* 폼 필드 간 여백 */
+.form-group {
+  margin-bottom: 1.5rem; /* 약 24px */
+}
+
+/* 라벨과 input 간 간격 */
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* input, textarea, select 스타일 개선 (선택) */
+.form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  transition: border 0.3s ease;
+  margin-bottom: 0.5rem;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary, #3b82f6);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
