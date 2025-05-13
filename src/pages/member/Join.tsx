@@ -2,6 +2,7 @@ import type {ChangeEvent, FormEvent} from 'react'
 import {useState, useCallback, useRef} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {EyeIcon, EyeSlashIcon} from '@heroicons/react/24/outline'
+import './Join.css'
 
 type JoinFormType = Record<
   'email' | 'pass' | 'mobile' | 'name' | 'nickname' | 'birthday' | 'gender' | 'address',
