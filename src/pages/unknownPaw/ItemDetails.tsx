@@ -65,7 +65,7 @@ export function ItemDetails() {
       }
 
       // 직접 전체 url로 vite proxy를 사용 안함
-      fetch(`http://localhost:8080/unknownPaw/api/posts/${postType}/read/${postId}`, {
+      fetch(`/api/posts/${postType}/read/${postId}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${latestToken}`,
@@ -147,45 +147,6 @@ export function ItemDetails() {
 
       <div className="item-details">
         <div className="container">
-<<<<<<< HEAD
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <span className="like" onClick={handleClick} style={{ 
-              cursor: 'pointer',
-              fontSize: '1.2rem',
-              color: '#666',
-              flex: '1',
-              textAlign: 'left'
-            }}>
-              <i className="lni lni-heart"></i>
-            </span>
-            <span className="price" style={{ 
-              fontWeight: 'bold',
-              fontSize: '1.1rem',
-              flex: '1',
-              textAlign: 'center'
-            }}>
-              시급: {item.price}
-            </span>
-            <button className="btn btn-primary" style={{ 
-              backgroundColor: '#2563eb',
-              color: 'white',
-              border: 'none',
-              
-              padding: '8px 20px',
-              borderRadius: '5px',
-              cursor: 'pointer',
-              fontSize: '1rem',
-              flex: '1',
-              textAlign: 'center',
-              maxWidth: '120px'
-            }}>
-              예약하기
-            </button>
-=======
           <div className="item-main-row">
             <div
               className="item-left-area"
@@ -283,7 +244,6 @@ export function ItemDetails() {
                 </button>
               </div>
             </div>
->>>>>>> 43843b1a68fdbadcbb2c99819db04e430900163e
           </div>
           <div className="map-area">
             <iframe

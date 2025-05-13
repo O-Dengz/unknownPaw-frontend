@@ -54,7 +54,7 @@ export function Login() {
 
     try {
       /* 2) 서버 요청 — context‑path 포함 */
-      const res = await fetch('http://localhost:8080/unknownPaw/api/member/login', {
+      const res = await fetch('/api/member/login', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email, password})

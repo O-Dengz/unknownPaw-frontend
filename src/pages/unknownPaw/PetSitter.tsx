@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import {Pagination} from '../../components/Pagination'
 import {formatTimeAgo} from '../../utils/timeAgo'
 
@@ -55,6 +55,7 @@ interface PageRequestDTO {
 }
 
 export function PetSitter() {
+  const navigate = useNavigate()
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -78,6 +79,7 @@ export function PetSitter() {
         console.error('No token found in sessionStorage. User is not logged in.')
         setError('로그인이 필요합니다.')
         setLoading(false)
+        navigate('/login')
         return
       }
 
@@ -91,23 +93,28 @@ export function PetSitter() {
       console.log('>>> 요청 파라미터:', queryParams.toString())
 
       fetch(
-        `http://localhost:8080/unknownPaw/api/posts/petsitter/list?page=${
-          pageRequest.page
-        }&size=${pageRequest.size}${pageRequest.type ? `&type=${pageRequest.type}` : ''}${
-          pageRequest.keyword ? `&keyword=${pageRequest.keyword}` : ''
-        }`,
+        `/api/posts/PET_SITTER/list?${queryParams.toString()}`,
         {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${latestToken}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
           }
         }
       )
         .then(async response => {
           console.log('>>> Response received:', response)
           if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
+            const errorText = await response.text()
+            console.error('Error response:', errorText)
+            
+            if (response.status === 401 || response.status === 403) {
+              sessionStorage.removeItem('token')
+              navigate('/login')
+              throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.')
+            }
+            throw new Error(`서버 오류: ${errorText || response.status}`)
           }
           return response.json()
         })
@@ -123,7 +130,7 @@ export function PetSitter() {
         })
         .catch(err => {
           console.error('Error fetching posts:', err)
-          setError('게시글을 불러오는데 실패했습니다.')
+          setError(err.message || '게시글을 불러오는데 실패했습니다.')
         })
         .finally(() => {
           setLoading(false)
@@ -131,7 +138,7 @@ export function PetSitter() {
     }
 
     fetchPosts()
-  }, [pageRequest])
+  }, [pageRequest, navigate])
 
   const handlePageChange = (page: number) => {
     setPageRequest(prev => ({...prev, page}))
