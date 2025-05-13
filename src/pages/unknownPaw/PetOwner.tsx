@@ -197,6 +197,7 @@ export function PetOwner() {
                             </Link>
                           </h3>
                           <p className="update-time">
+                            {/* 3일 전 */}
                             {new Date(post.regDate).toLocaleDateString()}
                           </p>
                           <ul className="rating">
