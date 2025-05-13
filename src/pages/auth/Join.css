@@ -1,0 +1,273 @@
+/* Color System */
+:root {
+  /* Primary Colors */
+  --primary-blue: #32ade6;
+  --primary-blue-hover: #2d9ed2;
+  --primary-yellow: #f1a852;
+  --primary-yellow-hover: #e09842;
+
+  /* Secondary Colors */
+  --secondary-green: #4caf50;
+  --secondary-red: #ff4d4f;
+  --secondary-purple: #9c27b0;
+
+  /* Neutral Colors */
+  --neutral-black: #000000;
+  --neutral-dark: #333333;
+  --neutral-gray: #666666;
+  --neutral-light-gray: #999999;
+  --neutral-lighter-gray: #cccccc;
+  --neutral-white: #ffffff;
+
+  /* Background Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #e0e0e0;
+
+  /* Border Colors */
+  --border-primary: #e0e0e0;
+  --border-focus: rgba(50, 173, 230, 0.2);
+
+  /* Text Colors */
+  --text-primary: var(--neutral-dark);
+  --text-secondary: var(--neutral-gray);
+  --text-tertiary: var(--neutral-light-gray);
+  --text-white: var(--neutral-white);
+
+  /* Status Colors */
+  --success: var(--secondary-green);
+  --error: var(--secondary-red);
+  --info: var(--primary-blue);
+  --warning: var(--primary-yellow);
+
+  /* Shadow */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Typography */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reset & Common Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Join Page Styles */
+.join-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-secondary);
+  padding: 2rem;
+}
+
+.join-form-wrapper {
+  background: var(--bg-primary);
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 480px;
+}
+
+.join-form-wrapper h2 {
+  text-align: center;
+  color: var(--text-primary);
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.form-group input:not([type='radio'], [type='checkbox']) {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background-color: var(--bg-primary);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px var(--border-focus);
+}
+
+.form-group input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Radio Button Group */
+.radio-group {
+  display: flex;
+  gap: 2rem;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.radio-group input[type='radio'] {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: var(--primary-blue);
+}
+
+/* Error Message */
+.error-message {
+  color: var(--error);
+  font-size: 0.85rem;
+  margin-top: 0.4rem;
+  display: block;
+}
+
+/* Terms Section */
+.terms {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.checkbox-label input[type='checkbox'] {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: var(--primary-blue);
+}
+
+.terms-link {
+  color: var(--primary-blue);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.terms-link:hover {
+  text-decoration: underline;
+}
+
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--primary-blue);
+  color: var(--text-white);
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 1.5rem;
+}
+
+.submit-btn:hover {
+  background-color: var(--primary-blue-hover);
+  transform: translateY(-1px);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+/* Login Link */
+.login-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.login-link a {
+  color: var(--primary-blue);
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .join-container {
+    padding: 1rem;
+  }
+
+  .join-form-wrapper {
+    padding: 1.5rem;
+  }
+
+  .join-form-wrapper h2 {
+    font-size: 1.5rem;
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+  }
+
+  .form-group input:not([type='radio'], [type='checkbox']) {
+    padding: 0.7rem;
+  }
+
+  .radio-group {
+    gap: 1.5rem;
+  }
+}
