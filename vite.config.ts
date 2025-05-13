@@ -6,7 +6,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/uploadAjax': {
-        target: 'http://localhost:8080/apiserver/',
+        target: 'http://localhost:8080/unknownPaw/api/',
+        changeOrigin: true,
+        secure: false
+      },
+      '/api': {
+        target: 'http://localhost:8080/unknownPaw',
         changeOrigin: true,
         secure: false
       }

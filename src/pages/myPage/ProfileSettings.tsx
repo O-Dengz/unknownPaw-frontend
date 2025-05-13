@@ -28,6 +28,8 @@ export function ProfileSettings() {
     retypePassword: ''
   })
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+
   const handleProfileSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // 프로필 업데이트 로직 구현
@@ -41,6 +43,12 @@ export function ProfileSettings() {
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // 비밀번호 변경 로직 구현
+  }
+
+  const handleDeleteAccount = () => {
+    // 회원 탈퇴 로직 구현
+    console.log('회원 탈퇴 처리')
+    setShowDeleteModal(false)
   }
 
   const handleFileChange = (
@@ -184,13 +192,13 @@ export function ProfileSettings() {
               </div>
 
               <div className="pet-profile-settings">
-                <h2>Pet Profile Settings</h2>
+                <h2>반려견 프로필 설정</h2>
                 <form onSubmit={handlePetProfileSubmit}>
                   <div className="pet-profile-image-preview">
                     <img src="/assets/images/pet/dog-1.jpg" alt="Pet Profile" />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="petImage">Pet Image*</label>
+                    <label htmlFor="petImage">강아지 사진*</label>
                     <label className="file-upload" htmlFor="petImage">
                       <i className="lni lni-cloud-upload"></i> 선택된 파일 없음
                     </label>
@@ -204,7 +212,7 @@ export function ProfileSettings() {
                   <div className="row">
                     <div className="col-lg-6">
                       <div className="form-group">
-                        <label>Pet Name*</label>
+                        <label>강아지 이름*</label>
                         <input
                           type="text"
                           name="petName"
@@ -216,7 +224,7 @@ export function ProfileSettings() {
                     </div>
                     <div className="col-lg-6">
                       <div className="form-group">
-                        <label>Breed*</label>
+                        <label>종*</label>
                         <input
                           type="text"
                           name="breed"
@@ -228,7 +236,7 @@ export function ProfileSettings() {
                     </div>
                     <div className="col-lg-6">
                       <div className="form-group">
-                        <label>Birth Year*</label>
+                        <label>태어난 연도*</label>
                         <input
                           type="number"
                           name="petBirth"
@@ -240,7 +248,7 @@ export function ProfileSettings() {
                     </div>
                     <div className="col-lg-6">
                       <div className="form-group">
-                        <label>Weight (kg)*</label>
+                        <label>몸무게 (kg)*</label>
                         <input
                           type="number"
                           name="weight"
@@ -253,7 +261,7 @@ export function ProfileSettings() {
                     </div>
                     <div className="col-lg-6">
                       <div className="toggle-group">
-                        <label>Gender*</label>
+                        <label>성별*</label>
                         <div className="toggle-buttons">
                           <button
                             type="button"
@@ -263,7 +271,7 @@ export function ProfileSettings() {
                             onClick={() =>
                               setPetData(prev => ({...prev, petGender: true}))
                             }>
-                            Male
+                            수컷
                           </button>
                           <button
                             type="button"
@@ -273,14 +281,14 @@ export function ProfileSettings() {
                             onClick={() =>
                               setPetData(prev => ({...prev, petGender: false}))
                             }>
-                            Female
+                            암컷
                           </button>
                         </div>
                       </div>
                     </div>
                     <div className="col-lg-6">
                       <div className="toggle-group">
-                        <label>Neutering*</label>
+                        <label>중성화 여부*</label>
                         <div className="toggle-buttons">
                           <button
                             type="button"
@@ -307,7 +315,7 @@ export function ProfileSettings() {
                     </div>
                     <div className="col-lg-12">
                       <div className="form-group">
-                        <label>Pet MBTI*</label>
+                        <label>강아지 MBTI*</label>
                         <input
                           type="text"
                           name="petMbti"
@@ -319,7 +327,7 @@ export function ProfileSettings() {
                     </div>
                     <div className="col-12">
                       <div className="form-group">
-                        <label>Pet Introduction*</label>
+                        <label>강아지 소개*</label>
                         <textarea
                           name="petIntroduce"
                           value={petData.petIntroduce}
@@ -330,7 +338,7 @@ export function ProfileSettings() {
                     </div>
                     <div className="col-12">
                       <button type="submit" className="update-profile-btn">
-                        Update Pet Profile
+                        펫 프로필 업데이트
                       </button>
                     </div>
                   </div>
@@ -378,6 +386,48 @@ export function ProfileSettings() {
                   </button>
                 </form>
               </div>
+
+              {/* 회원 탈퇴 섹션 */}
+              <div className="delete-account-section">
+                <h2>회원 탈퇴</h2>
+                <p className="warning-text">
+                  회원 탈퇴 시 모든 개인정보와 서비스 이용 기록이 삭제되며, 복구가
+                  불가능합니다.
+                  <br />
+                  탈퇴 전 반려동물 관련 예약 내역과 결제 내역을 확인해 주세요.
+                </p>
+                <button
+                  className="delete-account-btn"
+                  onClick={() => setShowDeleteModal(true)}>
+                  회원 탈퇴하기
+                </button>
+              </div>
+
+              {/* 회원 탈퇴 확인 모달 */}
+              {showDeleteModal && (
+                <div className="modal-overlay">
+                  <div className="modal-content">
+                    <h3>회원 탈퇴 확인</h3>
+                    <p>정말로 탈퇴하시겠습니까?</p>
+                    <p className="modal-warning">
+                      탈퇴 시 모든 개인정보와 서비스 이용 기록이 삭제되며, 복구가
+                      불가능합니다.
+                      <br />
+                      진행 중인 예약이 있다면 먼저 취소해 주세요.
+                    </p>
+                    <div className="modal-buttons">
+                      <button
+                        className="modal-btn cancel"
+                        onClick={() => setShowDeleteModal(false)}>
+                        취소
+                      </button>
+                      <button className="modal-btn confirm" onClick={handleDeleteAccount}>
+                        탈퇴하기
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
