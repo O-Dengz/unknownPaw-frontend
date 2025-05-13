@@ -20,10 +20,10 @@ const Header: React.FC = () => {
                       <Link to="/">홈</Link>
                     </li>
                     <li>
-                      <Link to="/petowner">반려인</Link>
+                      <Link to="/petowner/list">반려인</Link>
                     </li>
                     <li>
-                      <Link to="/petsitter">펫시터</Link>
+                      <Link to="/petsitter/list">펫시터</Link>
                     </li>
                     <li>
                       <Link to="/community">커뮤니티</Link>

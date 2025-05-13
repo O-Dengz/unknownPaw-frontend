@@ -69,12 +69,12 @@ export default function Navigation() {
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/petowner"onClick={() => setIsMenuOpen(false)}>
+                      <Link className="nav-link" to="/petowner/list"onClick={() => setIsMenuOpen(false)}>
                         Pet Owner
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/petsitter" onClick={() => setIsMenuOpen(false)}>
+                      <Link className="nav-link" to="/petsitter/list" onClick={() => setIsMenuOpen(false)}>
                         Pet Sitter
                       </Link>
                     </li>
@@ -98,14 +98,14 @@ export default function Navigation() {
                       </Link>
                     </li>
                     <li>
-                      <Link to="/register">
+                      <Link to="/join">
                         <i className="lni lni-user"></i> Join
                       </Link>
                     </li>
                   </ul>
                 </div>
                 <div className="button header-button">
-                  <Link to="/post" className="btn">
+                  <Link to="/postAd" className="btn">
                     Post
                   </Link>
                 </div>

@@ -8,6 +8,7 @@ import {List} from '../../pages/unknownPaw/List'
 import {About} from '../../pages/unknownPaw/About'
 import {PetOwner} from '../../pages/unknownPaw/PetOwner'
 import {PetSitter} from '../../pages/unknownPaw/PetSitter'
+
 import {Community} from '../../pages/unknownPaw/Community'
 import {ItemDetails} from '../../pages/unknownPaw/ItemDetails'
 
@@ -23,6 +24,7 @@ import MyFavourite from '../../pages/myPage/MyFavourite'
 /* ---------- 멤버 ---------- */
 import MemberProfile from '../../pages/member/MemberProfile'
 import CommunityPost from '../../pages/unknownPaw/CommunityPost'
+import PostAd from '../../pages/postAd/PostAd'
 
 export default function Layout() {
   return (
@@ -34,13 +36,14 @@ export default function Layout() {
         <Route index element={<List />} />
         <Route path="/list" element={<List />} />
         <Route path="/about" element={<About />} />
-        <Route path="/petowner" element={<PetOwner />} />
-        <Route path="/petsitter" element={<PetSitter />} />
+        <Route path="/petowner/list" element={<PetOwner />} />
+        <Route path="/petsitter/list" element={<PetSitter />} />
         <Route path="/community" element={<Community />} />
         <Route path="/communitypost/:postId" element={<CommunityPost />} />
+        <Route path="/postAd" element={<PostAd />} />
 
         {/* 상세 · 동적 라우트 */}
-        <Route path="/item/:id" element={<ItemDetails />} />
+        <Route path="/posts/:postType/read/:postId" element={<ItemDetails />} />
 
         {/* 마이페이지 섹션 */}
         <Route path="/dashboard" element={<Dashboard />} />
@@ -53,6 +56,7 @@ export default function Layout() {
 
         {/* 멤버 */}
         <Route path="/member/profile" element={<MemberProfile />} />
+        <Route path="/posts/:postType/read/postId" element={<ItemDetails />} />
 
         {/* 추후 기능
         <Route path="/post" element={<Post />} />

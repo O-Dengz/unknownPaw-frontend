@@ -1,95 +1,92 @@
-import { useState, useCallback, useRef, ChangeEvent, FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Header from '../../components/common/Header';
-import Footer from '../../components/common/Footer';
-import '../../assets/styles/login.css';
+import {useState, useCallback, useRef, ChangeEvent, FormEvent} from 'react'
+import {Link, useNavigate} from 'react-router-dom'
+import Header from '../../components/common/Header'
+import Footer from '../../components/common/Footer'
+import '../../assets/styles/login.css'
 
 /* ------------------- 타입 & 초기 상태 ------------------- */
 type LoginFormType = {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-};
+  email: string
+  password: string
+  rememberMe: boolean
+}
 
 const initialFormState: LoginFormType = {
   email: '',
   password: '',
-  rememberMe: false,
-};
+  rememberMe: false
+}
 
 /* ======================= 컴포넌트 ======================= */
 export function Login() {
   /* react‑state */
-  const [{ email, password, rememberMe }, setForm] =
-    useState<LoginFormType>(initialFormState);
+  const [{email, password, rememberMe}, setForm] =
+    useState<LoginFormType>(initialFormState)
 
   /* refs */
-  const emailRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   /* input 변경 핸들러 */
   const changed = useCallback(
     (key: keyof LoginFormType) => (e: ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-      setForm(prev => ({ ...prev, [key]: value as never }));
+      const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value
+      setForm(prev => ({...prev, [key]: value as never}))
     },
     []
-  );
+  )
 
   /* ----------------------- 로그인 ----------------------- */
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
 
     /* 1) 프런트 단 검증 */
     if (!email.trim()) {
-      alert('Please enter your email');
-      return emailRef.current?.focus();
+      alert('Please enter your email')
+      return emailRef.current?.focus()
     }
     if (!password) {
-      alert('Please enter your password');
-      return passwordRef.current?.focus();
+      alert('Please enter your password')
+      return passwordRef.current?.focus()
     }
 
     try {
       /* 2) 서버 요청 — context‑path 포함 */
-      const res = await fetch(
-        'http://localhost:8080/unknownPaw/api/member/login',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const res = await fetch('http://localhost:8080/unknownPaw/api/member/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email, password})
+      })
 
       /* 3) 실패 분기 */
       if (!res.ok) {
-        const msg = await res.text();
-        alert(msg || 'Login failed');
-        return;
+        const msg = await res.text()
+        alert(msg || 'Login failed')
+        return
       }
 
       /* 4) 성공 처리 */
-      const data = await res.json(); // { token, member }
-      sessionStorage.setItem('token', data.token);
-      sessionStorage.setItem('email', email);
-      sessionStorage.setItem('member', JSON.stringify(data.member));
+      const data = await res.json() // { token, member }
+      sessionStorage.setItem('token', data.token)
+      sessionStorage.setItem('email', email)
+      sessionStorage.setItem('member', JSON.stringify(data.member))
 
       /* Remember‑Me */
       if (rememberMe) {
-        localStorage.setItem('rememberedEmail', email);
+        localStorage.setItem('rememberedEmail', email)
       } else {
-        localStorage.removeItem('rememberedEmail');
+        localStorage.removeItem('rememberedEmail')
       }
 
       /* 5) 라우팅 */
-      navigate('/');
+      navigate('/')
     } catch (err) {
-      console.error(err);
-      alert('Network error. Please try again.');
+      console.error(err)
+      alert('Network error. Please try again.')
     }
-  };
+  }
 
   /* ======================= UI ======================= */
   return (
@@ -207,5 +204,5 @@ export function Login() {
       </main>
       <Footer />
     </>
-  );
+  )
 }

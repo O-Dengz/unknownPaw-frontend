@@ -3,15 +3,19 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  // vite.config.ts
-server: {
-  proxy: {
-    '/api': {
-      target: 'http://localhost:8080',
-      changeOrigin: true,
-      // rewrite: path => path.replace(/^\/api/, '')  // << 이 줄을 지우거나 주석처리
+  server: {
+    proxy: {
+      '/uploadAjax': {
+        target: 'http://localhost:8080/unknownPaw/api/',
+        changeOrigin: true,
+        secure: false
+      },
+      '/api': {
+        target: 'http://localhost:8080/unknownPaw',
+        changeOrigin: true,
+        secure: false
+      }
     }
-  }
-},
+  },
   plugins: [react(), tailwindcss()]
 })

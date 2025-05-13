@@ -1,9 +1,149 @@
-import { Link } from 'react-router-dom';
+import React, {useEffect, useState} from 'react'
+import {Link} from 'react-router-dom'
+import {Pagination} from '../../components/Pagination'
+import {formatTimeAgo} from '../../utils/timeAgo'
+
+interface MemberResponseDTO {
+  mid: number
+  email: string
+  nickname: string
+  profileImagePath?: string
+  pawRate?: number
+  emailVerified?: boolean
+  role?: string
+  status?: string
+  regDate?: string
+}
+
+interface Post {
+  postId: number
+  title: string
+  content: string
+  serviceCategory: string
+  hourlyRate: number
+  likes?: number
+  chatCount?: number
+  defaultLocation: string
+  regDate: string
+  email?: string
+  image?: {
+    imageId: number
+    imagePath: string
+    isMain: boolean
+  }[]
+  member?: MemberResponseDTO
+}
+
+interface PageResultDTO {
+  dtoList: Post[]
+  totalPage: number
+  page: number
+  size: number
+  start: number
+  end: number
+  prev: boolean
+  next: boolean
+  pageList: number[]
+  content: Post[]
+}
+
+interface PageRequestDTO {
+  page: number
+  size: number
+  type?: string
+  keyword?: string
+}
 
 export function PetSitter() {
+  const [posts, setPosts] = useState<Post[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [pageInfo, setPageInfo] = useState<PageResultDTO | null>(null)
+  const [pageRequest, setPageRequest] = useState<PageRequestDTO>({
+    page: 1,
+    size: 10
+  })
+
+  useEffect(() => {
+    console.log('>>> pageRequest 변경:', pageRequest)
+    console.log('>>> Posts 상태 (useEffect 시작):', posts)
+    const fetchPosts = () => {
+      setLoading(true)
+      setError(null)
+
+      const latestToken = sessionStorage.getItem('token')
+      console.log('>>> 토큰 값:', latestToken)
+
+      if (!latestToken) {
+        console.error('No token found in sessionStorage. User is not logged in.')
+        setError('로그인이 필요합니다.')
+        setLoading(false)
+        return
+      }
+
+      const queryParams = new URLSearchParams({
+        page: pageRequest.page.toString(),
+        size: pageRequest.size.toString(),
+        ...(pageRequest.type && {type: pageRequest.type}),
+        ...(pageRequest.keyword && {keyword: pageRequest.keyword})
+      })
+
+      console.log('>>> 요청 파라미터:', queryParams.toString())
+
+      fetch(
+        `http://localhost:8080/unknownPaw/api/posts/petsitter/list?page=${
+          pageRequest.page
+        }&size=${pageRequest.size}${pageRequest.type ? `&type=${pageRequest.type}` : ''}${
+          pageRequest.keyword ? `&keyword=${pageRequest.keyword}` : ''
+        }`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${latestToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+        .then(async response => {
+          console.log('>>> Response received:', response)
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+          }
+          return response.json()
+        })
+        .then((data: PageResultDTO) => {
+          console.log('>>> API 응답 데이터:', data)
+          if (data.content) {
+            console.log('>>> 첫 번째 게시글 데이터:', data.content[0])
+            console.log('>>> 첫 번째 게시글의 멤버 정보:', data.content[0]?.member)
+            setPosts(prevPosts => [...data.content] as Post[])
+            console.log('>>> Posts 상태 업데이트 (then):', posts)
+          }
+          setPageInfo(data)
+        })
+        .catch(err => {
+          console.error('Error fetching posts:', err)
+          setError('게시글을 불러오는데 실패했습니다.')
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    }
+
+    fetchPosts()
+  }, [pageRequest])
+
+  const handlePageChange = (page: number) => {
+    setPageRequest(prev => ({...prev, page}))
+  }
+
+  if (loading) return <div>로딩 중...</div>
+  if (error) return <div>{error}</div>
+  console.log('posts 내용 확인 ', posts)
+
   return (
-    <div className="pet-sitter-page">
-      {/* <!-- Start Items Grid Area --> */}
+    <div className="pet-owner-page">
+      {/* */}
       <section className="items-grid section custom-padding">
         <div className="container">
           <div className="row">
@@ -13,450 +153,118 @@ export function PetSitter() {
                   Pet Sitter
                 </h2>
                 <p className="wow fadeInUp" data-wow-delay=".6s">
-                  서비스를 요청하고 제안을 받아보세요!
+                  서비스를 제안하고 산책 제안을 받아보세요!
                 </p>
               </div>
             </div>
           </div>
           <div className="single-head">
             <div className="row">
-              <div className="col-lg-4 col-md-6 col-12">
-                {/* <!-- Start Single Grid --> */}
-                <div className="single-grid wow fadeInUp" data-wow-delay=".2s">
-                  <div className="image">
-                    <Link to="/item/1" className="thumbnail">
-                      <img src="assets/images/items-grid/img1.jpg" alt="#" />
-                    </Link>
-                    <div className="author">
-                      <div className="author-image">
-                        <a href="javascript:void(0)">
-                          <img src="assets/images/items-grid/author-1.jpg" alt="#" />
-                          <span>Smith jeko</span>
-                        </a>
+              {!loading && posts?.length > 0 ? (
+                posts?.map((post, index) => (
+                  <div key={post.postId} className="col-lg-4 col-md-6 col-12">
+                    <div
+                      className="single-grid wow fadeInUp"
+                      data-wow-delay={`.${(index + 1) * 2}s`}>
+                      <div className="image">
+                        <Link
+                          to={`/posts/petsitter/read/${post.postId}`}
+                          className="thumbnail">
+                          <img
+                            src={
+                              post.image?.[0]?.imagePath ||
+                              '../assets/images/items-grid/img2.jpg'
+                            }
+                            alt="#"
+                          />
+                        </Link>
+                        <div className="author">
+                          <div className="author-image">
+                            <a href="javascript:void(0)">
+                              <img
+                                src={
+                                  post.member?.profileImagePath ||
+                                  '../assets/images/items-grid/author-1.jpg'
+                                }
+                                alt="#"
+                              />
+                              <span>{post.member?.nickname || 'Unknown'}</span>
+                            </a>
+                          </div>
+                          <p className="sale">예약하기</p>
+                        </div>
                       </div>
-                      <p className="sale">예약하기</p>
-                    </div>
-                  </div>
-                  <div className="content">
-                    <div className="top-content">
-                      <a href="javascript:void(0)" className="tag">
-                        산책
-                      </a>
-                      <h3 className="title">
-                        <Link to="/item/1">강아지보다 잘 달립니다.</Link>
-                      </h3>
-                      <p className="update-time">2시간 전</p>
-                      <ul className="rating">
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">(35)</a>
-                        </li>
-                      </ul>
-                      <ul className="info-list">
-                        <li>
-                          <a href="javascript:void(0)">
-                            <i className="lni lni-map-marker"></i> 서울시 강남구
-                          </a>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">
-                            <i className="lni lni-timer"></i> May 2, 2025
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="bottom-content">
-                      <p className="price">
-                        시급: <span>10,000원</span>
-                      </p>
-                      <a href="javascript:void(0)" className="like">
-                        <i className="lni lni-heart"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                {/* <!-- End Single Grid --> */}
-              </div>
-              <div className="col-lg-4 col-md-6 col-12">
-                {/* <!-- Start Single Grid --> */}
-                <div className="single-grid wow fadeInUp" data-wow-delay=".4s">
-                  <div className="image">
-                    <Link to="/item/2" className="thumbnail">
-                      <img src="assets/images/items-grid/img2.jpg" alt="#" />
-                    </Link>
-                    <div className="author">
-                      <div className="author-image">
-                        <a href="javascript:void(0)">
-                          <img src="assets/images/items-grid/author-2.jpg" alt="#" />
-                          <span>Alex Jui</span>
-                        </a>
+                      <div className="content">
+                        <div className="top-content">
+                          <span className="tag">{post.serviceCategory}</span>
+                          <h3 className="title">
+                            <Link to={`/posts/petowner/read/${post.postId}`}>
+                              {post.title}
+                            </Link>
+                          </h3>
+                          <p className="update-time">{formatTimeAgo(post.regDate)}</p>
+                          <ul className="rating">
+                            <li>
+                              <i className="lni lni-star-filled"></i>
+                            </li>
+                            <li>
+                              <i className="lni lni-star-filled"></i>
+                            </li>
+                            <li>
+                              <i className="lni lni-star-filled"></i>
+                            </li>
+                            <li>
+                              <i className="lni lni-star-filled"></i>
+                            </li>
+                            <li>
+                              <i className="lni lni-star-filled"></i>
+                            </li>
+                            <li>
+                              <span>({post.likes || 0})</span>
+                            </li>
+                          </ul>
+                          <ul className="info-list">
+                            <li>
+                              <span>
+                                <i className="lni lni-map-marker"></i>{' '}
+                                {post.defaultLocation}
+                              </span>
+                            </li>
+                            <li>
+                              <span>
+                                <i className="lni lni-timer"></i>{' '}
+                                {new Date(post.regDate).toLocaleDateString()}
+                              </span>
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="bottom-content">
+                          <p className="price">
+                            시급: <span>{post.hourlyRate.toLocaleString()}원</span>
+                          </p>
+                          <span className="like">
+                            <i className="lni lni-heart"></i>
+                          </span>
+                        </div>
                       </div>
-                      <p className="sale">예약하기</p>
                     </div>
                   </div>
-                  <div className="content">
-                    <div className="top-content">
-                      <a href="javascript:void(0)" className="tag">
-                        돌봄
-                      </a>
-                      <h3 className="title">
-                        <Link to="/item/2">반려견의 일상, 세심하게 돌봐드려요!</Link>
-                      </h3>
-                      <p className="update-time">3시간 전</p>
-                      <ul className="rating">
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">(20)</a>
-                        </li>
-                      </ul>
-                      <ul className="info-list">
-                        <li>
-                          <a href="javascript:void(0)">
-                            <i className="lni lni-map-marker"></i> 부산시 부산진구
-                          </a>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">
-                            <i className="lni lni-timer"></i> May 2, 2025
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="bottom-content">
-                      <p className="price">
-                        시급: <span>30,000원</span>
-                      </p>
-                      <a href="javascript:void(0)" className="like">
-                        <i className="lni lni-heart"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                {/* <!-- End Single Grid --> */}
-              </div>
-              <div className="col-lg-4 col-md-6 col-12">
-                {/* <!-- Start Single Grid --> */}
-                <div className="single-grid wow fadeInUp" data-wow-delay=".6s">
-                  <div className="image">
-                    <Link to="/item/3" className="thumbnail">
-                      <img src="assets/images/items-grid/img3.jpg" alt="#" />
-                    </Link>
-                    <div className="author">
-                      <div className="author-image">
-                        <a href="javascript:void(0)">
-                          <img src="assets/images/items-grid/author-3.jpg" alt="#" />
-                          <span>Devid Milan</span>
-                        </a>
-                      </div>
-                      <p className="sale">예약하기</p>
-                    </div>
-                    <p className="item-position">
-                      <i className="lni lni-bolt"></i> Featured
-                    </p>
-                  </div>
-                  <div className="content">
-                    <div className="top-content">
-                      <a href="javascript:void(0)" className="tag">
-                        산책
-                      </a>
-                      <h3 className="title">
-                        <Link to="/item/3">활발한 강아지? 걱정 마세요, 함께 뛰어놀아요!</Link>
-                      </h3>
-                      <p className="update-time">3시간 전</p> 
-                      <ul className="rating">
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">(55)</a>
-                        </li>
-                      </ul>
-                      <ul className="info-list">
-                        <li>
-                          <a href="javascript:void(0)">
-                            <i className="lni lni-map-marker"></i> 서울시 송파구
-                          </a>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">
-                            <i className="lni lni-timer"></i> May 2, 2025
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="bottom-content">
-                      <p className="price">
-                        시급: <span>15,000원</span>
-                      </p>
-                      <a href="javascript:void(0)" className="like">
-                        <i className="lni lni-heart"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                {/* <!-- End Single Grid --> */}
-              </div>
-              <div className="col-lg-4 col-md-6 col-12">
-                {/* <!-- Start Single Grid --> */}
-                <div className="single-grid wow fadeInUp" data-wow-delay=".2s">
-                  <div className="image">
-                    <Link to="/item/4" className="thumbnail">
-                      <img src="assets/images/items-grid/img4.jpg" alt="#" />
-                    </Link>
-                    <div className="author">
-                      <div className="author-image">
-                        <a href="javascript:void(0)">
-                          <img src="assets/images/items-grid/author-4.jpg" alt="#" />
-                          <span>Jesia Jully</span>
-                        </a>
-                      </div>
-                      <p className="sale">예약하기</p>
-                    </div>
-                  </div>
-                  <div className="content">
-                    <div className="top-content">
-                      <a href="javascript:void(0)" className="tag">
-                        돌봄
-                      </a>
-                      <h3 className="title">
-                        <Link to="/item/4">"편안하고 안전한 돌봄 서비스, 믿고 맡기세요!"</Link>
-                      </h3>
-                      <p className="update-time">4시간 전</p>
-                      <ul className="rating">
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">(35)</a>
-                        </li>
-                      </ul>
-                      <ul className="info-list">
-                        <li>
-                          <a href="javascript:void(0)">
-                            <i className="lni lni-map-marker"></i> 성남시 분당구
-                          </a>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">
-                            <i className="lni lni-timer"></i> May 2, 2025
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="bottom-content">
-                      <p className="price">
-                        시급: <span>10,000원</span>
-                      </p>
-                      <a href="javascript:void(0)" className="like">
-                        <i className="lni lni-heart"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                {/* <!-- End Single Grid --> */}
-              </div>
-              <div className="col-lg-4 col-md-6 col-12">
-                {/* <!-- Start Single Grid --> */}
-                <div className="single-grid wow fadeInUp" data-wow-delay=".4s">
-                  <div className="image">
-                    <Link to="/item/5" className="thumbnail">
-                      <img src="assets/images/items-grid/img5.jpg" alt="#" />
-                    </Link>
-                    <div className="author">
-                      <div className="author-image">
-                        <a href="javascript:void(0)">
-                          <img src="assets/images/items-grid/author-5.jpg" alt="#" />
-                          <span>Thomas Deco</span>
-                        </a>
-                      </div>
-                      <p className="sale">예약하기</p>
-                    </div>
-                    <p className="item-position">
-                      <i className="lni lni-bolt"></i> Featured
-                    </p>
-                  </div>
-                  <div className="content">
-                    <div className="top-content">
-                      <a href="javascript:void(0)" className="tag">
-                        산책
-                      </a>
-                      <h3 className="title">
-                        <Link to="/item/5">반려견 산책, 전문가에게 맡겨주세요!</Link>
-                      </h3>
-                      <p className="update-time">5시간 전</p>
-                      <ul className="rating">
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">(35)</a>
-                        </li>
-                      </ul>
-                      <ul className="info-list">
-                        <li>
-                          <a href="javascript:void(0)">
-                            <i className="lni lni-map-marker"></i> 부산시 기장군  
-                          </a>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">
-                            <i className="lni lni-timer"></i> May 25, 2023
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="bottom-content">
-                      <p className="price">
-                        시급: <span>15,000원</span>
-                      </p>
-                      <a href="javascript:void(0)" className="like">
-                        <i className="lni lni-heart"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                {/* <!-- End Single Grid --> */}
-              </div>
-              <div className="col-lg-4 col-md-6 col-12">
-                {/* <!-- Start Single Grid --> */}
-                <div className="single-grid wow fadeInUp" data-wow-delay=".6s">
-                  <div className="image">
-                    <Link to="/item/6" className="thumbnail">
-                      <img src="assets/images/items-grid/img6.jpg" alt="#" />
-                    </Link>
-                    <div className="author">
-                      <div className="author-image">
-                        <a href="javascript:void(0)">
-                          <img src="assets/images/items-grid/author-6.jpg" alt="#" />
-                          <span>Jonson zack</span>
-                        </a>
-                      </div>
-                      <p className="sale">예약하기</p>
-                    </div>
-                  </div>
-                  <div className="content">
-                    <div className="top-content">
-                      <a href="javascript:void(0)" className="tag">
-                        산책
-                      </a>
-                      <h3 className="title">
-                        <Link to="/item/6">반려견 산책, 안전하고 즐겁게 돌봐드려요!</Link>
-                      </h3>
-                      <p className="update-time">7시간 전</p>
-                      <ul className="rating">
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <i className="lni lni-star-filled"></i>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">(20)</a>
-                        </li>
-                      </ul>
-                      <ul className="info-list">
-                        <li>
-                          <a href="javascript:void(0)">
-                            <i className="lni lni-map-marker"></i> 부산시 강서구
-                          </a>
-                        </li>
-                        <li>
-                          <a href="javascript:void(0)">
-                            <i className="lni lni-timer"></i> May 2, 2025
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="bottom-content">
-                      <p className="price">
-                        시급: <span>15,000원</span>
-                      </p>
-                      <a href="javascript:void(0)" className="like">
-                        <i className="lni lni-heart"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                {/* <!-- End Single Grid --> */}
-              </div>
+                ))
+              ) : !loading && posts?.length === 0 ? (
+                <div className="col-12">게시글이 없습니다.</div>
+              ) : null}
             </div>
           </div>
+
+          {pageInfo && !loading && (
+            <Pagination
+              pageInfo={pageInfo}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
       </section>
-      {/* <!-- /End Items Grid Area --> */}
+      {/* */}
     </div>
-  );
+  )
 }
