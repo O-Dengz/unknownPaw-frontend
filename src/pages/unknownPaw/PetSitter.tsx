@@ -1,137 +1,142 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, {useEffect, useState} from 'react'
+import {Link} from 'react-router-dom'
 
 interface MemberResponseDTO {
-  mid: number;
-  email: string;
-  nickname: string;
-  profileImagePath?: string;
-  pawRate?: number;
-  emailVerified?: boolean;
-  role?: string;
-  status?: string;
-  regDate?: string;
+  mid: number
+  email: string
+  nickname: string
+  profileImagePath?: string
+  pawRate?: number
+  emailVerified?: boolean
+  role?: string
+  status?: string
+  regDate?: string
 }
 
 interface Post {
-  postId: number;
-  title: string;
-  content: string;
-  serviceCategory: string;
-  hourlyRate: number;
-  likes?: number;
-  chatCount?: number;
-  defaultLocation: string;
-  regDate: string;
+  postId: number
+  title: string
+  content: string
+  serviceCategory: string
+  hourlyRate: number
+  likes?: number
+  chatCount?: number
+  defaultLocation: string
+  regDate: string
+  email?: string
   image?: {
-    imageId: number;
-    imagePath: string;
-    isMain: boolean;
-  }[];
-  member?: MemberResponseDTO;
+    imageId: number
+    imagePath: string
+    isMain: boolean
+  }[]
+  member?: MemberResponseDTO
 }
 
 interface PageResultDTO {
-  dtoList: Post[];
-  totalPage: number;
-  page: number;
-  size: number;
-  start: number;
-  end: number;
-  prev: boolean;
-  next: boolean;
-  pageList: number[];
+  dtoList: Post[]
+  totalPage: number
+  page: number
+  size: number
+  start: number
+  end: number
+  prev: boolean
+  next: boolean
+  pageList: number[]
 }
 
 interface PageRequestDTO {
-  page: number;
-  size: number;
-  type?: string;
-  keyword?: string;
+  page: number
+  size: number
+  type?: string
+  keyword?: string
 }
 
 export function PetSitter() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [pageInfo, setPageInfo] = useState<PageResultDTO | null>(null);
+  const [posts, setPosts] = useState<Post[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [pageInfo, setPageInfo] = useState<PageResultDTO | null>(null)
   const [pageRequest, setPageRequest] = useState<PageRequestDTO>({
     page: 1,
-    size: 10,
-  });
+    size: 10
+  })
 
   useEffect(() => {
-    console.log('>>> pageRequest 변경:', pageRequest);
-    console.log('>>> Posts 상태 (useEffect 시작):', posts);
+    console.log('>>> pageRequest 변경:', pageRequest)
+    console.log('>>> Posts 상태 (useEffect 시작):', posts)
     const fetchPosts = () => {
-      setLoading(true);
-      setError(null);
+      setLoading(true)
+      setError(null)
 
-      const latestToken = sessionStorage.getItem('token');
-      console.log('>>> 토큰 값:', latestToken);
+      const latestToken = sessionStorage.getItem('token')
+      console.log('>>> 토큰 값:', latestToken)
 
       if (!latestToken) {
-        console.error('No token found in sessionStorage. User is not logged in.');
-        setError('로그인이 필요합니다.');
-        setLoading(false);
-        return;
+        console.error('No token found in sessionStorage. User is not logged in.')
+        setError('로그인이 필요합니다.')
+        setLoading(false)
+        return
       }
 
       const queryParams = new URLSearchParams({
         page: pageRequest.page.toString(),
         size: pageRequest.size.toString(),
-        ...(pageRequest.type && { type: pageRequest.type }),
-        ...(pageRequest.keyword && { keyword: pageRequest.keyword }),
-      });
+        ...(pageRequest.type && {type: pageRequest.type}),
+        ...(pageRequest.keyword && {keyword: pageRequest.keyword})
+      })
 
-      console.log('>>> 요청 파라미터:', queryParams.toString());
+      console.log('>>> 요청 파라미터:', queryParams.toString())
 
       fetch(
-        `http://localhost:8080/unknownPaw/api/posts/petsitter/list?page=${pageRequest.page}&size=${pageRequest.size}${
-          pageRequest.type ? `&type=${pageRequest.type}` : ''
-        }${pageRequest.keyword ? `&keyword=${pageRequest.keyword}` : ''}`,
+        `http://localhost:8080/unknownPaw/api/posts/petsitter/list?page=${
+          pageRequest.page
+        }&size=${pageRequest.size}${pageRequest.type ? `&type=${pageRequest.type}` : ''}${
+          pageRequest.keyword ? `&keyword=${pageRequest.keyword}` : ''
+        }`,
         {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${latestToken}`,
-            'Content-Type': 'application/json',
-          },
+            'Content-Type': 'application/json'
+          }
         }
       )
-        .then(async (response) => {
-          console.log('>>> Response received:', response);
+        .then(async response => {
+          console.log('>>> Response received:', response)
           if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! status: ${response.status}`)
           }
-          return response.json();
+          return response.json()
         })
         .then((data: PageResultDTO) => {
-          console.log('>>> API 응답 데이터:', data);
+          console.log('>>> API 응답 데이터:', data)
           if (data.content) {
-            console.log('>>> 첫 번째 게시글 데이터:', data.content[0]);
-            setPosts((prevPosts) => [...data.content] as Post[]); // 함수형 업데이트
-            console.log('>>> Posts 상태 업데이트 (then):', posts);
+            console.log('>>> 첫 번째 게시글 데이터:', data.content[0])
+            console.log('>>> 첫 번째 게시글의 멤버 정보:', data.content[0]?.member)
+            setPosts(prevPosts => [...data.content] as Post[])
+            console.log('>>> Posts 상태 업데이트 (then):', posts)
           }
-          setPageInfo(data);
+          setPageInfo(data)
         })
-        .catch((err) => {
-          console.error('Error fetching posts:', err);
-          setError('게시글을 불러오는데 실패했습니다.');
+        .catch(err => {
+          console.error('Error fetching posts:', err)
+          setError('게시글을 불러오는데 실패했습니다.')
         })
         .finally(() => {
-          setLoading(false);
-        });
-    };
+          setLoading(false)
+        })
+    }
 
-    fetchPosts();
-  }, [pageRequest]);
+    fetchPosts()
+  }, [pageRequest])
 
   const handlePageChange = (page: number) => {
-    setPageRequest((prev) => ({ ...prev, page }));
-  };
+    setPageRequest(prev => ({...prev, page}))
+  }
 
-  if (loading) return <div>로딩 중...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div>로딩 중...</div>
+  if (error) return <div>{error}</div>
+  console.log('posts 내용 확인 ', posts)
 
   return (
     <div className="pet-owner-page">
@@ -157,13 +162,11 @@ export function PetSitter() {
                   <div key={post.postId} className="col-lg-4 col-md-6 col-12">
                     <div
                       className="single-grid wow fadeInUp"
-                      data-wow-delay={`.${(index + 1) * 2}s`}
-                    >
+                      data-wow-delay={`.${(index + 1) * 2}s`}>
                       <div className="image">
                         <Link
-                          to={`/posts/petowner/read/${post.postId}`}
-                          className="thumbnail"
-                        >
+                          to={`/posts/petsitter/read/${post.postId}`}
+                          className="thumbnail">
                           <img
                             src={
                               post.image?.[0]?.imagePath ||
@@ -182,7 +185,7 @@ export function PetSitter() {
                                 }
                                 alt="#"
                               />
-                              <span>{post.member?.nickname || 'Unknown'}</span>
+                              <span>{post.member?.mid || 'Unknown'}</span>
                             </a>
                           </div>
                           <p className="sale">예약하기</p>
@@ -259,23 +262,18 @@ export function PetSitter() {
                   <li className="page-item">
                     <button
                       className="page-link"
-                      onClick={() => handlePageChange(pageInfo.start - 1)}
-                    >
+                      onClick={() => handlePageChange(pageInfo.start - 1)}>
                       이전
                     </button>
                   </li>
                 )}
-                {pageInfo.pageList?.map((pageNum) => (
+                {pageInfo.pageList?.map(pageNum => (
                   <li
                     key={pageNum}
-                    className={`page-item ${
-                      pageNum === pageInfo.page ? 'active' : ''
-                    }`}
-                  >
+                    className={`page-item ${pageNum === pageInfo.page ? 'active' : ''}`}>
                     <button
                       className="page-link"
-                      onClick={() => handlePageChange(pageNum)}
-                    >
+                      onClick={() => handlePageChange(pageNum)}>
                       {pageNum}
                     </button>
                   </li>
@@ -284,8 +282,7 @@ export function PetSitter() {
                   <li className="page-item">
                     <button
                       className="page-link"
-                      onClick={() => handlePageChange(pageInfo.end + 1)}
-                    >
+                      onClick={() => handlePageChange(pageInfo.end + 1)}>
                       다음
                     </button>
                   </li>
@@ -297,5 +294,5 @@ export function PetSitter() {
       </section>
       {/* */}
     </div>
-  );
+  )
 }

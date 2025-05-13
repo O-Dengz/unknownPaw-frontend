@@ -127,8 +127,8 @@ export function ItemDetails() {
   if (!postDTO) return <div>게시글을 찾을 수 없습니다.</div>
 
   // 이미지 및 프로필 정보 상세 로그
-  console.log('postDTO.image:', postDTO.image);
-  console.log('postDTO.member:', postDTO.member);
+  console.log('postDTO.image:', postDTO.image)
+  console.log('postDTO.member:', postDTO.member)
   return (
     <>
       <div className="breadcrumbs">
@@ -160,33 +160,42 @@ export function ItemDetails() {
               {postDTO.image && postDTO.image.length > 0 && (
                 <img
                   src={
-                    postDTO.image[0].imagePath || 
-                    '../assets/images/items-grid/img2.jpg'}
+                    postDTO.image[0].imagePath || '../assets/images/items-grid/img2.jpg'
+                  }
                   alt="상품 이미지"
                   className="main-image"
                 />
               )}
               <div className="author-info-area">
-                <div className="post-author-profile">
-                  {postDTO.member && (
-                    <>
-                      {postDTO.member.profileImagePath && (
-                        <img
-                          src={postDTO.member.profileImagePath || '../assets/images/items-grid/author-1.jpg'}
-                          alt="프로필"
-                          className="post-author-image"
-                        />
-                      )}
-                      <div className="author-meta">
-                        <div className="author-name">{postDTO.member.nickname || 'nickname'}</div>
-                        <div className="author-location">{postDTO.defaultLocation || '부산시'}</div>
-                        <div className="author-rating">
-                          <span>🐾 {postDTO.member.pawRate.toFixed(1) || '1.4'}</span>
-                        </div>
+                {postDTO.member && (
+                  <>
+                    {/* 프로필 이미지 */}
+                    <div className="post-author-image">
+                      <img
+                        className="profile-image"
+                        src={
+                          postDTO.member.profileImagePath
+                            ? postDTO.member.profileImagePath
+                            : '../assets/images/items-grid/img2.jpg'
+                        }
+                        alt="프로필"
+                      />
+                    </div>
+                    {/* 닉네임 및 위치 */}
+                    <div className="author-meta">
+                      <div className="author-name">
+                        {postDTO.member.nickname || 'nickname'}
                       </div>
-                    </>
-                  )}
-                </div>
+                      <div className="author-location">
+                        {postDTO.defaultLocation || '부산시'}
+                      </div>
+                    </div>
+                    {/* 매너온도(우측) */}
+                    <div className="author-rating">
+                      <span>🐾 {postDTO.member.pawRate.toFixed(1) || '1.4'}</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
             <div className="item-right-area">
