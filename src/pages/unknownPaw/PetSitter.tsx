@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
+import {Pagination} from '../../components/Pagination'
+import {formatTimeAgo} from '../../utils/timeAgo'
 
 interface MemberResponseDTO {
   mid: number
@@ -147,10 +149,10 @@ export function PetSitter() {
             <div className="col-12">
               <div className="section-title">
                 <h2 className="wow fadeInUp" data-wow-delay=".4s">
-                  Pet Owner
+                  Pet Sitter
                 </h2>
                 <p className="wow fadeInUp" data-wow-delay=".6s">
-                  서비스를 요청하고 제안을 받아보세요!
+                  서비스를 제안하고 산책 제안을 받아보세요!
                 </p>
               </div>
             </div>
@@ -185,7 +187,7 @@ export function PetSitter() {
                                 }
                                 alt="#"
                               />
-                              <span>{post.member?.mid || 'Unknown'}</span>
+                              <span>{post.member?.nickname || 'Unknown'}</span>
                             </a>
                           </div>
                           <p className="sale">예약하기</p>
@@ -199,9 +201,7 @@ export function PetSitter() {
                               {post.title}
                             </Link>
                           </h3>
-                          <p className="update-time">
-                            {new Date(post.regDate).toLocaleDateString()}
-                          </p>
+                          <p className="update-time">{formatTimeAgo(post.regDate)}</p>
                           <ul className="rating">
                             <li>
                               <i className="lni lni-star-filled"></i>
@@ -256,39 +256,16 @@ export function PetSitter() {
           </div>
 
           {pageInfo && !loading && (
-            <div className="pagination-area">
-              <ul className="pagination">
-                {pageInfo.prev && (
-                  <li className="page-item">
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(pageInfo.start - 1)}>
-                      이전
-                    </button>
-                  </li>
-                )}
-                {pageInfo.pageList?.map(pageNum => (
-                  <li
-                    key={pageNum}
-                    className={`page-item ${pageNum === pageInfo.page ? 'active' : ''}`}>
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(pageNum)}>
-                      {pageNum}
-                    </button>
-                  </li>
-                ))}
-                {pageInfo.next && (
-                  <li className="page-item">
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(pageInfo.end + 1)}>
-                      다음
-                    </button>
-                  </li>
-                )}
-              </ul>
-            </div>
+            <Pagination
+              current={pageInfo.page}
+              total={pageInfo.totalPage}
+              pageList={pageInfo.pageList}
+              onPageChange={handlePageChange}
+              prev={pageInfo.prev}
+              next={pageInfo.next}
+              start={pageInfo.start}
+              end={pageInfo.end}
+            />
           )}
         </div>
       </section>

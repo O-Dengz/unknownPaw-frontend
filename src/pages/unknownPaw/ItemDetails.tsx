@@ -1,12 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {useParams} from 'react-router-dom'
 import axios from 'axios'
-import '../../../public/assets/css/LineIcons.2.0.css'
-import '../../../public/assets/css/animate.css'
-import '../../../public/assets/css/bootstrap.min.css'
-import '../../../public/assets/css/glightbox.min.css'
-import '../../../public/assets/css/main.css'
-import '../../../public/assets/css/tiny-slider.css'
 import './Post.css'
 import {Div} from '../../components'
 import {useToken} from '../../hooks'
@@ -160,71 +154,48 @@ export function ItemDetails() {
               {postDTO.image && postDTO.image.length > 0 && (
                 <img
                   src={
-                    postDTO.image[0].imagePath || '../assets/images/items-grid/img2.jpg'
+                    postDTO.image[0].imagePath ||
+                    '../../../assets/images/items-grid/img2.jpg'
                   }
                   alt="상품 이미지"
                   className="main-image"
                 />
               )}
-              <div
-                className="author-info-area"
-                style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
+              {/* 등록된 이미지 불러오기 예 */}
+              <div className="main-image-selection">
+                <div className="main-image">
+                  <img src="../../../assets/images/items-grid/img2.jpg" alt="상품" />
+                </div>
+              </div>
+              <div className="author-info-area">
                 {postDTO.member && (
                   <>
-                    {/* 프로필 이미지 */}
-                    <div
-                      className="post-author-image"
-                      style={{
-                        minWidth: 56,
-                        minHeight: 56,
-                        display: 'flex',
-                        alignItems: 'center'
-                      }}>
-                      <img
-                        src={
-                          postDTO.member.profileImagePath
-                            ? postDTO.member.profileImagePath
-                            : '../assets/images/items-grid/img2.jpg'
-                        }
-                        alt="프로필"
-                        style={{
-                          width: 56,
-                          height: 56,
-                          borderRadius: '50%',
-                          objectFit: 'cover',
-                          border: '1px solid #eee'
-                        }}
-                      />
-                    </div>
-                    {/* 닉네임 및 위치 */}
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center'
-                      }}>
-                      <div
-                        className="author-name"
-                        style={{fontWeight: 600, fontSize: 18}}>
-                        {postDTO.member.nickname || 'nickname'}
+                    <div className="profile-meta-wrap">
+                      <div className="post-author-image">
+                        <img
+                          src={
+                            postDTO.member.profileImagePath
+                              ? postDTO.member.profileImagePath
+                              : '../../../assets/images/items-grid/author-2.jpg'
+                          }
+                          alt="프로필"
+                          style={{
+                            width: 56,
+                            height: 56,
+                            borderRadius: '50%'
+                          }}
+                        />
                       </div>
-                      <div
-                        className="author-location"
-                        style={{color: '#888', fontSize: 14}}>
-                        {postDTO.defaultLocation || '부산시'}
+                      <div className="author-meta">
+                        <div className="author-name">
+                          {postDTO.member.nickname || 'nickname'}
+                        </div>
+                        <div className="author-location">
+                          {postDTO.defaultLocation || '부산시'}
+                        </div>
                       </div>
                     </div>
-                    {/* 매너온도(우측) */}
-                    <div
-                      className="author-rating"
-                      style={{
-                        marginLeft: 16,
-                        fontWeight: 500,
-                        fontSize: 16,
-                        color: '#FFA500',
-                        display: 'flex',
-                        alignItems: 'center'
-                      }}>
+                    <div className="author-rating">
                       <span>🐾 {postDTO.member.pawRate.toFixed(1) || '1.4'}</span>
                     </div>
                   </>

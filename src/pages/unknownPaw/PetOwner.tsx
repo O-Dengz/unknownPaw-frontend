@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
+import {Pagination} from '../../components/Pagination'
+import {formatTimeAgo} from '../../utils/timeAgo'
 
 interface MemberResponseDTO {
   mid: number
@@ -109,6 +111,7 @@ export function PetOwner() {
         })
         .then((data: PageResultDTO) => {
           console.log('>>> API 응답 데이터:', data)
+          console.log('>>> API 응답 데이터 pageInfo.pageList:', data.pageList)
           if (data.content) {
             console.log('>>> 첫 번째 게시글 데이터:', data.content[0])
             setPosts(prevPosts => [...data.content] as Post[]) // 함수형 업데이트
@@ -173,7 +176,7 @@ export function PetOwner() {
                           />
                         </Link>
                         <div className="author">
-                          <div className="post-author-image">
+                          <div className="author-image">
                             <a href="javascript:void(0)">
                               <img
                                 src={
@@ -198,7 +201,7 @@ export function PetOwner() {
                           </h3>
                           <p className="update-time">
                             {/* 3일 전 */}
-                            {new Date(post.regDate).toLocaleDateString()}
+                            {formatTimeAgo(post.regDate)}
                           </p>
                           <ul className="rating">
                             <li>
@@ -254,43 +257,10 @@ export function PetOwner() {
           </div>
 
           {pageInfo && !loading && (
-            <div className="pagination-area">
-              <ul className="pagination">
-                {pageInfo.prev && (
-                  <li className="page-item">
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(pageInfo.start - 1)}>
-                      이전
-                    </button>
-                  </li>
-                )}
-                {pageInfo.pageList?.map(pageNum => (
-                  <li
-                    key={pageNum}
-                    className={`page-item ${pageNum === pageInfo.page ? 'active' : ''}`}>
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(pageNum)}>
-                      {pageNum}
-                    </button>
-                  </li>
-                ))}
-                {pageInfo.next && (
-                  <li className="page-item">
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(pageInfo.end + 1)}>
-                      다음
-                    </button>
-                  </li>
-                )}
-              </ul>
-            </div>
+            <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
           )}
         </div>
       </section>
-      {/* */}
     </div>
   )
 }
