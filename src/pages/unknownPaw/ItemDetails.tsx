@@ -166,32 +166,65 @@ export function ItemDetails() {
                   className="main-image"
                 />
               )}
-              <div className="author-info-area">
+              <div
+                className="author-info-area"
+                style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
                 {postDTO.member && (
                   <>
                     {/* 프로필 이미지 */}
-                    <div className="post-author-image">
+                    <div
+                      className="post-author-image"
+                      style={{
+                        minWidth: 56,
+                        minHeight: 56,
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}>
                       <img
-                        className="profile-image"
                         src={
                           postDTO.member.profileImagePath
                             ? postDTO.member.profileImagePath
                             : '../assets/images/items-grid/img2.jpg'
                         }
                         alt="프로필"
+                        style={{
+                          width: 56,
+                          height: 56,
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                          border: '1px solid #eee'
+                        }}
                       />
                     </div>
                     {/* 닉네임 및 위치 */}
-                    <div className="author-meta">
-                      <div className="author-name">
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center'
+                      }}>
+                      <div
+                        className="author-name"
+                        style={{fontWeight: 600, fontSize: 18}}>
                         {postDTO.member.nickname || 'nickname'}
                       </div>
-                      <div className="author-location">
+                      <div
+                        className="author-location"
+                        style={{color: '#888', fontSize: 14}}>
                         {postDTO.defaultLocation || '부산시'}
                       </div>
                     </div>
                     {/* 매너온도(우측) */}
-                    <div className="author-rating">
+                    <div
+                      className="author-rating"
+                      style={{
+                        marginLeft: 16,
+                        fontWeight: 500,
+                        fontSize: 16,
+                        color: '#FFA500',
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}>
                       <span>🐾 {postDTO.member.pawRate.toFixed(1) || '1.4'}</span>
                     </div>
                   </>
