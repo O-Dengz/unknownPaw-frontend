@@ -37,7 +37,7 @@ export default function Layout() {
         <Route path="/petowner" element={<PetOwner />} />
         <Route path="/petsitter" element={<PetSitter />} />
         <Route path="/community" element={<Community />} />
-        <Route path="/communityPost" element={<CommunityPost />} />
+        <Route path="/communitypost/:postId" element={<CommunityPost />} />
 
         {/* 상세 · 동적 라우트 */}
         <Route path="/item/:id" element={<ItemDetails />} />

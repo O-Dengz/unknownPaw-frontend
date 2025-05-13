@@ -238,6 +238,7 @@ export function ItemDetails() {
               backgroundColor: '#2563eb',
               color: 'white',
               border: 'none',
+              
               padding: '8px 20px',
               borderRadius: '5px',
               cursor: 'pointer',

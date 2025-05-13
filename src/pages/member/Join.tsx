@@ -98,36 +98,73 @@ export function Join() {
   // prettier-ignore
   return (
     <div
-      className="flex items-center justify-center"
-      style={{height: '100vh', minHeight: '100vh'}}>
-      <div className="flex flex-col rounded items-center bg-gray-200 justify-center flex-1 max-w-sm mx-auto">
-        <div className="w-full px-6 py-8 text-black rounded shadow-md">
-          <form method="post" onSubmit={onSubmit}>
-            <h1 className="mb-8 text-4xl text-center">My Journal</h1>
-            <input type="text" name="email" ref={emailRef} className="input input-accent w-full p-1 mb-4 text-xl rounded-lg size-15"
-              placeholder="Email" onChange={changed('email')} />
-            <input type="password" name="pass" ref={passRef} className="input input-accent w-full p-1 mb-4 text-xl rounded-lg size-15"
-              placeholder="Password" onChange={changed('pass')}/>
-            <input type="text" name="mobile" ref={mobileRef} className="input input-accent w-full p-1 mb-4 text-xl rounded-lg size-15"
-              placeholder="Mobile" onChange={changed('mobile')} />
-            <input type="text" name="name" ref={nameRef} className="input input-accent w-full p-1 mb-4 text-xl rounded-lg size-15"
-              placeholder="Name" onChange={changed('name')} />
-            <input type="text" name="nickname" ref={nicknameRef} className="input input-accent w-full p-1 mb-4 text-xl rounded-lg size-15"
-              placeholder="Nickname" onChange={changed('nickname')} />
-            <button
-              className="w-full p-3 mb-4 text-2xl text-black bg-gray-300 rounded size-15"
-              type="submit">
-              Join
-            </button>
-          </form>
-          <span className="mt-6 text-lg text-grey-dark font-sans md:font-serif">
-            Create account?
-            <Link className="ml-5 text-lg" to="/join">
-              Join
-            </Link>
-          </span>
+      className="flex items-center justify-center min-h-screen"
+      style={{
+        background: 'linear-gradient(135deg, #fceabb 0%, #f8b500 50%, #a1c4fd 100%)', // 오렌지 + 하늘색
+      }}
+    >
+      <div className="w-full max-w-md p-10 bg-white rounded-lg shadow-lg">
+        <h1 className="mb-8 text-3xl font-bold text-center text-gray-800">
+          My Journal 회원가입
+        </h1>
+  
+        <form method="post" onSubmit={onSubmit} className="space-y-4">
+          <input
+            type="text"
+            name="email"
+            ref={emailRef}
+            placeholder="이메일"
+            onChange={changed('email')}
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+          <input
+            type="password"
+            name="pass"
+            ref={passRef}
+            placeholder="비밀번호"
+            onChange={changed('pass')}
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+          <input
+            type="text"
+            name="mobile"
+            ref={mobileRef}
+            placeholder="휴대폰 번호"
+            onChange={changed('mobile')}
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+          <input
+            type="text"
+            name="name"
+            ref={nameRef}
+            placeholder="이름"
+            onChange={changed('name')}
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+          <input
+            type="text"
+            name="nickname"
+            ref={nicknameRef}
+            placeholder="닉네임"
+            onChange={changed('nickname')}
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+  
+          <button
+            type="submit"
+            className="w-full py-3 text-white bg-orange-400 hover:bg-orange-500 rounded-md font-semibold text-lg transition duration-300"
+          >
+            가입하기
+          </button>
+        </form>
+  
+        <div className="mt-6 text-center text-sm text-gray-600">
+          이미 계정이 있으신가요?
+          <Link to="/login" className="ml-2 text-orange-500 hover:underline">
+            로그인
+          </Link>
         </div>
       </div>
     </div>
-  )
+  );  
 }

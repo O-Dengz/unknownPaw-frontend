@@ -8,14 +8,14 @@ export default function Footer() {
               <div className="single-footer mobile-app">
                 <h3>Mobile Apps</h3>
                 <div className="app-button">
-                  <a href="javascript:void(0)" className="btn">
+                  <a onClick={(e) => e.preventDefault()} className="btn">
                     <i className="lni lni-play-store"></i>
                     <span className="text">
                       <span className="small-text">Get It On</span>
                       Google Play
                     </span>
                   </a>
-                  <a href="javascript:void(0)" className="btn">
+                  <a onClick={(e) => e.preventDefault()} className="btn">
                     <i className="lni lni-apple"></i>
                     <span className="text">
                       <span className="small-text">Get It On</span>
@@ -32,35 +32,35 @@ export default function Footer() {
                   <div className="col-lg-6 col-md-6 col-12">
                     <ul>
                       <li>
-                        <a href="javascript:void(0)">Chicago</a>
+                        <a onClick={(e) => e.preventDefault()}>Chicago</a>
                       </li>
                       <li>
-                        <a href="javascript:void(0)">New York City</a>
+                        <a onClick={(e) => e.preventDefault()}>New York City</a>
                       </li>
                       <li>
-                        <a href="javascript:void(0)">San Francisco</a>
+                        <a onClick={(e) => e.preventDefault()}>San Francisco</a>
                       </li>
                       <li>
-                        <a href="javascript:void(0)">Washington</a>
+                        <a onClick={(e) => e.preventDefault()}>Washington</a>
                       </li>
                       <li>
-                        <a href="javascript:void(0)">Boston</a>
+                        <a onClick={(e) => e.preventDefault()}>Boston</a>
                       </li>
                     </ul>
                   </div>
                   <div className="col-lg-6 col-md-6 col-12">
                     <ul>
                       <li>
-                        <a href="javascript:void(0)">Los Angeles</a>
+                        <a onClick={(e) => e.preventDefault()}>Los Angeles</a>
                       </li>
                       <li>
-                        <a href="javascript:void(0)">Seattle</a>
+                        <a onClick={(e) => e.preventDefault()}>Seattle</a>
                       </li>
                       <li>
-                        <a href="javascript:void(0)">Las Vegas</a>
+                        <a onClick={(e) => e.preventDefault()}>Las Vegas</a>
                       </li>
                       <li>
-                        <a href="javascript:void(0)">San Diego</a>
+                        <a onClick={(e) => e.preventDefault()}>San Diego</a>
                       </li>
                     </ul>
                   </div>
@@ -72,19 +72,19 @@ export default function Footer() {
                 <h3>Quick Links</h3>
                 <ul>
                   <li>
-                    <a href="javascript:void(0)">About Us</a>
+                    <a onClick={(e) => e.preventDefault()}>About Us</a>
                   </li>
                   <li>
-                    <a href="javascript:void(0)">How It's Works</a>
+                    <a onClick={(e) => e.preventDefault()}>How It's Works</a>
                   </li>
                   <li>
-                    <a href="javascript:void(0)">Login</a>
+                    <a onClick={(e) => e.preventDefault()}>Login</a>
                   </li>
                   <li>
-                    <a href="javascript:void(0)">Signup</a>
+                    <a onClick={(e) => e.preventDefault()}>Signup</a>
                   </li>
                   <li>
-                    <a href="javascript:void(0)">Help & Support</a>
+                    <a onClick={(e) => e.preventDefault()}>Help & Support</a>
                   </li>
                   <li>
                     <a href="/dashboard">My Page</a>
@@ -123,19 +123,19 @@ export default function Footer() {
                 <div className="content">
                   <ul className="footer-bottom-links">
                     <li>
-                      <a href="javascript:void(0)">Terms of use</a>
+                      <a onClick={(e) => e.preventDefault()}>Terms of use</a>
                     </li>
                     <li>
-                      <a href="javascript:void(0)"> Privacy Policy</a>
+                      <a onClick={(e) => e.preventDefault()}> Privacy Policy</a>
                     </li>
                     <li>
-                      <a href="javascript:void(0)">Advanced Search</a>
+                      <a onClick={(e) => e.preventDefault()}>Advanced Search</a>
                     </li>
                     <li>
-                      <a href="javascript:void(0)">Site Map</a>
+                      <a onClick={(e) => e.preventDefault()}>Site Map</a>
                     </li>
                     <li>
-                      <a href="javascript:void(0)">Information</a>
+                      <a onClick={(e) => e.preventDefault()}>Information</a>
                     </li>
                   </ul>
                   <p className="copyright-text">
@@ -146,22 +146,22 @@ export default function Footer() {
                   </p>
                   <ul className="footer-social">
                     <li>
-                      <a href="javascript:void(0)">
+                      <a onClick={(e) => e.preventDefault()}>
                         <i className="lni lni-facebook-filled"></i>
                       </a>
                     </li>
                     <li>
-                      <a href="javascript:void(0)">
+                      <a onClick={(e) => e.preventDefault()}>
                         <i className="lni lni-twitter-original"></i>
                       </a>
                     </li>
                     <li>
-                      <a href="javascript:void(0)">
+                      <a onClick={(e) => e.preventDefault()}>
                         <i className="lni lni-youtube"></i>
                       </a>
                     </li>
                     <li>
-                      <a href="javascript:void(0)">
+                      <a onClick={(e) => e.preventDefault()}>
                         <i className="lni lni-linkedin-original"></i>
                       </a>
                     </li>
