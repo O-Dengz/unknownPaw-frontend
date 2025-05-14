@@ -93,7 +93,7 @@ export function PetSitter() {
       console.log('>>> 요청 파라미터:', queryParams.toString())
 
       fetch(
-        `/api/posts/PET_SITTER/list?${queryParams.toString()}`,
+        `/api/posts/petsitter/list?${queryParams.toString()}`,
         {
           method: 'GET',
           headers: {
@@ -205,7 +205,7 @@ export function PetSitter() {
                         <div className="top-content">
                           <span className="tag">{post.serviceCategory}</span>
                           <h3 className="title">
-                            <Link to={`/posts/petowner/read/${post.postId}`}>
+                            <Link to={`/posts/petsitter/read/${post.postId}`}>
                               {post.title}
                             </Link>
                           </h3>

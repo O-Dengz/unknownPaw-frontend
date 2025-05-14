@@ -92,7 +92,7 @@ export function PetOwner() {
       console.log('>>> 요청 파라미터:', queryParams.toString())
 
       fetch(
-        `/api/posts/PET_OWNER/list?${queryParams.toString()}`,
+        `/api/posts/petowner/list?${queryParams.toString()}`,
         {
           method: 'GET',
           headers: {
