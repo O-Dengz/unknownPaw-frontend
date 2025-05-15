@@ -1,7 +1,8 @@
-import {Routes, Route} from 'react-router-dom'
+import {useLocation, Routes, Route} from 'react-router-dom'
 
 import Navigation from './Navigation'
 import Footer from './Footer'
+import MainHeader from '../../components/MainHeader'
 
 /* ---------- 공통 페이지 ---------- */
 import {List} from '../../pages/unknownPaw/List'
@@ -27,9 +28,11 @@ import CommunityPost from '../../pages/unknownPaw/CommunityPost'
 import PostAd from '../../pages/postAd/PostAd'
 
 export default function Layout() {
+  const location = useLocation()
+  const isListPage = location.pathname === '/' || location.pathname === '/list'
   return (
     <>
-      <Navigation />
+      {isListPage ? <MainHeader /> : <Navigation />}
 
       <Routes>
         {/* 기본/공통 */}

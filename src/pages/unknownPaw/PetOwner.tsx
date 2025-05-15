@@ -91,23 +91,20 @@ export function PetOwner() {
 
       console.log('>>> 요청 파라미터:', queryParams.toString())
 
-      fetch(
-        `/api/posts/petowner/list?${queryParams.toString()}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${latestToken}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          }
+      fetch(`/api/posts/petowner/list?${queryParams.toString()}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${latestToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
         }
-      )
+      })
         .then(async response => {
           console.log('>>> Response received:', response)
           if (!response.ok) {
             const errorText = await response.text()
             console.error('Error response:', errorText)
-            
+
             if (response.status === 401 || response.status === 403) {
               sessionStorage.removeItem('token')
               navigate('/login')
