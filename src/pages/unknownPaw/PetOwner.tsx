@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate, useLocation} from 'react-router-dom'
 import {Pagination} from '../../components/Pagination'
 import {formatTimeAgo} from '../../utils/timeAgo'
+import ScrollToTopButton from '../../components/ScrollToTopButton'
+import PawRating from '../../components/PawRating'
 
 interface MemberResponseDTO {
   mid: number
@@ -33,16 +35,19 @@ interface Post {
   member?: MemberResponseDTO
 }
 
-interface PageResultDTO {
-  dtoList: Post[]
-  totalPage: number
-  page: number
+interface SpringPageResponse {
+  content: Post[]
+  pageable: {
+    pageNumber: number
+    pageSize: number
+  }
+  totalElements: number
+  totalPages: number
+  last: boolean
+  first: boolean
+  empty: boolean
+  number: number
   size: number
-  start: number
-  end: number
-  prev: boolean
-  next: boolean
-  pageList: number[]
 }
 
 interface PageRequestDTO {
@@ -53,18 +58,72 @@ interface PageRequestDTO {
 }
 
 export function PetOwner() {
+  const navigate = useNavigate()
+  const location = useLocation()
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [pageInfo, setPageInfo] = useState<PageResultDTO | null>(null)
-  const [pageRequest, setPageRequest] = useState<PageRequestDTO>({
-    page: 1,
-    size: 10
+  const [pageInfo, setPageInfo] = useState<SpringPageResponse | null>(null)
+
+  const [searchKeyword, setSearchKeyword] = useState('')
+  const [searchType, setSearchType] = useState<'title' | 'content' | 'author'>('title')
+
+  const [pageRequest, setPageRequest] = useState<PageRequestDTO>(() => {
+    // URL에서 페이지 정보 가져오기
+    const searchParams = new URLSearchParams(location.search)
+    const pageFromUrl = parseInt(searchParams.get('page') || '1')
+    const initialPage = pageFromUrl > 0 ? pageFromUrl - 1 : 0 // URL이 1 미만일 경우 0으로 처리
+    const typeFromUrl = searchParams.get('type')
+    const keyword = searchParams.get('keyword') || undefined
+    const sortBy = searchParams.get('sortBy') || 'regDate'
+    const sortOrder =
+      searchParams.get('sortOrder')?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC'
+
+    return {
+      page: initialPage,
+      size: 12,
+      type: typeFromUrl || undefined,
+      keyword: keyword,
+      sortBy: sortBy,
+      sortOrder: sortOrder
+    }
   })
+  const handleClearSearch = () => {
+    setSearchKeyword('')
+    setPageRequest(prev => ({
+      ...prev,
+      page: 0,
+      keyword: undefined,
+      type: undefined
+    }))
+  }
 
   useEffect(() => {
-    console.log('>>> pageRequest 변경:', pageRequest)
-    console.log('>>> Posts 상태 (useEffect 시작):', posts)
+    const searchParams = new URLSearchParams(location.search)
+    const urlPage = pageRequest.page + 1
+    searchParams.set('page', urlPage.toString())
+    if (pageRequest.type) {
+      searchParams.set('type', pageRequest.type)
+    } else {
+      searchParams.delete('type')
+    }
+    if (pageRequest.keyword) {
+      searchParams.set('keyword', pageRequest.keyword)
+    } else {
+      searchParams.delete('keyword')
+    }
+    if (pageRequest.sortBy) {
+      searchParams.set('sortBy', pageRequest.sortBy)
+      // sortOrder는 sortBy와 함께 항상 추가
+      searchParams.set('sortOrder', pageRequest.sortOrder || 'DESC')
+    }
+
+    navigate(`?${searchParams.toString()}`, {replace: true})
+  }, [pageRequest, navigate])
+
+  useEffect(() => {
+    console.log('>>> pageRequest 변경:', pageRequest) // 항상 0-based
+
     const fetchPosts = () => {
       setLoading(true)
       setError(null)
@@ -79,45 +138,48 @@ export function PetOwner() {
         return
       }
 
-      const queryParams = new URLSearchParams({
-        page: pageRequest.page.toString(),
-        size: pageRequest.size.toString(),
-        ...(pageRequest.type && {type: pageRequest.type}),
-        ...(pageRequest.keyword && {keyword: pageRequest.keyword})
-      })
+      // page가 1일 때는 0으로 변환
+      const pageParam = pageRequest.page
+      let apiUrl = `http://localhost:8080/unknownPaw/api/posts/petowner/list?page=${pageParam}&size=${pageRequest.size}`
 
-      console.log('>>> 요청 파라미터:', queryParams.toString())
+      if (pageRequest.type) {
+        apiUrl += `&type=${pageRequest.type}`
+      }
+      if (pageRequest.keyword) {
+        apiUrl += `&keyword=${pageRequest.keyword}`
+      }
 
-      fetch(
-        `http://localhost:8080/unknownPaw/api/posts/petowner/list?page=${
-          pageRequest.page
-        }&size=${pageRequest.size}${pageRequest.type ? `&type=${pageRequest.type}` : ''}${
-          pageRequest.keyword ? `&keyword=${pageRequest.keyword}` : ''
-        }`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${latestToken}`,
-            'Content-Type': 'application/json'
-          }
+      // 정렬 파라미터 추가
+      if (pageRequest.sortBy) {
+        // 'sort=필드명,정렬방식' 형식으로 파라미터 이름을 'sort'로 변경
+        apiUrl += `&sort=${pageRequest.sortBy},${pageRequest.sortOrder || 'DESC'}`
+      }
+
+      console.log('>>> API URL:', apiUrl) // 생성된 최종 URL 확인
+
+      fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${latestToken}`,
+          'Content-Type': 'application/json'
         }
-      )
+      })
         .then(async response => {
           console.log('>>> Response received:', response)
           if (!response.ok) {
+            const errorBody = await response.text().catch(() => 'No response body')
+            console.error('>>> Error response body:', errorBody) // 에러 본문 로깅
             throw new Error(`HTTP error! status: ${response.status}`)
           }
           return response.json()
         })
-        .then((data: PageResultDTO) => {
+        .then((data: SpringPageResponse) => {
           console.log('>>> API 응답 데이터:', data)
-          console.log('>>> API 응답 데이터 pageInfo.pageList:', data.pageList)
-          if (data.content) {
-            console.log('>>> 첫 번째 게시글 데이터:', data.content[0])
-            setPosts(prevPosts => [...data.content] as Post[]) // 함수형 업데이트
-            console.log('>>> Posts 상태 업데이트 (then):', posts)
-          }
+
+          setPosts(data.content || []) // content가 null일 경우 빈 배열 설정
           setPageInfo(data)
+          console.log('>>> Posts 상태 업데이트 (then):', posts)
+          // }
         })
         .catch(err => {
           console.error('Error fetching posts:', err)
@@ -129,10 +191,20 @@ export function PetOwner() {
     }
 
     fetchPosts()
-  }, [pageRequest])
+  }, [pageRequest]) // pageRequest 상태가 변경될 때마다 이 effect 실행
 
   const handlePageChange = (page: number) => {
     setPageRequest(prev => ({...prev, page}))
+  }
+  const handleSortChange = (sortBy: string, sortOrder: 'ASC' | 'DESC') => {
+    console.log(`Sorting by: ${sortBy}, Order: ${sortOrder}`)
+    // 정렬 기준 변경 시 첫 페이지로 이동
+    setPageRequest(prev => ({
+      ...prev,
+      page: 0,
+      sortBy: sortBy,
+      sortOrder: sortOrder
+    }))
   }
 
   if (loading) return <div>로딩 중...</div>
@@ -140,6 +212,8 @@ export function PetOwner() {
 
   return (
     <div className="pet-owner-page">
+      <ScrollToTopButton />
+
       {/* */}
       <section className="items-grid section custom-padding">
         <div className="container">
@@ -155,6 +229,133 @@ export function PetOwner() {
               </div>
             </div>
           </div>
+          {/* 검색, 필터, 정렬 기능 추가 시 넣을 곳 */}
+          {/* 검색 바 */}
+          <div className="row mb-4">
+            <div className="col-18">
+              <div className="search-bar-wrap">
+                <select
+                  className="search-select"
+                  value={searchType}
+                  onChange={e =>
+                    setSearchType(e.target.value as 'title' | 'content' | 'author')
+                  }
+                  style={{marginRight: '10px'}}>
+                  <option value="title">제목</option>
+                  <option value="content">내용</option>
+                  <option value="author">작성자</option>
+                </select>
+                <input
+                  type="text"
+                  className="search-input"
+                  placeholder="검색어를 입력하세요"
+                  value={searchKeyword}
+                  onChange={e => setSearchKeyword(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      setPageRequest(prev => ({
+                        ...prev,
+                        page: 0,
+                        keyword: searchKeyword,
+                        type: searchType
+                      }))
+                    }
+                  }}
+                />
+                <button
+                  className="search-btn"
+                  onClick={() => {
+                    setPageRequest(prev => ({
+                      ...prev,
+                      page: 0,
+                      keyword: searchKeyword,
+                      type: searchType
+                    }))
+                  }}
+                  type="button">
+                  <i className="lni lni-search"></i>
+                </button>
+                {searchKeyword && (
+                  <button
+                    className={`clear-btn visible`}
+                    onClick={handleClearSearch}
+                    type="button">
+                    <i className="lni lni-close"></i>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+          {/* 아이템 개수 / 정렬 조건  */}
+          <div className="row mb-3 align-items-center">
+            {' '}
+            {/* 세로 중앙 정렬 */}
+            <div className="col-md-6 col-12">
+              {/* 총 게시물 개수 표시 */}
+              {pageInfo?.totalElements !== undefined && (
+                <p className="total-items-count" style={{fontSize: '1rem', margin: 0}}>
+                  총{' '}
+                  <strong style={{color: '#F1A852'}}>
+                    {pageInfo.totalElements.toLocaleString()}
+                  </strong>{' '}
+                  건
+                </p>
+              )}
+            </div>
+            <div className="col-md-6 col-12 text-md-end text-start">
+              {' '}
+              {/* 모바일에서는 왼쪽, md 이상에서 오른쪽 정렬 */}
+              {/* 정렬 버튼 영역 */}
+              <div className="sort-options">
+                {/* 최신순 */}
+                <button
+                  className={`sort-button ${
+                    pageRequest.sortBy === 'regDate' && pageRequest.sortOrder === 'DESC'
+                      ? 'active'
+                      : ''
+                  }`}
+                  onClick={() => handleSortChange('regDate', 'DESC')}>
+                  최신순
+                </button>
+                <span className="separator">|</span>
+                {/* 좋아요순 - 백엔드에서 'likes' 필드로 정렬 지원해야 함 */}
+                <button
+                  className={`sort-button ${
+                    pageRequest.sortBy === 'likes' && pageRequest.sortOrder === 'DESC'
+                      ? 'active'
+                      : ''
+                  }`}
+                  onClick={() => handleSortChange('likes', 'DESC')}>
+                  좋아요순
+                </button>
+                <span className="separator">|</span>
+                {/* 낮은 가격순 */}
+                <button
+                  className={`sort-button ${
+                    pageRequest.sortBy === 'hourlyRate' && pageRequest.sortOrder === 'ASC'
+                      ? 'active'
+                      : ''
+                  }`}
+                  onClick={() => handleSortChange('hourlyRate', 'ASC')}>
+                  낮은 가격순
+                </button>
+                <span className="separator">|</span>
+                {/* 높은 가격순 */}
+                <button
+                  className={`sort-button ${
+                    pageRequest.sortBy === 'hourlyRate' &&
+                    pageRequest.sortOrder === 'DESC'
+                      ? 'active'
+                      : ''
+                  }`}
+                  onClick={() => handleSortChange('hourlyRate', 'DESC')}>
+                  높은 가격순
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 게시글 시작 */}
           <div className="single-head">
             <div className="row">
               {!loading && posts?.length > 0 ? (
@@ -169,24 +370,23 @@ export function PetOwner() {
                           className="thumbnail">
                           <img
                             src={
-                              post.image?.[0]?.imagePath ||
-                              '../assets/images/items-grid/img1.jpg'
+                              post.image?.[0]?.imagePath || '/assets/images/pet/dog-2.jpg'
                             }
                             alt="#"
                           />
                         </Link>
                         <div className="author">
                           <div className="author-image">
-                            <a href="javascript:void(0)">
+                            <Link to={`/profile/simple/${post.member?.mid}`}>
                               <img
                                 src={
                                   post.member?.profileImagePath ||
-                                  '../assets/images/items-grid/author-1.jpg'
+                                  '/assets/images/items-grid/author-1.jpg'
                                 }
                                 alt="#"
                               />
                               <span>{post.member?.nickname || 'Unknown'}</span>
-                            </a>
+                            </Link>
                           </div>
                           <p className="sale">예약하기</p>
                         </div>
@@ -203,26 +403,15 @@ export function PetOwner() {
                             {/* 3일 전 */}
                             {formatTimeAgo(post.regDate)}
                           </p>
-                          <ul className="rating">
+                          {/* 발바닥 지수 */}
+                          <ul className="paw-rating">
                             <li>
-                              <i className="lni lni-star-filled"></i>
-                            </li>
-                            <li>
-                              <i className="lni lni-star-filled"></i>
-                            </li>
-                            <li>
-                              <i className="lni lni-star-filled"></i>
-                            </li>
-                            <li>
-                              <i className="lni lni-star-filled"></i>
-                            </li>
-                            <li>
-                              <i className="lni lni-star-filled"></i>
-                            </li>
-                            <li>
-                              <span>({post.likes || 0})</span>
+                              <PawRating rating={post.member?.pawRate || 0} />
+                              {/* <PawRating rating={3.1} /> */}
+                              <p>({post.member?.pawRate?.toFixed(1)})</p>
                             </li>
                           </ul>
+
                           <ul className="info-list">
                             <li>
                               <span>
@@ -251,7 +440,15 @@ export function PetOwner() {
                   </div>
                 ))
               ) : !loading && posts?.length === 0 ? (
-                <div className="col-12">게시글이 없습니다.</div>
+                <div className="col-12 text-center p-4">
+                  <h5 className="mb-3">🔍 검색 결과가 없습니다.</h5>
+                  <p className="text-muted">다른 키워드로 다시 시도해보세요.</p>
+                  <button
+                    onClick={handleClearSearch}
+                    className="btn btn-outline-primary mt-3">
+                    ← 이전 페이지로 돌아가기
+                  </button>
+                </div>
               ) : null}
             </div>
           </div>

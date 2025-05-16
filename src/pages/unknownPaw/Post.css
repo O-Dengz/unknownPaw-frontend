@@ -31,15 +31,14 @@
 }
 
 .profile-author-image {
-  minWidth: 56,
-  minHeight: 56,
-  width: 30,
-  height:30,
-  border-radius: 50%,
-  display: 'flex',
-  alignItems: 'center'
+  minwidth: 56;
+  minheight: 56;
+  width: 30;
+  height: 30;
+  border-radius: 50%;
+  display: 'flex';
+  alignitems: 'center';
 }
-
 
 .paw-rate {
   text-align: right;
@@ -120,33 +119,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.like-button {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: #32ade6;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 1.4rem;
-  margin-left: 8px;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-
-.like-button:hover {
-  background: #91d3f2;
-  color: #1e91c7;
-}
-
-.like-button.active,
-.like-button:active {
-  background: #1e91c7;
-  color: #fff;
 }
 
 .price-display {
@@ -279,7 +251,7 @@
   font-size: 0.9rem;
   margin-top: 1px;
 }
-.map-area iframe{
+.map-area iframe {
   width: 100%;
   height: 300px;
   background: #eaeaea;
@@ -307,6 +279,7 @@
 .reserve-button:hover {
   background-color: #1e91c7;
 }
+
 .post-service-category p {
   text-align: center;
   display: inline-block;
@@ -412,7 +385,7 @@
   margin-left: 16px;
   font-weight: 500;
   font-size: 16px;
-  color: #FFA500;
+  color: #ffa500;
   display: flex;
   align-items: center;
 }
@@ -421,4 +394,321 @@
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.likes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-top: 12px;
+  border-radius: 50%;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 2px 8px rgba(50, 50, 50, 0.1);
+  transition: box-shadow 0.2s;
+}
+
+.likes i {
+  font-size: 20px;
+  color: #32ade6;
+  transition: all 0.3s ease;
+}
+
+.likes:hover {
+  background-color: #c9e8f7;
+  transition: all 0.3s ease;
+}
+
+.likes.active {
+  background-color: #32ade6;
+  border-color: #32ade6;
+}
+
+.likes.active i {
+  color: #fff;
+}
+
+.search-bar-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto 24px auto;
+  position: relative;
+}
+
+.search-input {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 10px 0 0 10px;
+  font-size: 1.1rem;
+  background: #fff;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(50, 50, 200, 0.07);
+  transition: box-shadow 0.2s;
+}
+
+.search-input:focus {
+  box-shadow: 0 2px 12px rgba(50, 50, 200, 0.13);
+}
+
+.search-btn {
+  width: 50px;
+  height: 52px;
+  border: none;
+  background: #fff;
+  border-radius: 0 20% 20% 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: #32ade6;
+  margin-left: -8px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(50, 50, 200, 0.07);
+  transition: background 0.2s;
+}
+
+.search-btn:hover {
+  background: #f0f7ff;
+}
+
+.clear-btn {
+  margin-left: 12px;
+  background: none;
+  border: none;
+  color: #22222;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clear-btn.visible {
+  color: #e0e0e0;
+}
+
+.clear-btn:hover {
+  color: #adadad;
+}
+
+@media (max-width: 600px) {
+  .search-bar-wrap {
+    max-width: 100%;
+  }
+  .search-input {
+    font-size: 1rem;
+    padding: 12px 12px;
+  }
+  .search-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+  .clear-btn {
+    font-size: 1.2rem;
+  }
+}
+
+.sort-bar-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+  min-width: 160px;
+}
+
+.sort-select {
+  padding: 12px 18px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  background: #fff;
+  color: #222;
+  box-shadow: 0 2px 8px rgba(50, 50, 50, 0.07);
+  cursor: pointer;
+  transition: border 0.2s;
+}
+
+.sort-select:focus {
+  border: 1.5px solid #32ade6;
+  outline: none;
+}
+
+@media (max-width: 600px) {
+  .sort-bar-wrap {
+    margin-bottom: 12px;
+    min-width: 100px;
+  }
+  .sort-select {
+    font-size: 0.95rem;
+    padding: 8px 10px;
+  }
+}
+
+.search-select {
+  /* 브라우저 기본 스타일 제거 */
+  -webkit-appearance: none; /* Safari, Chrome */
+  appearance: none; /* 표준 */
+  /* IE의 기본 드롭다운 화살표 제거 */
+  &::-ms-expand {
+    display: none;
+  }
+  display: inline-block; /* 레이아웃에 맞게 조절 */
+  padding: 10px 30px 10px 15px; /* 우측 패딩은 커스텀 화살표 공간 확보 */
+  font-size: 1rem; /* 폰트 크기 */
+  line-height: 1.8; /* 줄 높이 */
+  color: #555; /* 부드러운 글씨 색 */
+  background-color: #ffffff; /* 깨끗한 배경 */
+  border: 1px solid #e0e0e0; /* 연한 회색 테두리 */
+  border-radius: 8px; /* 부드러운 라운드 모서리 */
+  cursor: pointer; /* 마우스 오버 시 커서 변경 */
+  outline: none; /* 포커스 시 기본 파란색/주황색 외곽선 제거 */
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* 애니메이션 효과 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23888'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 12px;
+}
+
+.search-select:hover {
+  border-color: #c0c0c0;
+}
+
+.search-select:focus {
+  border-color: #32ade6;
+  box-shadow: 0 0 0 0.2rem rgba(50, 173, 230, 0.3);
+}
+
+.search-select option {
+  padding: 10px;
+  background-color: #ffffff;
+  color: #555;
+}
+
+.search-no-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0 40px 0;
+  background: #f8f9fa;
+  border-radius: 16px;
+  margin: 32px auto 0 auto;
+  max-width: 480px;
+  box-shadow: 0 2px 12px rgba(50, 50, 50, 0.07);
+}
+
+.search-no-result img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin-bottom: 24px;
+  opacity: 0.85;
+}
+
+.search-no-result .no-result-text {
+  font-size: 1.25rem;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.search-no-result .back-btn {
+  margin-top: 10px;
+  padding: 10px 28px;
+  background: #32ade6;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search-no-result .back-btn:hover {
+  background: #1e91c7;
+}
+.box-jali {
+  height: 200px;
+  background: #f8f;
+}
+
+.paw-rating li {
+  display: flex; /* li를 flex 컨테이너로 만듦 */
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+/* 정렬 버튼 컨테이너 */
+.sort-options {
+  display: flex; /* 버튼들을 한 줄로 */
+  align-items: center; /* 세로 중앙 정렬 */
+  flex-wrap: wrap; /* 화면 줄어들면 줄바꿈 */
+  gap: 5px; /* 버튼 사이 간격 */
+  float: right;
+}
+
+/* 정렬 라벨 */
+.sort-label {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* 정렬 버튼 기본 스타일 */
+.sort-button {
+  background: none;
+  border: none;
+  padding: 0 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #555;
+  transition: color 0.2s ease-in-out;
+  white-space: nowrap; /* 버튼 텍스트 줄바꿈 방지 */
+}
+
+.sort-button:hover {
+  color: #db8a3d; /* 호버 시 색상 변경 */
+}
+
+/* 활성 정렬 버튼 스타일 */
+.sort-button.active {
+  font-weight: bold;
+  color: #f1a852; /* 활성 상태 색상 */
+}
+
+/* 구분자 스타일 */
+.separator {
+  margin: 0 5px;
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+/* 모바일 화면 등 좁은 환경에서의 스타일 조정 (선택 사항) */
+@media (max-width: 767px) {
+  .sort-options {
+    justify-content: center; /* 모바일에서 가운데 정렬 */
+    margin-top: 15px; /* 위에 간격 추가 */
+  }
+
+  .total-items-count {
+    text-align: center; /* 모바일에서 가운데 정렬 */
+    margin-bottom: 15px !important; /* 아래 간격 추가 */
+  }
+
+  /* row mb-3 align-items-center 의 .col-md-6 부분에 대한 모바일 스타일 */
+  .row.mb-3.align-items-center > .col-12 {
+    text-align: center !important; /* 모바일에서 가운데 정렬 강제 */
+  }
 }

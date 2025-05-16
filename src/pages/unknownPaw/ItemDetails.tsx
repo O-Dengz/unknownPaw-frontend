@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {useParams} from 'react-router-dom'
+import {useParams, useNavigate, useLocation, Link} from 'react-router-dom'
 import axios from 'axios'
 import './Post.css'
 import {Div} from '../../components'
@@ -25,6 +25,7 @@ interface PostDTO {
   defaultLocation: string
   flexibleLocation: string
   regDate: string
+  postTypeUrlSegment?: string
   image: {
     imageId: number
     imagePath: string
@@ -41,13 +42,20 @@ interface PageRequestDTO {
 }
 
 export function ItemDetails() {
-  // const token = useToken()  // useToken 훅에서 상태를 가져오지 않고, 필요할 때 sessionStorage에서 직접 읽음
+  const navigate = useNavigate()
+  const location = useLocation()
   const {postId, postType} = useParams()
   const [postDTO, setPostDTO] = useState<PostDTO | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [liked, setLiked] = useState(false)
   console.log('postId:', postId, 'postType:', postType) // URL 파라미터 확인 로그
+
+  // 뒤로 가기 핸들러
+  const handleBack = () => {
+    // 이전 페이지의 URL로 이동 (페이지 정보가 포함된)
+    navigate(-1)
+  }
 
   useEffect(() => {
     const fetchPost = () => {
@@ -123,6 +131,7 @@ export function ItemDetails() {
   // 이미지 및 프로필 정보 상세 로그
   console.log('postDTO.image:', postDTO.image)
   console.log('postDTO.member:', postDTO.member)
+
   return (
     <>
       <div className="breadcrumbs">
@@ -136,7 +145,14 @@ export function ItemDetails() {
             <div className="col-lg-6 col-md-6 col-12">
               <ul className="breadcrumb-nav">
                 <li>
-                  <a href="/">홈</a>
+                  <a
+                    href="/"
+                    onClick={e => {
+                      e.preventDefault()
+                      handleBack()
+                    }}>
+                    홈
+                  </a>
                 </li>
                 <li>{postDTO.serviceCategory}</li>
               </ul>
@@ -148,59 +164,55 @@ export function ItemDetails() {
       <div className="item-details">
         <div className="container">
           <div className="item-main-row">
-            <div
-              className="item-left-area"
-              style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-              {postDTO.image && postDTO.image.length > 0 && (
-                <img
-                  src={
-                    postDTO.image[0].imagePath ||
-                    '../../../assets/images/items-grid/img2.jpg'
-                  }
-                  alt="상품 이미지"
-                  className="main-image"
-                />
-              )}
-              {/* 등록된 이미지 불러오기 예 */}
+            <div className="item-left-area">
               <div className="main-image-selection">
                 <div className="main-image">
-                  <img src="../../../assets/images/items-grid/img2.jpg" alt="상품" />
+                  <img
+                    src={
+                      postDTO.image?.[0]?.imagePath || '/assets/images/pet/dog-2.jpg' // public 기준 절대 경로 권장
+                    }
+                    alt="상품 이미지"
+                    className="main-image"
+                  />
                 </div>
               </div>
-              <div className="author-info-area">
-                {postDTO.member && (
-                  <>
-                    <div className="profile-meta-wrap">
-                      <div className="post-author-image">
-                        <img
-                          src={
-                            postDTO.member.profileImagePath
-                              ? postDTO.member.profileImagePath
-                              : '../../../assets/images/items-grid/author-2.jpg'
-                          }
-                          alt="프로필"
-                          style={{
-                            width: 56,
-                            height: 56,
-                            borderRadius: '50%'
-                          }}
-                        />
-                      </div>
-                      <div className="author-meta">
-                        <div className="author-name">
-                          {postDTO.member.nickname || 'nickname'}
+
+              <Link to={`/profile/simple/${postDTO.member?.mid}`}>
+                <div className="author-info-area">
+                  {postDTO.member && (
+                    <>
+                      <div className="profile-meta-wrap">
+                        <div className="post-author-image">
+                          <img
+                            src={
+                              postDTO.member.profileImagePath
+                                ? postDTO.member.profileImagePath
+                                : '/assets/images/items-grid/author-2.jpg'
+                            }
+                            alt="프로필"
+                            style={{
+                              width: 56,
+                              height: 56,
+                              borderRadius: '50%'
+                            }}
+                          />
                         </div>
-                        <div className="author-location">
-                          {postDTO.defaultLocation || '부산시'}
+                        <div className="author-meta">
+                          <div className="author-name">
+                            {postDTO.member.nickname || 'nickname'}
+                          </div>
+                          <div className="author-location">
+                            {postDTO.defaultLocation || '부산시'}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="author-rating">
-                      <span>🐾 {postDTO.member.pawRate.toFixed(1) || '1.4'}</span>
-                    </div>
-                  </>
-                )}
-              </div>
+                      <div className="author-rating">
+                        <span>🐾 {postDTO.member.pawRate.toFixed(1) || '1.4'}</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </Link>
             </div>
             <div className="item-right-area">
               <h2 className="item-title">{postDTO.title}</h2>
@@ -239,7 +251,7 @@ export function ItemDetails() {
                   alignItems: 'center'
                 }}>
                 <button className="reserve-button">예약하기</button>
-                <button className="reserve-button" onClick={() => setLiked(!liked)}>
+                <button className="likes" onClick={() => setLiked(!liked)}>
                   <i className={`lni ${liked ? 'lni-heart-filled' : 'lni-heart'}`}></i>
                 </button>
               </div>

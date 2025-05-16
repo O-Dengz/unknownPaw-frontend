@@ -1,67 +1,117 @@
 import React from 'react'
+import '../pages/myPage/myPage.css'
+
 interface PageResultDTO {
-  dtoList: any[] // 페이지네이션 렌더링에는 필요 없지만, 객체 구조 일치를 위해 정의
+  dtoList: any[]
   totalPage: number
-  page: number // 현재 페이지 번호
-  size: number // 페이지 사이즈 (페이지네이션 렌더링에 필요 없지만, 객체 구조 일치)
-  start: number // 페이지 블록의 시작 번호
-  end: number // 페이지 블록의 끝 번호
-  prev: boolean // 이전 블록 존재 여부
-  next: boolean // 다음 블록 존재 여부
-  pageList: number[] // 표시할 페이지 번호 목록
+  page: number
+  size: number
+  start: number
+  end: number
+  prev: boolean
+  next: boolean
+  pageList: number[]
+}
+
+interface SpringPageResponse {
+  content: any[]
+  pageable: {
+    pageNumber: number
+    pageSize: number
+  }
+  totalElements: number
+  totalPages: number
+  last: boolean
+  first: boolean
+  number: number
 }
 
 interface PaginationProps {
-  // pageInfo 객체 전체를 prop으로 받음
-  pageInfo: PageResultDTO | null // pageInfo는 null일 수 있으므로 | null 추가
-
-  // 페이지 변경 핸들러 함수는 그대로 받음
+  pageInfo: SpringPageResponse | null
   onPageChange: (page: number) => void
 }
 
+// Spring Boot 페이지네이션 응답을 PageResultDTO 형식으로 변환하는 함수
+const convertToPageResultDTO = (springPage: SpringPageResponse): PageResultDTO => {
+  // Spring은 0-based, 우리는 1-based로 변환
+  const currentPage = springPage.number + 1
+  const totalPages = springPage.totalPages
+  const pageSize = springPage.pageable.pageSize
+
+  // 페이지 블록 크기 (5페이지씩 보여주기)
+  const blockSize = 5
+  const currentBlock = Math.floor((currentPage - 1) / blockSize)
+
+  const start = currentBlock * blockSize + 1
+  const end = Math.min(start + blockSize - 1, totalPages)
+
+  const pageList = Array.from({length: end - start + 1}, (_, i) => start + i)
+
+  return {
+    dtoList: springPage.content,
+    totalPage: totalPages,
+    page: currentPage,
+    size: pageSize,
+    start,
+    end,
+    prev: !springPage.first,
+    next: !springPage.last,
+    pageList
+  }
+}
+
 export function Pagination({pageInfo, onPageChange}: PaginationProps) {
-  // pageInfo가 null이거나 pageList가 없거나 비어있으면 아무것도 렌더링하지 않음
-  // PetSitter.tsx에서 이미 pageInfo && !loading 조건으로 감싸고 있지만, 컴포넌트 내부에서 한 번 더 체크하면 안전
-  if (!pageInfo || !pageInfo.pageList || pageInfo.pageList.length === 0) {
+  // 디버깅을 위한 콘솔 로그 추가
+  console.log('Pagination 컴포넌트 렌더링:', {
+    pageInfo,
+    convertedPageInfo: pageInfo ? convertToPageResultDTO(pageInfo) : null
+  })
+
+  if (!pageInfo) {
+    console.log('pageInfo가 null입니다.')
     return null
   }
 
-  // pageInfo 객체에서 필요한 속성들을 구조 분해 할당하여 사용
-  // pageList, page (현재 페이지), start, end, prev, next 등을 pageInfo에서 가져옴
-  const {pageList, page, start, end, prev, next} = pageInfo
+  const convertedPageInfo = convertToPageResultDTO(pageInfo)
+
+  if (!convertedPageInfo.pageList || convertedPageInfo.pageList.length === 0) {
+    console.log('페이지네이션 렌더링 조건 미충족:', {
+      hasPageList: !convertedPageInfo.pageList,
+      isPageListEmpty: convertedPageInfo.pageList?.length === 0
+    })
+    return null
+  }
+
+  const {pageList, page, start, end, prev, next} = convertedPageInfo
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (newPage: number) => {
+    // 페이지 번호가 유효한 범위 내에 있는지 확인
+    if (newPage >= 1 && newPage <= convertedPageInfo.totalPage) {
+      onPageChange(newPage - 1) // Spring은 0-based이므로 1을 빼서 전달
+    }
+  }
 
   return (
-    <div className="pagination-area">
-      <ul className="pagination">
-        {/* 이전 페이지 버튼: pageInfo.prev 사용 */}
+    <div className="pagination-mgt">
+      <ul className="pagination-list">
         {prev && (
-          <li className="page-item">
-            {/* start에서 1을 빼서 이전 블록의 마지막 페이지로 이동 */}
-            <button className="page-link" onClick={() => onPageChange(start - 1)}>
-              이전
+          <li>
+            <button onClick={() => handlePageChange(start - 1)}>
+              <i className="lni lni-chevron-left"></i>
             </button>
           </li>
         )}
-        {/* 페이지 번호 버튼 목록: pageInfo.pageList 사용 */}
         {pageList.map(pageNum => (
-          <li
-            key={pageNum}
-            // 현재 페이지 (pageInfo.page)와 페이지 번호 비교
-            className={`page-item ${pageNum === page ? 'active' : ''}`}>
-            {/* 클릭 시 해당 페이지 번호로 이동 */}
-            <button className="page-link" onClick={() => onPageChange(pageNum)}>
-              {pageNum}
-            </button>
+          <li key={pageNum} className={pageNum === page ? 'active' : ''}>
+            <button onClick={() => handlePageChange(pageNum)}>{pageNum}</button>
           </li>
         ))}
-        {/* 다음 페이지 버튼: pageInfo.next 사용 */}
         {next && (
-          <li className="page-item">
-            {/* end에서 1을 더해서 다음 블록의 첫 페이지로 이동 */}
-            <button className="page-link" onClick={() => onPageChange(end + 1)}>
-              다음
+          <li>
+            <button onClick={() => handlePageChange(end + 1)}>
+              <i className="lni lni-chevron-right"></i>
             </button>
-            {/* </button> */}
           </li>
         )}
       </ul>
