@@ -27,7 +27,7 @@ interface PostFormData {
   title: string
   content: string
   serviceCategory: string
-  desiredHourlyRate: number
+  hourlyRate: number
   defaultLocation: string
   walkDate?: string
   images?: File[]
@@ -48,7 +48,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
     title: '',
     content: '',
     serviceCategory: '',
-    desiredHourlyRate: 0,
+    hourlyRate: 0,
     defaultLocation: '',
     walkDate: ''
   })
@@ -74,7 +74,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
         }
 
         const data = await response.json()
-        console.log('🐶 받은 데이터:', data) 
+        console.log('🐶 받은 데이터:', data)
         setMember(data)
         if (data?.pets?.length > 0) {
           setSelectedPet(data.pets[0])
@@ -97,7 +97,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
       const file = event.target.files[0]
       setImage(file)
       setPreviewUrl(URL.createObjectURL(file))
-      setPostData(prev => ({ ...prev, images: [file] }))
+      setPostData(prev => ({...prev, images: [file]}))
     }
   }
 
@@ -147,9 +147,9 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
             onChange={e => setPostData({...postData, serviceCategory: e.target.value})}
             className="form-control">
             <option value="">카테고리를 선택하세요</option>
-            <option value="산책">산책</option>
-            <option value="호텔링">호텔링</option>
-            <option value="돌봄">돌봄</option>
+            <option value="WALK">산책</option>
+            <option value="HOTELING">호텔링</option>
+            <option value="CARE">돌봄</option>
           </select>
         </div>
 
@@ -158,10 +158,8 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
           <label className="text-gray-700 font-medium">시급</label>
           <input
             type="number"
-            value={postData.desiredHourlyRate}
-            onChange={e =>
-              setPostData({...postData, desiredHourlyRate: Number(e.target.value)})
-            }
+            value={postData.hourlyRate}
+            onChange={e => setPostData({...postData, hourlyRate: Number(e.target.value)})}
             placeholder="시급을 입력하세요"
             className="form-control"
           />

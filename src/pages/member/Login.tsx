@@ -72,6 +72,7 @@ export function Login() {
       sessionStorage.setItem('token', data.token)
       sessionStorage.setItem('email', email)
       sessionStorage.setItem('member', JSON.stringify(data.member))
+      sessionStorage.setItem('mid', String(data.member.mid))
 
       /* Remember‑Me */
       if (rememberMe) {
