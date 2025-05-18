@@ -1,14 +1,14 @@
 import {useState, useEffect} from 'react'
 
 interface Pet {
-  id: number
-  name: string
+  petId: number
+  petName: string
   breed: string
-  birthDate: string
-  gender: boolean
+  petBirth: string
+  petGender: boolean
   weight: number
   mbti: string
-  isNeutered: boolean
+  neutering: boolean
   introduction: string
 }
 
@@ -57,7 +57,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
     // 로그인된 사용자 정보 가져오기
     const fetchMemberData = async () => {
       try {
-        const token = localStorage.getItem('token') // JWT 토큰 가져오기
+        const token = sessionStorage.getItem('token') // JWT 토큰 가져오기
         if (!token) {
           throw new Error('로그인이 필요합니다.')
         }
@@ -74,6 +74,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
         }
 
         const data = await response.json()
+        console.log('🐶 받은 데이터:', data) 
         setMember(data)
         if (data?.pets?.length > 0) {
           setSelectedPet(data.pets[0])
@@ -96,11 +97,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
       const file = event.target.files[0]
       setImage(file)
       setPreviewUrl(URL.createObjectURL(file))
-
-      onDataChange({
-        ...postData,
-        images: [file]
-      })
+      setPostData(prev => ({ ...prev, images: [file] }))
     }
   }
 
@@ -109,7 +106,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
     if (selectedPet) {
       onDataChange({
         ...postData,
-        petId: selectedPet.id,
+        petId: selectedPet.petId,
         images: image ? [image] : undefined
       })
     }
@@ -288,15 +285,15 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
           <div className="form-group mb-6">
             <label className="text-gray-700 font-medium">반려동물 선택</label>
             <select
-              value={selectedPet?.id || ''}
+              value={selectedPet?.petId || ''}
               onChange={e => {
-                const pet = member.pets.find(p => p.id === Number(e.target.value))
+                const pet = member.pets.find(p => p.petId === Number(e.target.value))
                 setSelectedPet(pet || null)
               }}
               className="form-control">
               {member.pets.map(pet => (
-                <option key={pet.id} value={pet.id}>
-                  {pet.name}
+                <option key={pet.petId} value={pet.petId}>
+                  {pet.petName}
                 </option>
               ))}
             </select>
@@ -310,7 +307,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
               <label className="text-gray-700">이름</label>
               <input
                 type="text"
-                value={selectedPet.name}
+                value={selectedPet.petName}
                 readOnly
                 className="form-control bg-gray-100"
               />
@@ -328,7 +325,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
               <label className="text-gray-700">생년월일</label>
               <input
                 type="text"
-                value={selectedPet.birthDate}
+                value={selectedPet.petBirth}
                 readOnly
                 className="form-control bg-gray-100"
               />
@@ -337,7 +334,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
               <label className="text-gray-700">성별</label>
               <input
                 type="text"
-                value={selectedPet.gender ? '수컷' : '암컷'}
+                value={selectedPet.petGender ? '수컷' : '암컷'}
                 readOnly
                 className="form-control bg-gray-100"
               />
@@ -364,7 +361,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
               <label className="text-gray-700">중성화 여부</label>
               <input
                 type="text"
-                value={selectedPet.isNeutered ? '예' : '아니오'}
+                value={selectedPet.neutering ? '예' : '아니오'}
                 readOnly
                 className="form-control bg-gray-100"
               />

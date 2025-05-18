@@ -47,7 +47,7 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
     // 로그인된 사용자 정보 가져오기
     const fetchMemberData = async () => {
       try {
-        const token = localStorage.getItem('token') // JWT 토큰 가져오기
+        const token = sessionStorage.getItem('token') // JWT 토큰 가져오기
         if (!token) {
           throw new Error('로그인이 필요합니다.')
         }

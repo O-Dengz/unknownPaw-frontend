@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import { useState, useCallback } from 'react'
 import {useNavigate} from 'react-router-dom'
 import PetOwnerForm from './PetOwnerForm'
 import PetSitterForm from './PetSitterForm'
@@ -61,7 +61,7 @@ export default function PostAd() {
     }
 
     try {
-      const token = localStorage.getItem('token')
+      const token = sessionStorage.getItem('token')
       if (!token) {
         throw new Error('로그인이 필요합니다.')
       }
@@ -106,9 +106,10 @@ export default function PostAd() {
     }
   }
 
-  const handleFormDataChange = (data: Partial<PostData>) => {
-    setPostData(prev => ({...prev, ...data}))
-  }
+  const handleFormDataChange = useCallback(
+    (data: Partial<PostData>) => setPostData(prev => ({ ...prev, ...data })),
+    []             
+  )
 
   return (
     <section className="dashboard section">
