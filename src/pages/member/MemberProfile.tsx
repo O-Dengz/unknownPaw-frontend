@@ -110,8 +110,7 @@ export default function MemberProfile() {
           {
             method: 'GET',
             headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
+              Authorization: `Bearer ${token}`
             }
           }
         )
@@ -119,7 +118,10 @@ export default function MemberProfile() {
         if (!response.ok) {
           const errorBody = await response
             .json()
-            .catch(() => ({message: 'Failed to parse error body'})) // JSON 파싱 실패도 고려
+            .catch(() => ({message: 'Failed to parse error body'})) // 403 또는 401 에러 시 사용자에게 로그인 필요 메시지 표시
+          if (response.status === 403 || response.status === 401) {
+            throw new Error('로그인이 필요하거나 세션이 만료되었습니다.')
+          }
           throw new Error(errorBody.message || `HTTP error! status: ${response.status}`)
         }
         const data: MemberResponseDTO = await response.json() // 타입 지정
@@ -159,6 +161,9 @@ export default function MemberProfile() {
           const errorBody = await response
             .json()
             .catch(() => ({message: 'Failed to parse error body'}))
+          if (response.status === 403 || response.status === 401) {
+            throw new Error('로그인이 필요합니다.')
+          }
           throw new Error(errorBody.message || `HTTP error! status: ${response.status}`)
         }
 
@@ -204,6 +209,9 @@ export default function MemberProfile() {
             errorBody,
             '<<<'
           )
+          if (response.status === 403 || response.status === 401) {
+            throw new Error('로그인이 필요합니다.')
+          }
           throw new Error(errorBody.message || `HTTP error! status: ${response.status}`)
         }
 
@@ -218,38 +226,35 @@ export default function MemberProfile() {
       }
     }
 
-    // mid 값이 유효할 때, 모든 API 실행
-    console.log('>>> Proceeding with fetch calls <<<')
-    fetchBasicInfo()
-    fetchPets()
-    fetchPosts()
-
     // ✨✨✨ 토큰이 존재할 때만 API 호출을 시도하도록 조건을 추가하는 것이 좋습니다.
     // 또는 토큰이 없을 때 로그인 페이지로 리다이렉트하는 로직을 여기에 추가합니다.
     if (mid && token) {
       // mid가 있고 토큰도 있을 때만 fetch 실행
-      console.log('Token exists. Proceeding with authenticated fetches.')
+      console.log('MID and token are valid. Proceeding with authenticated fetches.')
       fetchBasicInfo()
       fetchPets()
       fetchPosts()
-    } else if (mid && !token) {
-      // 토큰이 없는데 authenticated 엔드포인트에 접근하려 할 때
+    } else if (!mid) {
+      // mid가 없을 때 처리 (기존 로직 유지 또는 개선)
+      console.log('MID is missing. Cannot fetch profile data.')
+      setErrorBasic('회원 ID를 찾을 수 없습니다.')
+      setErrorPets('회원 ID를 찾 수 없습니다.')
+      setErrorPosts('회원 ID를 찾 수 없습니다.')
+      setLoadingBasic(false)
+      setLoadingPets(false)
+      setLoadingPosts(false)
+    } else if (!token) {
+      // 토큰이 없을 때 처리 (기존 로직 유지 또는 개선)
       console.warn(
         'MID exists, but token is missing. Cannot perform authenticated fetches.'
       )
-      setErrorBasic('로그인이 필요하거나 세션이 만료되었습니다.') // 사용자에게 표시할 메시지
+      setErrorBasic('로그인이 필요하거나 세션이 만료되었습니다.')
       setErrorPets('로그인이 필요합니다.')
       setErrorPosts('로그인이 필요합니다.')
       setLoadingBasic(false)
       setLoadingPets(false)
       setLoadingPosts(false)
-    } else {
-      // mid가 없을 때 (기존 로직)
-      console.log('MID is missing.')
-      setErrorBasic('회원 ID를 찾을 수 없습니다.')
-      setLoadingBasic(false)
-      setLoadingPets(false)
-      setLoadingPosts(false)
+      // 필요하다면 여기서 로그인 페이지로 리다이렉트
     }
 
     // 클린업 함수 (필요 시)

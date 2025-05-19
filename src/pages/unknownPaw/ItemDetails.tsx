@@ -2,8 +2,6 @@ import React, {useEffect, useState} from 'react'
 import {useParams, useNavigate, useLocation, Link} from 'react-router-dom'
 import axios from 'axios'
 import './Post.css'
-import {Div} from '../../components'
-import {useToken} from '../../hooks'
 
 interface MemberResponseDTO {
   mid: number
@@ -182,19 +180,15 @@ export function ItemDetails() {
                   {postDTO.member && (
                     <>
                       <div className="profile-meta-wrap">
-                        <div className="post-author-image">
+                        <div className="post-author11-image2">
                           <img
+                            className="post-author-image"
                             src={
                               postDTO.member.profileImagePath
                                 ? postDTO.member.profileImagePath
                                 : '/assets/images/items-grid/author-2.jpg'
                             }
                             alt="프로필"
-                            style={{
-                              width: 56,
-                              height: 56,
-                              borderRadius: '50%'
-                            }}
                           />
                         </div>
                         <div className="author-meta">
@@ -205,9 +199,9 @@ export function ItemDetails() {
                             {postDTO.defaultLocation || '부산시'}
                           </div>
                         </div>
-                      </div>
-                      <div className="author-rating">
-                        <span>🐾 {postDTO.member.pawRate.toFixed(1) || '1.4'}</span>
+                        <div className="author-rating">
+                          <span>🐾 {postDTO.member.pawRate.toFixed(1) || '1.4'}</span>
+                        </div>
                       </div>
                     </>
                   )}

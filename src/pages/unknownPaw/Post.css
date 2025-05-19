@@ -181,6 +181,7 @@
 .item-detail-list li {
   margin-bottom: 4px;
 }
+
 .item-notice {
   color: #444;
   font-size: 0.95rem;
@@ -188,6 +189,7 @@
   margin-top: 20px;
   line-height: 1.6;
 }
+
 .author-info-area {
   width: 100%;
   max-width: 900px;
@@ -347,14 +349,15 @@
 .author-info-area {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 30px;
 }
 
 .post-author-image {
-  min-width: 56px;
-  min-height: 56px;
+  max-width: 56px;
+  max-height: 56px;
   display: flex;
-  align-items: center;
+  border-radius: 50%;
+  /* align-items: center; */
 }
 
 .profile-image {
@@ -393,7 +396,21 @@
 .profile-meta-wrap {
   display: flex;
   align-items: center;
-  gap: 16px;
+  /* max-width: 900px;
+  width: 100%;
+  height: auto; */
+}
+
+.profile-meta-wrap > *:nth-child(1) {
+  margin-right: 30px;
+}
+
+.profile-meta-wrap > *:nth-child(2) {
+  margin-right: 100px;
+}
+
+.profile-meta-wrap > *:nth-child(3) {
+  margin-right: 0; /* 마지막 요소는 간격 없음 */
 }
 
 .likes {
