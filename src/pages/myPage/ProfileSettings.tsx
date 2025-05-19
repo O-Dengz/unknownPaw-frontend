@@ -141,6 +141,7 @@ export function ProfileSettings() {
                     <input
                       id="profileImage"
                       type="file"
+                      multiple
                       onChange={e => handleFileChange(e, 'profile')}
                       accept="image/*"
                     />
@@ -205,6 +206,7 @@ export function ProfileSettings() {
                     <input
                       id="petImage"
                       type="file"
+                      multiple
                       onChange={e => handleFileChange(e, 'pet')}
                       accept="image/*"
                     />

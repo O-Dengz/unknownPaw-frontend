@@ -1,4 +1,4 @@
-import {useLocation, Routes, Route} from 'react-router-dom'
+import {useLocation, Routes, Route, ScrollRestoration} from 'react-router-dom'
 
 import Navigation from './Navigation'
 import Footer from './Footer'
@@ -58,7 +58,7 @@ export default function Layout() {
         <Route path="/myfavourite" element={<MyFavourite />} />
 
         {/* 멤버 */}
-        <Route path="/member/profile" element={<MemberProfile />} />
+        <Route path="/profile/simple/:mid" element={<MemberProfile />} />
         <Route path="/posts/:postType/read/postId" element={<ItemDetails />} />
 
         {/* 추후 기능

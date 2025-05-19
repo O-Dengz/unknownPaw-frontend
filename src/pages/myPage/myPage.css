@@ -1040,7 +1040,7 @@
   border-radius: 4px;
   object-fit: cover;
 }
-.item-list-title  {
+.item-list-title {
   margin-top: 20px;
   margin-bottom: 20px;
   color: #00000;
@@ -1142,6 +1142,12 @@
   justify-content: center;
 }
 
+.pagination-mgt {
+  margin-top: 80px;
+  display: flex;
+  justify-content: center;
+}
+
 .pagination-list {
   display: flex;
   gap: 5px;
@@ -1150,7 +1156,7 @@
   list-style: none;
 }
 
-.pagination-list li a {
+.pagination-list li button {
   width: 32px;
   height: 32px;
   display: flex;
@@ -1162,16 +1168,19 @@
   background: #f8f9fa;
   text-decoration: none;
   transition: all 0.2s ease;
+  border: 1px solid #eee;
 }
 
-.pagination-list li.active a {
+.pagination-list li.active button {
   background: #32ade6;
   color: #fff;
+  border-color: #32ade6;
 }
 
-.pagination-list li a:hover {
+.pagination-list li button:hover {
   background: #32ade6;
   color: #fff;
+  border-color: #32ade6;
 }
 
 /* 반응형 */
