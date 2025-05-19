@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {useParams, useNavigate, useLocation, Link} from 'react-router-dom'
 import axios from 'axios'
 import './Post.css'
+import ScrollToTopButton from '../../components/ScrollToTopButton'
 
 interface MemberResponseDTO {
   mid: number
@@ -71,7 +72,7 @@ export function ItemDetails() {
       }
 
       // 직접 전체 url로 vite proxy를 사용 안함
-      fetch(`http://localhost:8080/unknownPaw/api/posts/${postType}/read/${postId}`, {
+      fetch(`/api/posts/${postType}/read/${postId}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${latestToken}`,
@@ -132,6 +133,7 @@ export function ItemDetails() {
 
   return (
     <>
+      <ScrollToTopButton />
       <div className="breadcrumbs">
         <div className="container">
           <div className="row align-items-center">

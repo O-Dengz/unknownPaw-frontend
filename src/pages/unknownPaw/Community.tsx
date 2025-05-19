@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState, useEffect } from 'react'
 import '../../../public/assets/css/LineIcons.2.0.css'
 import '../../../public/assets/css/animate.css'
 import '../../../public/assets/css/bootstrap.min.css'
@@ -6,11 +6,142 @@ import '../../../public/assets/css/glightbox.min.css'
 import '../../../public/assets/css/main.css'
 import '../../../public/assets/css/tiny-slider.css'
 
+// 기본 이미지 배열
+const defaultImages = [
+  '/src/assets/무료나눔.png',
+  '/src/assets/오댕이.jpg',
+  '/src/assets/피카츄 군침싹.jpg'
+]
+
+// 랜덤 이미지 선택 함수
+const getRandomDefaultImage = () => {
+  const randomIndex = Math.floor(Math.random() * defaultImages.length)
+  return defaultImages[randomIndex]
+}
+
+// 커스텀 스타일 추가
+const styles = {
+  metaDetails: {
+    marginTop: '10px',
+  },
+  metaDetailsTop: {
+    display: 'flex',
+    gap: '15px',
+    marginBottom: '2px',
+  },
+  metaDetailsMiddle: {
+    display: 'flex',
+    gap: '15px',
+    marginBottom: '5px',
+  },
+  metaDetailsBottom: {
+    display: 'flex',
+    gap: '15px',
+  },
+  metaItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
+  },
+  thumbnailImage: {
+    width: '100%',
+    height: '200px',
+    objectFit: 'cover' as const,
+    borderRadius: '8px',
+  },
+  imageContainer: {
+    position: 'relative' as const,
+    overflow: 'hidden',
+    borderRadius: '8px',
+    marginBottom: '15px',
+  },
+  popularFeedMeta: {
+    display: 'flex',
+    gap: '15px',
+    marginTop: '5px',
+    fontSize: '0.9em',
+    color: '#666',
+  },
+  popularFeedItem: {
+    marginBottom: '15px',
+    paddingBottom: '15px',
+    borderBottom: '1px solid #eee',
+  }
+}
+
+interface CommunityPost {
+  communityId: number
+  title: string
+  content: string
+  likes: number
+  commentCount: number
+  authorName: string
+  authorNickname: string
+  authorProfileImage: string
+  communityCategory: string
+  regDate: string
+  communityImages: string[]
+}
+
 export function Community() {
-  const [rangeValue, setRangeValue] = useState(10)
+  const [posts, setPosts] = useState<CommunityPost[]>([])
+  const [filteredPosts, setFilteredPosts] = useState<CommunityPost[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string>('ALL')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [searchType, setSearchType] = useState<'title' | 'author' | 'content'>('title')
+
+  useEffect(() => {
+    fetchPosts()
+  }, [])
+
+  useEffect(() => {
+    // 검색어가 변경될 때마다 검색 실행
+    handleSearch()
+  }, [searchTerm, searchType, posts])
+
+  const fetchPosts = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/unknownPaw/api/community')
+      const data = await response.json()
+      setPosts(data)
+      setFilteredPosts(data)
+      setLoading(false)
+    } catch (error) {
+      setError('게시물을 불러오는 데 실패했습니다.')
+      setLoading(false)
+    }
+  }
+
+  const handleSearch = () => {
+    if (!searchTerm.trim()) {
+      setFilteredPosts(posts)
+      return
+    }
+
+    const searchTermLower = searchTerm.toLowerCase()
+    const filtered = posts.filter(post => {
+      switch (searchType) {
+        case 'title':
+          return post.title.toLowerCase().includes(searchTermLower)
+        case 'author':
+          return post.authorName.toLowerCase().includes(searchTermLower) || 
+                 post.authorNickname.toLowerCase().includes(searchTermLower)
+        case 'content':
+          return post.content.toLowerCase().includes(searchTermLower)
+        default:
+          return true
+      }
+    })
+    setFilteredPosts(filtered)
+  }
+
+  if (loading) return <div>로딩중...</div>
+  if (error) return <div>{error}</div>
 
   return (
-    <section className="section latest-news-area blog-list">
+    <section className="section latest-news-area blog-list" style={{ paddingTop: '150px' }}>
       <div className="container">
         {/* 상단 제목 및 네비게이션 */}
         <div className="row">
@@ -31,110 +162,48 @@ export function Community() {
           {/* 게시물 영역 (왼쪽 8컬럼) */}
           <div className="col-lg-8 col-md-7 col-12">
             <div className="row">
-              {/* 게시물 아이템 */}
-              <div className="col-lg-4 col-md-6 col-12 mb-4">
-                <div className="single-news wow fadeInUp" data-wow-delay=".2s">
-                  <div className="image">
-                    <a href="/communitypost">
-                      <img
-                        className="thumb"
-                        src="\src\assets\123.png"
-                        alt="귀여운 강아지"
-                      />
-                    </a>
-                  </div>
-                  <div className="content-body">
-                    <h4 className="title">
-                      <a href="/communitypost">두발로 걸었어요!</a>
-                    </h4>
-                    <p>
-                      저희집 강아지가 두발로 걸었어요!! 쓸개골이 걱정되긴 하지만 너무
-                      신기하지 않나요!? 🐾
-                    </p>
-                    <div className="meta-details">
-                      <ul>
-                        <li>
-                          <a href="#">2025.05.02</a>
-                        </li>
-                        <li>
-                          <a href="#">일상이야기</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* 게시물 아이템 */}
-              <div className="col-lg-4 col-md-6 col-12 mb-4">
-                <div className="single-news wow fadeInUp" data-wow-delay=".2s">
-                  <div className="image">
-                    <a href="blog-single-sidebar.html">
-                      <img
-                        className="thumb"
-                        src="\src\assets\피카츄 군침싹.jpg"
-                        alt="귀여운 강아지"
-                      />
-                    </a>
-                  </div>
-                  <div className="content-body">
-                    <h4 className="title">
-                      <a href="blog-single-sidebar.html">
-                        저희집 공주가 사료를 안먹어요..
+              {filteredPosts.map((post) => (
+                <div key={post.communityId} className="col-lg-4 col-md-6 col-12 mb-4">
+                  <div className="single-news wow fadeInUp" data-wow-delay=".2s">
+                    <div className="image" style={styles.imageContainer}>
+                      <a href={`/communitypost/${post.communityId}`}>
+                        <img
+                          className="thumb"
+                          style={styles.thumbnailImage}
+                          src={post.communityImages[0] || getRandomDefaultImage()}
+                          alt={post.title}
+                        />
                       </a>
-                    </h4>
-                    <p>
-                      호불호 없는 강아지 사료 아시는 분 있나요.. 저희집 공주가 사료를
-                      안먹어요.. 뭐가 문제일까요..?
-                    </p>
-                    <div className="meta-details">
-                      <ul>
-                        <li>
-                          <a href="#">2025.05.02</a>
-                        </li>
-                        <li>
-                          <a href="#">일상이야기</a>
-                        </li>
-                      </ul>
+                    </div>
+                    <div className="content-body">
+                      <h4 className="title">
+                        <a href={`/communitypost/${post.communityId}`}>{post.title}</a>
+                      </h4>
+                      <p>{post.content}</p>
+                      <div className="meta-details" style={styles.metaDetails}>
+                        <ul className="meta-details-top" style={styles.metaDetailsTop}>
+                          <li>
+                            <a href="#">{new Date(post.regDate).toLocaleDateString()}</a>
+                          </li>
+                        </ul>
+                        <ul className="meta-details-middle" style={styles.metaDetailsMiddle}>
+                          <li>
+                            <a href="#">{post.communityCategory}</a>
+                          </li>
+                        </ul>
+                        <ul className="meta-details-bottom" style={styles.metaDetailsBottom}>
+                          <li style={styles.metaItem}>
+                            <a href="#"><i className="lni lni-heart"></i> {post.likes}</a>
+                          </li>
+                          <li style={styles.metaItem}>
+                            <a href="#"><i className="lni lni-comments"></i> {post.commentCount}</a>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              {/* 게시물 아이템 */}
-              <div className="col-lg-4 col-md-6 col-12 mb-4">
-                <div className="single-news wow fadeInUp" data-wow-delay=".2s">
-                  <div className="image">
-                    <a href="blog-single-sidebar.html">
-                      <img
-                        className="thumb"
-                        src="\src\assets\무료나눔.png"
-                        alt="귀여운 강아지"
-                      />
-                    </a>
-                  </div>
-                  <div className="content-body">
-                    <h4 className="title">
-                      <a href="blog-single-sidebar.html">무료나눔 마감임박!😀</a>
-                    </h4>
-                    <p>
-                      시즌 오프 강아지 패딩, 신발 나눔중입니다. 댓글에 강아지 자랑
-                      남겨주시면 채팅 드릴게요 :)
-                    </p>
-                    <div className="meta-details">
-                      <ul>
-                        <li>
-                          <a href="#">2025.05.01</a>
-                        </li>
-                        <li>
-                          <a href="#">일상이야기</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* 추가 게시물은 위 div 복사해서 붙여넣기! */}
+              ))}
             </div>
 
             {/* 페이지네이션 */}
@@ -171,12 +240,34 @@ export function Community() {
                 <h5 className="widget-title">
                   <span>게시글 검색</span>
                 </h5>
-                <form action="#">
-                  <input type="text" placeholder="검색어를 입력하세요." />
-                  <button type="submit">
-                    <i className="lni lni-search-alt"></i>
-                  </button>
-                </form>
+                <div className="search-form">
+                  <select 
+                    value={searchType}
+                    onChange={(e) => setSearchType(e.target.value as 'title' | 'author' | 'content')}
+                    style={{
+                      width: '100%',
+                      padding: '8px',
+                      borderRadius: '4px',
+                      border: '1px solid #ddd',
+                      marginBottom: '10px'
+                    }}
+                  >
+                    <option value="title">제목</option>
+                    <option value="author">작성자</option>
+                    <option value="content">내용</option>
+                  </select>
+                  <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
+                    <input 
+                      type="text" 
+                      placeholder="검색어를 입력하세요." 
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <button type="submit">
+                      <i className="lni lni-search-alt"></i>
+                    </button>
+                  </form>
+                </div>
               </div>
 
               {/* 인기글 위젯 */}
@@ -185,36 +276,35 @@ export function Community() {
                   <span>인기 게시물</span>
                 </h5>
                 <div className="popular-feed-loop">
-                  <div className="single-popular-feed">
-                    <div className="feed-desc">
-                      <h6 className="post-title">
-                        <a href="#">강아지가 고양이같아요..</a>
-                      </h6>
-                      <span className="time">
-                        <i className="lni lni-calendar"></i> 2025.04.24
-                      </span>
-                    </div>
-                  </div>
-                  <div className="single-popular-feed">
-                    <div className="feed-desc">
-                      <h6 className="post-title">
-                        <a href="#">#OOTD 오늘의 댕일리룩.jpg</a>
-                      </h6>
-                      <span className="time">
-                        <i className="lni lni-calendar"></i> 2025.04.22
-                      </span>
-                    </div>
-                  </div>
-                  <div className="single-popular-feed">
-                    <div className="feed-desc">
-                      <h6 className="post-title">
-                        <a href="#">님들 님들 님들 이거 봐보셈 급함!!!!</a>
-                      </h6>
-                      <span className="time">
-                        <i className="lni lni-calendar"></i> 2025.05.01
-                      </span>
-                    </div>
-                  </div>
+                  {posts
+                    .sort((a, b) => {
+                      // 좋아요와 댓글 수를 합산한 점수로 정렬
+                      const scoreA = a.likes + a.commentCount;
+                      const scoreB = b.likes + b.commentCount;
+                      return scoreB - scoreA;
+                    })
+                    .slice(0, 3)
+                    .map((post) => (
+                      <div key={post.communityId} className="single-popular-feed" style={styles.popularFeedItem}>
+                        <div className="feed-desc">
+                          <h6 className="post-title">
+                            <a href={`/communitypost/${post.communityId}`}>{post.title}</a>
+                          </h6>
+                          <div className="meta-info" style={styles.popularFeedMeta}>
+                            <span className="time">
+                              <i className="lni lni-calendar"></i>{' '}
+                              {new Date(post.regDate).toLocaleDateString()}
+                            </span>
+                            <span className="likes">
+                              <i className="lni lni-heart"></i> {post.likes}
+                            </span>
+                            <span className="comments">
+                              <i className="lni lni-comments"></i> {post.commentCount}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>

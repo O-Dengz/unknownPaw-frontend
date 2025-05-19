@@ -4,6 +4,7 @@ import './memberProfile.css'
 import {post} from 'axios'
 import PawRating from '../../components/PawRating'
 import {useToken} from '../../hooks'
+import ScrollToTopButton from '../../components/ScrollToTopButton'
 
 interface MemberResponseDTO {
   mid: number
@@ -289,6 +290,7 @@ export default function MemberProfile() {
   console.log('>>> Rendering Member Profile with data <<<')
   return (
     <div className="dashboard section">
+      <ScrollToTopButton />
       <div className="container">
         <div className="row">
           <div className="col-12">

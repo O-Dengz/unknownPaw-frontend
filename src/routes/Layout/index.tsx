@@ -1,7 +1,8 @@
-import {Routes, Route, ScrollRestoration} from 'react-router-dom'
+import {useLocation, Routes, Route, ScrollRestoration} from 'react-router-dom'
 
 import Navigation from './Navigation'
 import Footer from './Footer'
+import MainHeader from '../../components/MainHeader'
 
 /* ---------- 공통 페이지 ---------- */
 import {List} from '../../pages/unknownPaw/List'
@@ -24,11 +25,14 @@ import MyFavourite from '../../pages/myPage/MyFavourite'
 /* ---------- 멤버 ---------- */
 import MemberProfile from '../../pages/member/MemberProfile'
 import CommunityPost from '../../pages/unknownPaw/CommunityPost'
+import PostAd from '../../pages/postAd/PostAd'
 
 export default function Layout() {
+  const location = useLocation()
+  const isListPage = location.pathname === '/' || location.pathname === '/list'
   return (
     <>
-      <Navigation />
+      {isListPage ? <MainHeader /> : <Navigation />}
 
       <Routes>
         {/* 기본/공통 */}
@@ -38,7 +42,8 @@ export default function Layout() {
         <Route path="/petowner/list" element={<PetOwner />} />
         <Route path="/petsitter/list" element={<PetSitter />} />
         <Route path="/community" element={<Community />} />
-        <Route path="/communityPost" element={<CommunityPost />} />
+        <Route path="/communitypost/:postId" element={<CommunityPost />} />
+        <Route path="/postAd" element={<PostAd />} />
 
         {/* 상세 · 동적 라우트 */}
         <Route path="/posts/:postType/read/:postId" element={<ItemDetails />} />
