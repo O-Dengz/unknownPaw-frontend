@@ -118,14 +118,11 @@ export function PetSitter() {
   }, [pageRequest, navigate])
 
   useEffect(() => {
-    console.log('>>> pageRequest 변경:', pageRequest)
-
     const fetchPosts = () => {
       setLoading(true)
       setError(null)
 
       const latestToken = sessionStorage.getItem('token')
-      console.log('>>> 토큰 값:', latestToken)
 
       if (!latestToken) {
         console.error('No token found in sessionStorage. User is not logged in.')
@@ -150,8 +147,6 @@ export function PetSitter() {
         apiUrl += `&sort=${pageRequest.sortBy},${pageRequest.sortOrder || 'DESC'}`
       }
 
-      console.log('>>> API URL:', apiUrl) // 생성된 최종 URL 확인
-
       fetch(apiUrl, {
         method: 'GET',
         headers: {
@@ -160,19 +155,14 @@ export function PetSitter() {
         }
       })
         .then(async response => {
-          console.log('>>> Response received:', response)
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`)
           }
           return response.json()
         })
         .then((data: PageResultDTO) => {
-          console.log('>>> API 응답 데이터:', data)
           if (data.content) {
-            console.log('>>> 첫 번째 게시글 데이터:', data.content[0])
-            console.log('>>> 첫 번째 게시글의 멤버 정보:', data.content[0]?.member)
             setPosts(prevPosts => [...data.content] as Post[])
-            console.log('>>> Posts 상태 업데이트 (then):', posts)
           }
           setPageInfo(data)
         })
@@ -192,7 +182,6 @@ export function PetSitter() {
     setPageRequest(prev => ({...prev, page}))
   }
   const handleSortChange = (sortBy: string, sortOrder: 'ASC' | 'DESC') => {
-    console.log(`Sorting by: ${sortBy}, Order: ${sortOrder}`)
     // 정렬 기준 변경 시 첫 페이지로 이동
     setPageRequest(prev => ({
       ...prev,

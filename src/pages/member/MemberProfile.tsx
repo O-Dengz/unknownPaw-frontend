@@ -67,10 +67,7 @@ export default function MemberProfile() {
 
   // 컴포넌트가 마운트되거나 mid가 변경될 때 데이터를 가져옵니다.
   useEffect(() => {
-    console.log('>>> useEffect callback running. mid value:', mid, '<<<') // useEffect 시작 로그 유지
-
     if (!mid) {
-      console.log('>>> mid is NOT valid, skipping fetches <<<') // mid 유효성 로그 유지
       setErrorBasic('회원 ID를 찾을 수 없습니다.')
       setErrorPets('회원 ID를 찾을 수 없습니다.')
       setErrorPosts('회원 ID를 찾을 수 없습니다.')
@@ -80,10 +77,7 @@ export default function MemberProfile() {
       return // mid 없으면 API 호출 실행 안 함
     }
 
-    // ✨ 토큰 변수를 useEffect 스코프 안에 선언
-    const token = sessionStorage.getItem('token') // 또는 localStorage.getItem('jwtToken');
-    console.log('>>> Retrieved token:', token, '<<<') // 가져온 토큰 값 확인
-    // ✨✨✨ 토큰이 없을 때 API 호출을 건너뛰고 에러 상태를 설정하는 로직을 여기에 둡니다.
+    const token = sessionStorage.getItem('token')
     if (!token) {
       console.warn('>>> Token is missing. Skipping authenticated fetches. <<<')
       setErrorBasic('로그인이 필요하거나 세션이 만료되었습니다.')
@@ -92,20 +86,14 @@ export default function MemberProfile() {
       setLoadingBasic(false)
       setLoadingPets(false)
       setLoadingPosts(false)
-      // ✨ 토큰이 없을 때 로그인 페이지로 리다이렉트하는 로직을 여기에 추가할 수 있습니다.
-      // import { useNavigate } from 'react-router-dom';
-      // const navigate = useNavigate();
-      // navigate('/login');
       return // 토큰이 없으면 여기서 종료
     }
 
     const fetchBasicInfo = async () => {
-      console.log('>>> fetchBasicInfo function called <<<')
       setLoadingBasic(true) // 로딩 시작
       setErrorBasic(null) // 이전 에러 초기화
 
       try {
-        console.log('Fetching profile for mid:', mid) // ✨ 추가: 페칭 시작 로그
         const response = await fetch(
           `http://localhost:8080/unknownPaw/api/member/profile/simple/${mid}`,
           {
@@ -126,28 +114,20 @@ export default function MemberProfile() {
           throw new Error(errorBody.message || `HTTP error! status: ${response.status}`)
         }
         const data: MemberResponseDTO = await response.json() // 타입 지정
-        console.log('Received basic info:', data, '<<<')
         setMemberDTO(data)
       } catch (e: any) {
         console.error('Fetching basic info failed:', e)
         setErrorBasic(`회원 기본 정보를 불러오는데 실패했습니다: ${e.message}`)
       } finally {
         setLoadingBasic(false) // 로딩 종료
-        console.log('>>> Fetching basic info process finished <<<')
       }
     }
 
     // ✨✨✨ 펫 목록 호출 함수
     const fetchPets = async () => {
-      console.log('>>> fetchPets function called 펫 목록 <<<')
       setLoadingPets(true)
       setErrorPets(null)
       try {
-        console.log(
-          '>>> Attempting to fetch pets from URL:',
-          `http://localhost:8080/unknownPaw/api/member/${mid}/pets`,
-          '<<<'
-        )
         // ✨✨✨ 새로운 펫 목록 API 엔드포인트 호출
         const response = await fetch(
           `http://localhost:8080/unknownPaw/api/member/${mid}/pets`,
@@ -169,7 +149,7 @@ export default function MemberProfile() {
         }
 
         const data: PetDTO[] = await response.json() // ✨✨✨ List<PetDTO> 타입을 예상
-        console.log('>>> Received pets data:', data, '<<<')
+
         setPets(data) // ✨✨✨ 상태 업데이트
       } catch (e: any) {
         console.error('Fetching pets failed: ', e)
@@ -184,12 +164,6 @@ export default function MemberProfile() {
       setLoadingPosts(true)
       setErrorPosts(null)
       try {
-        console.log(
-          '>>> Attempting to fetch posts from URL:',
-          `http://localhost:8080/unknownPaw/api/member/${mid}/posts`,
-          '<<<'
-        )
-
         const response = await fetch(
           `http://localhost:8080/unknownPaw/api/member/${mid}/posts`,
           {
@@ -217,7 +191,7 @@ export default function MemberProfile() {
         }
 
         const data: PostDTO[] = await response.json() // ✨✨✨ List<PostDTO> 타입을 예상
-        console.log('>>> Received posts data:', data, '<<<')
+
         setPosts(data) // ✨✨✨ 상태 업데이트
       } catch (e: any) {
         console.error('Fetching posts failed:', e)
@@ -231,13 +205,13 @@ export default function MemberProfile() {
     // 또는 토큰이 없을 때 로그인 페이지로 리다이렉트하는 로직을 여기에 추가합니다.
     if (mid && token) {
       // mid가 있고 토큰도 있을 때만 fetch 실행
-      console.log('MID and token are valid. Proceeding with authenticated fetches.')
+
       fetchBasicInfo()
       fetchPets()
       fetchPosts()
     } else if (!mid) {
       // mid가 없을 때 처리 (기존 로직 유지 또는 개선)
-      console.log('MID is missing. Cannot fetch profile data.')
+
       setErrorBasic('회원 ID를 찾을 수 없습니다.')
       setErrorPets('회원 ID를 찾 수 없습니다.')
       setErrorPosts('회원 ID를 찾 수 없습니다.')
@@ -259,9 +233,7 @@ export default function MemberProfile() {
     }
 
     // 클린업 함수 (필요 시)
-    return () => {
-      console.log('>>> useEffect cleanup running for mid:', mid, '<<<')
-    }
+    return () => {}
   }, [mid])
 
   // --- 데이터 로딩 및 에러 상태 표시 ---
@@ -282,12 +254,10 @@ export default function MemberProfile() {
   }
 
   if (!memberDTO) {
-    console.log('>>> Rendering "Not Found" state (memberDTO is null) <<<')
     return <div className="profile-notfound">회원 기본 정보를 찾을 수 없습니다.</div>
   }
 
   // --- 데이터가 모두 로드되었을 때 화면 표시 ---
-  console.log('>>> Rendering Member Profile with data <<<')
   return (
     <div className="dashboard section">
       <ScrollToTopButton />

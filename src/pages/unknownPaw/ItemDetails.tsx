@@ -48,7 +48,6 @@ export function ItemDetails() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [liked, setLiked] = useState(false)
-  console.log('postId:', postId, 'postType:', postType) // URL 파라미터 확인 로그
 
   // 뒤로 가기 핸들러
   const handleBack = () => {
@@ -62,8 +61,7 @@ export function ItemDetails() {
       setError(null)
 
       const latestToken = sessionStorage.getItem('token')
-      console.log('토큰:', latestToken)
-      // 토큰이 없을 경우 fetch 시도 없이 에러 처리함
+
       if (!latestToken) {
         console.error('No token found in sessionStorage. User is not logged in.')
         setError('로그인이 필요합니다.') // 사용자에게 보여줄 메시지
@@ -100,8 +98,6 @@ export function ItemDetails() {
           }
         })
         .then(data => {
-          // 데이터 로드 성공
-          console.log('Fetched post data:', data)
           setPostDTO(data)
         })
         .catch(err => {
@@ -126,10 +122,6 @@ export function ItemDetails() {
   if (loading) return <div>로딩 중...</div>
   if (error) return <div>{error}</div>
   if (!postDTO) return <div>게시글을 찾을 수 없습니다.</div>
-
-  // 이미지 및 프로필 정보 상세 로그
-  console.log('postDTO.image:', postDTO.image)
-  console.log('postDTO.member:', postDTO.member)
 
   return (
     <>

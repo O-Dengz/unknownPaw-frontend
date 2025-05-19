@@ -62,10 +62,10 @@ const convertToPageResultDTO = (springPage: SpringPageResponse): PageResultDTO =
 
 export function Pagination({pageInfo, onPageChange}: PaginationProps) {
   // 디버깅을 위한 콘솔 로그 추가
-  console.log('Pagination 컴포넌트 렌더링:', {
-    pageInfo,
-    convertedPageInfo: pageInfo ? convertToPageResultDTO(pageInfo) : null
-  })
+  // console.log('Pagination 컴포넌트 렌더링:', {
+  //   pageInfo,
+  //   convertedPageInfo: pageInfo ? convertToPageResultDTO(pageInfo) : null
+  // })
 
   if (!pageInfo) {
     console.log('pageInfo가 null입니다.')

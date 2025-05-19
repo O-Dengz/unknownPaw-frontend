@@ -122,14 +122,11 @@ export function PetOwner() {
   }, [pageRequest, navigate])
 
   useEffect(() => {
-    console.log('>>> pageRequest 변경:', pageRequest) // 항상 0-based
-
     const fetchPosts = () => {
       setLoading(true)
       setError(null)
 
       const latestToken = sessionStorage.getItem('token')
-      console.log('>>> 토큰 값:', latestToken)
 
       if (!latestToken) {
         console.error('No token found in sessionStorage. User is not logged in.')
@@ -155,8 +152,6 @@ export function PetOwner() {
         apiUrl += `&sort=${pageRequest.sortBy},${pageRequest.sortOrder || 'DESC'}`
       }
 
-      console.log('>>> API URL:', apiUrl) // 생성된 최종 URL 확인
-
       fetch(apiUrl, {
         method: 'GET',
         headers: {
@@ -165,21 +160,15 @@ export function PetOwner() {
         }
       })
         .then(async response => {
-          console.log('>>> Response received:', response)
           if (!response.ok) {
             const errorBody = await response.text().catch(() => 'No response body')
-            console.error('>>> Error response body:', errorBody) // 에러 본문 로깅
             throw new Error(`HTTP error! status: ${response.status}`)
           }
           return response.json()
         })
         .then((data: SpringPageResponse) => {
-          console.log('>>> API 응답 데이터:', data)
-
           setPosts(data.content || []) // content가 null일 경우 빈 배열 설정
           setPageInfo(data)
-          console.log('>>> Posts 상태 업데이트 (then):', posts)
-          // }
         })
         .catch(err => {
           console.error('Error fetching posts:', err)
@@ -197,7 +186,6 @@ export function PetOwner() {
     setPageRequest(prev => ({...prev, page}))
   }
   const handleSortChange = (sortBy: string, sortOrder: 'ASC' | 'DESC') => {
-    console.log(`Sorting by: ${sortBy}, Order: ${sortOrder}`)
     // 정렬 기준 변경 시 첫 페이지로 이동
     setPageRequest(prev => ({
       ...prev,
