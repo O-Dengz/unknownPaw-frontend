@@ -65,17 +65,13 @@ export function PetOwner() {
   })
 
   useEffect(() => {
-    console.log('>>> pageRequest 변경:', pageRequest)
-    console.log('>>> Posts 상태 (useEffect 시작):', posts)
     const fetchPosts = () => {
       setLoading(true)
       setError(null)
 
       const latestToken = sessionStorage.getItem('token')
-      console.log('>>> 토큰 값:', latestToken)
 
       if (!latestToken) {
-        console.error('No token found in sessionStorage. User is not logged in.')
         setError('로그인이 필요합니다.')
         setLoading(false)
         navigate('/login')
@@ -89,8 +85,6 @@ export function PetOwner() {
         ...(pageRequest.keyword && {keyword: pageRequest.keyword})
       })
 
-      console.log('>>> 요청 파라미터:', queryParams.toString())
-
       fetch(`/api/posts/petowner/list?${queryParams.toString()}`, {
         method: 'GET',
         headers: {
@@ -100,11 +94,8 @@ export function PetOwner() {
         }
       })
         .then(async response => {
-          console.log('>>> Response received:', response)
           if (!response.ok) {
             const errorText = await response.text()
-            console.error('Error response:', errorText)
-
             if (response.status === 401 || response.status === 403) {
               sessionStorage.removeItem('token')
               navigate('/login')
@@ -115,12 +106,8 @@ export function PetOwner() {
           return response.json()
         })
         .then((data: PageResultDTO) => {
-          console.log('>>> API 응답 데이터:', data)
-          console.log('>>> API 응답 데이터 pageInfo.pageList:', data.pageList)
           if (data.content) {
-            console.log('>>> 첫 번째 게시글 데이터:', data.content[0])
             setPosts(prevPosts => [...data.content] as Post[])
-            console.log('>>> Posts 상태 업데이트 (then):', posts)
           }
           setPageInfo(data)
         })
@@ -182,7 +169,7 @@ export function PetOwner() {
                         </Link>
                         <div className="author">
                           <div className="author-image">
-                            <a href="javascript:void(0)">
+                            <a href="#" onClick={e => e.preventDefault()}>
                               <img
                                 src={
                                   post.member?.profileImagePath ||

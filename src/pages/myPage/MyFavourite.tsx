@@ -16,7 +16,9 @@ export default function MyFavourite() {
             <div className="col-lg-6 col-md-6 col-12">
               <ul className="breadcrumb-nav">
                 <li>
-                  <a href="/">홈</a>
+                  <a href="/">
+                    <img src="/assets/images/logo/logo.png" alt="UnknownPaw" style={{ height: '30px' }} />
+                  </a>
                 </li>
                 <li>찜한 게시글</li>
               </ul>
