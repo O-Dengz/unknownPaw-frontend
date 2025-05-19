@@ -9,8 +9,9 @@ import {List} from '../../pages/unknownPaw/List'
 import {About} from '../../pages/unknownPaw/About'
 import {PetOwner} from '../../pages/unknownPaw/PetOwner'
 import {PetSitter} from '../../pages/unknownPaw/PetSitter'
-import {Community} from '../../pages/unknownPaw/Community'
 import {ItemDetails} from '../../pages/unknownPaw/ItemDetails'
+import {Community} from '../../pages/community/Community'
+import CommunityPost from '../../pages/community/CommunityPost'
 
 /* ---------- 마이페이지 ---------- */
 import Dashboard from '../../pages/myPage/Dashboard'
@@ -24,7 +25,7 @@ import MyFavourite from '../../pages/myPage/MyFavourite'
 
 /* ---------- 멤버 ---------- */
 import MemberProfile from '../../pages/member/MemberProfile'
-import CommunityPost from '../../pages/unknownPaw/CommunityPost'
+
 import PostAd from '../../pages/postAd/PostAd'
 
 export default function Layout() {

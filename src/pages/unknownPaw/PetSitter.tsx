@@ -37,23 +37,28 @@ interface Post {
   member?: MemberResponseDTO
 }
 
-interface PageResultDTO {
-  dtoList: Post[]
-  totalPage: number
-  page: number
-  size: number
-  start: number
-  end: number
-  prev: boolean
-  next: boolean
-  pageList: number[]
-}
-
 interface PageRequestDTO {
   page: number
   size: number
   type?: string
   keyword?: string
+  sortBy?: string
+  sortOrder?: 'ASC' | 'DESC'
+}
+
+interface PageResultDTO {
+  content: Post[]
+  pageable: {
+    pageNumber: number
+    pageSize: number
+  }
+  totalElements: number
+  totalPages: number
+  last: boolean
+  first: boolean
+  empty: boolean
+  number: number
+  size: number
 }
 
 export function PetSitter() {
