@@ -43,7 +43,7 @@ export function DashboardSidebar({
             </a>
           </li>
           <li>
-            <a className={isActive('/my-items') ? 'active' : ''} href="/my-items">
+            <a className={isActive('/my-posts') ? 'active' : ''} href="/my-posts">
               <i className="lni lni-bolt-alt"></i> 내 게시글
             </a>
           </li>
@@ -58,20 +58,15 @@ export function DashboardSidebar({
             </a>
           </li>
           <li>
-            <a
-              className={isActive('/bookmarked-items') ? 'active' : ''}
-              href="/bookmarked-items">
-              <i className="lni lni-bookmark"></i> 북마크
-            </a>
-          </li>
-          <li>
             <a className={isActive('/chatting') ? 'active' : ''} href="/chatting">
               <i className="lni lni-envelope"></i> 채팅
             </a>
           </li>
           <li>
-            <a className={isActive('/invoice') ? 'active' : ''} href="/invoice">
-              <i className="lni lni-printer"></i> 거래 내역
+            <a
+              className={isActive('/reservation-details') ? 'active' : ''}
+              href="/reservation-details">
+              <i className="lni lni-printer"></i> 예약 내역
             </a>
           </li>
           <li>
