@@ -3980,6 +3980,12 @@ blockquote .shape {
   display: inline-block;
   margin-left: 5px;
   color: #fff;
+
+  max-width: 100%; /* 부모 요소 너비에 맞춰 최대 너비 제한 */
+  white-space: nowrap; /* 텍스트를 한 줄로 표시 */
+  overflow: hidden; /* 넘치는 내용을 숨김 */
+  text-overflow: ellipsis; /* 넘치는 부분을 말줄임표로 표시 */
+  vertical-align: middle; /* 필요한 경우 세로 정렬 조정 */
 }
 
 .items-grid .single-grid .image .author .author-image img {
