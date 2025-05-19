@@ -9,7 +9,6 @@ import {List} from '../../pages/unknownPaw/List'
 import {About} from '../../pages/unknownPaw/About'
 import {PetOwner} from '../../pages/unknownPaw/PetOwner'
 import {PetSitter} from '../../pages/unknownPaw/PetSitter'
-
 import {Community} from '../../pages/unknownPaw/Community'
 import {ItemDetails} from '../../pages/unknownPaw/ItemDetails'
 
@@ -18,8 +17,9 @@ import Dashboard from '../../pages/myPage/Dashboard'
 import {ProfileSettings} from '../../pages/myPage/ProfileSettings'
 import Chatting from '../../pages/myPage/Chatting'
 import Faq from '../../pages/myPage/Faq'
-import Invoice from '../../pages/myPage/Invoice'
-import MyItems from '../../pages/myPage/MyItems'
+import ReservationDetails from '../../pages/myPage/ReservationDetails'
+import ReservationDetailsView from '../../pages/myPage/ReservationDetailsView'
+import MyPosts from '../../pages/myPage/MyPosts'
 import MyFavourite from '../../pages/myPage/MyFavourite'
 
 /* ---------- 멤버 ---------- */
@@ -41,7 +41,7 @@ export default function Layout() {
         <Route path="/about" element={<About />} />
         <Route path="/petowner/list" element={<PetOwner />} />
         <Route path="/petsitter/list" element={<PetSitter />} />
-        <Route path="/community" element={<Community />} />
+        <Route path="/community/list" element={<Community />} />
         <Route path="/communitypost/:postId" element={<CommunityPost />} />
         <Route path="/postAd" element={<PostAd />} />
 
@@ -53,8 +53,9 @@ export default function Layout() {
         <Route path="/profile-settings" element={<ProfileSettings />} />
         <Route path="/chatting" element={<Chatting />} />
         <Route path="/faq" element={<Faq />} />
-        <Route path="/invoice" element={<Invoice />} />
-        <Route path="/my-items" element={<MyItems />} />
+        <Route path="/reservation-details" element={<ReservationDetails />} />
+        <Route path="/reservation-details/:rno" element={<ReservationDetailsView />} />
+        <Route path="/my-posts" element={<MyPosts />} />
         <Route path="/myfavourite" element={<MyFavourite />} />
 
         {/* 멤버 */}
