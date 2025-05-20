@@ -42,7 +42,7 @@ export default function Layout() {
         <Route path="/about" element={<About />} />
         <Route path="/petowner/list" element={<PetOwner />} />
         <Route path="/petsitter/list" element={<PetSitter />} />
-        <Route path="/community/list" element={<Community />} />
+        <Route path="/community/posts" element={<Community />} />
         <Route path="/communitypost/:postId" element={<CommunityPost />} />
         <Route path="/postAd" element={<PostAd />} />
 

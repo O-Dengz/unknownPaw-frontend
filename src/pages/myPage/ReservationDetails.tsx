@@ -62,7 +62,7 @@ export default function ReservationDetails() {
         if (!mid) throw new Error('로그인이 필요합니다.')
 
         const response = await axios.get<ReservationDetailsItem[]>(
-          `http://localhost:8080/unknownPaw/api/appointment/member/${mid}`
+          `/api/appointment/member/${mid}`
         )
         if (!response.data) throw new Error('데이터가 없습니다.')
 

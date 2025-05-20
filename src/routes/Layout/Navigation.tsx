@@ -76,7 +76,7 @@ export default function Navigation() {
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/community" onClick={() => setIsMenuOpen(false)}>
+                      <Link className="nav-link" to="/community/posts" onClick={() => setIsMenuOpen(false)}>
                         Community
                       </Link>
                     </li>

@@ -28,7 +28,7 @@ export default function ReservationDetailsView() {
         setLoading(true)
         setError('')
         const response = await axios.get(
-          `http://localhost:8080/unknownPaw/api/appointment/${rno}`
+          `/api/appointment/${rno}`
         )
         setDetail(response.data as ReservationDetails)
       } catch (err) {

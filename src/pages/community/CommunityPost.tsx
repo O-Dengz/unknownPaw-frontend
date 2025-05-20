@@ -1,4 +1,3 @@
-// src/pages/unknownPaw/CommunityPost.tsx
 import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import '../../../public/assets/css/LineIcons.2.0.css'
