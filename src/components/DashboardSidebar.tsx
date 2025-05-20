@@ -48,7 +48,7 @@ export function DashboardSidebar({
             </a>
           </li>
           <li>
-            <a className={isActive('/myfavourite') ? 'active' : ''} href="/myfavourite">
+            <a className={isActive('/myfavorites') ? 'active' : ''} href="/myfavorites">
               <i className="lni lni-heart"></i> 찜한 게시글
             </a>
           </li>

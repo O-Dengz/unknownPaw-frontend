@@ -20,12 +20,12 @@ import Faq from '../../pages/myPage/Faq'
 import ReservationDetails from '../../pages/myPage/ReservationDetails'
 import ReservationDetailsView from '../../pages/myPage/ReservationDetailsView'
 import MyPosts from '../../pages/myPage/MyPosts'
-import MyFavourite from '../../pages/myPage/MyFavourite'
 
 /* ---------- 멤버 ---------- */
 import MemberProfile from '../../pages/member/MemberProfile'
 import CommunityPost from '../../pages/unknownPaw/CommunityPost'
 import PostAd from '../../pages/postAd/PostAd'
+import MyFavorites from '../../pages/myPage/MyFavorites'
 
 export default function Layout() {
   const location = useLocation()
@@ -56,7 +56,7 @@ export default function Layout() {
         <Route path="/reservation-details" element={<ReservationDetails />} />
         <Route path="/reservation-details/:rno" element={<ReservationDetailsView />} />
         <Route path="/my-posts" element={<MyPosts />} />
-        <Route path="/myfavourite" element={<MyFavourite />} />
+        <Route path="/myfavorites" element={<MyFavorites />} />
 
         {/* 멤버 */}
         <Route path="/member/profile" element={<MemberProfile />} />

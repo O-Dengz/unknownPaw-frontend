@@ -1,73 +1,51 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
+import axios from 'axios'
 import {DashboardSidebar} from '../../components/DashboardSidebar'
 
-interface ActivityLog {
-  icon: string
-  title: string
-  time: string
-}
-
-interface RecentAd {
-  image: string
-  title: string
-  time: string
+interface DashboardSummary {
+  postCounts: {petOwner: number; petSitter: number; community: number}
+  likedCount: number
+  reservations: {walk: number; care: number; hotel: number}
+  latestPostTitle: string
+  latestPostDate: string
+  latestReservationDate: string
 }
 
 export default function Dashboard() {
-  const [activityLogs] = useState<ActivityLog[]>([
-    {
-      icon: 'lni lni-alarm',
-      title: '프로필 정보가 업데이트되었습니다',
-      time: '12분 전'
-    },
-    {
-      icon: 'lni lni-alarm',
-      title: '비밀번호가 변경되었습니다',
-      time: '59분 전'
-    },
-    {
-      icon: 'lni lni-alarm',
-      title: '펫호텔 예약이 확정되었습니다',
-      time: '5시간 전'
-    },
-    {
-      icon: 'lni lni-alarm',
-      title: '새로운 미용 예약이 등록되었습니다',
-      time: '8시간 전'
-    },
-    {
-      icon: 'lni lni-alarm',
-      title: '프리미엄 회원으로 업그레이드되었습니다',
-      time: '1일 전'
-    }
-  ])
+  const [summary, setSummary] = useState<DashboardSummary | null>(null)
 
-  const [recentAds] = useState<RecentAd[]>([
-    {
-      image: '/assets/images/items-grid/item1.jpg',
-      title: '강아지 미용 서비스',
-      time: '12분 전'
-    },
-    {
-      image: '/assets/images/items-grid/item2.jpg',
-      title: '고양이 호텔 예약',
-      time: '5일 전'
-    },
-    {
-      image: '/assets/images/items-grid/item3.jpg',
-      title: '강아지 훈련 서비스',
-      time: '1주일 전'
-    },
-    {
-      image: '/assets/images/items-grid/item4.jpg',
-      title: '고양이 미용 서비스',
-      time: '3주일 전'
-    }
-  ])
+  // 📌 날짜를 사람이 읽기 좋은 "몇분전" 형식으로 포맷
+  const getRelativeTime = (iso: string): string => {
+    const now = new Date()
+    const date = new Date(iso)
+    const diffMs = now.getTime() - date.getTime()
 
-  const handleRemove = (index: number) => {
-    // 삭제 로직 구현
+    const seconds = Math.floor(diffMs / 1000)
+    const minutes = Math.floor(diffMs / (1000 * 60))
+    const hours = Math.floor(diffMs / (1000 * 60 * 60))
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+    if (seconds < 60) return `${seconds}초 전`
+    if (minutes < 60) return `${minutes}분 전`
+    if (hours < 24) return `${hours}시간 전`
+    return `${days}일 전`
   }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const mid = Number(sessionStorage.getItem('mid')) || 1
+      try {
+        const res = await axios.get<DashboardSummary>(
+          `http://localhost:8080/unknownPaw/api/member/${mid}/summary`
+        )
+        setSummary(res.data)
+      } catch (error) {
+        console.error('📛 summary 데이터 불러오기 실패:', error)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   return (
     <div>
@@ -99,95 +77,116 @@ export default function Dashboard() {
             </div>
             <div className="col-lg-9 col-md-8 col-12">
               <div className="main-content">
-                <div className="dashboard-stats">
-                  <div className="row">
-                    <div className="col-lg-4 col-md-4 col-12">
-                      <div className="stat-card">
-                        <div className="stat-icon">
-                          <i className="lni lni-checkmark-circle"></i>
+                {summary ? (
+                  <>
+                    {/* 🔹 통계 카드 */}
+                    <div className="dashboard-stats">
+                      <div className="row">
+                        <div className="col-lg-4 col-md-4 col-12">
+                          <div className="stat-card">
+                            <div className="stat-icon">
+                              <i className="lni lni-write"></i>
+                            </div>
+                            <div className="stat-info">
+                              <h3>
+                                {summary.postCounts.petOwner +
+                                  summary.postCounts.petSitter +
+                                  summary.postCounts.community}
+                              </h3>
+                              <p>총 게시글 수</p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="stat-info">
-                          <h3>12</h3>
-                          <p>총 예약 건수</p>
+                        <div className="col-lg-4 col-md-4 col-12">
+                          <div className="stat-card featured">
+                            <div className="stat-icon">
+                              <i className="lni lni-heart"></i>
+                            </div>
+                            <div className="stat-info">
+                              <h3>{summary.likedCount}</h3>
+                              <p>좋아요 누른 글</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-12">
+                          <div className="stat-card expired">
+                            <div className="stat-icon">
+                              <i className="lni lni-calendar"></i>
+                            </div>
+                            <div className="stat-info">
+                              <h3>
+                                {summary.reservations.walk +
+                                  summary.reservations.care +
+                                  summary.reservations.hotel}
+                              </h3>
+                              <p>총 예약 수</p>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="col-lg-4 col-md-4 col-12">
-                      <div className="stat-card featured">
-                        <div className="stat-icon">
-                          <i className="lni lni-bolt"></i>
-                        </div>
-                        <div className="stat-info">
-                          <h3>3</h3>
-                          <p>진행중인 예약</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-4 col-md-4 col-12">
-                      <div className="stat-card expired">
-                        <div className="stat-icon">
-                          <i className="lni lni-emoji-sad"></i>
-                        </div>
-                        <div className="stat-info">
-                          <h3>2</h3>
-                          <p>만료된 예약</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
-                <div className="row">
-                  <div className="col-lg-6 col-md-12 col-12">
-                    <div className="activity-log dashboard-block">
-                      <h3 className="block-title">활동 내역</h3>
-                      <ul>
-                        {activityLogs.map((log, index) => (
-                          <li key={index} className="activity-item">
-                            <div className="activity-icon">
-                              <i className="lni lni-alarm"></i>
-                            </div>
-                            <div className="activity-content">
-                              <h4>{log.title}</h4>
-                              <p>{log.time}</p>
-                            </div>
-                            <button
-                              className="remove-btn"
-                              onClick={() => handleRemove(index)}>
-                              <i className="lni lni-close"></i>
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
+                    {/* 🔹 활동 내역 + 최근 예약 */}
+                    <div className="row">
+                      <div className="col-lg-6 col-md-12 col-12">
+                        <div className="activity-log dashboard-block">
+                          <h3 className="block-title">활동 내역</h3>
+                          <ul>
+                            <li className="activity-item">
+                              <div className="activity-icon">
+                                <i className="lni lni-pencil-alt"></i>
+                              </div>
+                              <div className="activity-content">
+                                <h4>최근 게시글</h4>
+                                <p>{summary.latestPostTitle}</p>
+                                <small className="text-muted">
+                                  {getRelativeTime(summary.latestPostDate)}
+                                </small>
+                              </div>
+                            </li>
+                            <li className="activity-item">
+                              <div className="activity-icon">
+                                <i className="lni lni-heart"></i>
+                              </div>
+                              <div className="activity-content">
+                                <h4>좋아요 누른 글</h4>
+                                <p>{summary.likedCount}건</p>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+
+                      <div className="col-lg-6 col-md-12 col-12">
+                        <div className="recent-ads dashboard-block">
+                          <h3 className="block-title">최근 예약</h3>
+                          <ul>
+                            <li className="ad-item">
+                              <div className="ad-image">
+                                <img
+                                  src="/assets/images/items-grid/item1.jpg"
+                                  alt="예약 이미지"
+                                />
+                              </div>
+                              <div className="ad-content">
+                                <h4>최근 예약 날짜</h4>
+                                <p>
+                                  {summary.latestReservationDate
+                                    ? new Date(
+                                        summary.latestReservationDate
+                                      ).toLocaleString('ko-KR')
+                                    : '없음'}
+                                </p>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-lg-6 col-md-12 col-12">
-                    <div className="recent-ads dashboard-block">
-                      <h3 className="block-title">최근 예약</h3>
-                      <ul>
-                        {recentAds.map((ad, index) => (
-                          <li key={index} className="ad-item">
-                            <div className="ad-image">
-                              <img
-                                src={'/assets/images/items-grid/img2.jpg'}
-                                alt={ad.title}
-                              />
-                            </div>
-                            <div className="ad-content">
-                              <h4>{ad.title}</h4>
-                              <p>{ad.time}</p>
-                            </div>
-                            <button
-                              className="remove-btn"
-                              onClick={() => handleRemove(index)}>
-                              <i className="lni lni-close"></i>
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
+                  </>
+                ) : (
+                  <div>📡 대시보드 로딩 중...</div>
+                )}
               </div>
             </div>
           </div>
