@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import './Post.css'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
 import KakaoMap from './components/KakaoMap'
+import ChatBox from '../../components/ChatBox'
 
 interface MemberResponseDTO {
   mid: number
@@ -229,6 +230,11 @@ export function ItemDetails() {
           <button className="report-button">🚨 신고하기</button>
         </div>
       </div>
+      <div className="chat-box-wrapper">
+  {/* 채팅 UI */}
+  <ChatBox />
+</div>
+    
     </>
   )
 }
