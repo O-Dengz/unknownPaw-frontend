@@ -1,17 +1,47 @@
-import {useLocation} from 'react-router-dom'
+import {useState, useEffect} from 'react' // useState 추가
+import {Link, useLocation} from 'react-router-dom'
+import {useUserStore} from '../store/userStore'
 
-interface DashboardSidebarProps {
-  userName?: string
-  userImage?: string
-  username?: string
+interface UserProfile {
+  mid: number
+  email: string
+  nickname: string
+  profileImagePath: string | null
+  pawRate: number
+  address: string | null
+  phoneNumber: string | null
+  emailVerified: boolean
+  regDate: string | null
+  role: string
+  status: string
 }
-
-export function DashboardSidebar({
-  userName = '홍길동',
-  userImage = '/assets/images/items-grid/author-2.jpg',
-  username = '@username'
-}: DashboardSidebarProps) {
+export function DashboardSidebar() {
   const location = useLocation()
+  const {user, setUser} = useUserStore()
+  // user 상태 가져오기
+  const currentUser = useUserStore(state => state.user)
+
+  // 회원 정보를 저장할 state 정의
+  // useEffect 훅을 컴포넌트 본문 안으로 이동
+  useEffect(() => {
+    if (!user) {
+      const memberData = sessionStorage.getItem('member')
+      const token = sessionStorage.getItem('token')
+      if (memberData) {
+        try {
+          const parsed: UserProfile = JSON.parse(memberData)
+          console.log('[DashboardSidebar] 로그인된 사용자 정보:', parsed)
+          setUser(parsed)
+        } catch (err) {
+          console.error('[DashboardSidebar] sessionStorage member 파싱 오류:', err)
+        }
+      } else {
+        console.log('[DashboardSidebar] 로그인 정보가 없습니다.')
+      }
+      if (token) {
+      }
+    }
+  }, [user, setUser]) // 빈 배열은 컴포넌트가 처음 마운트될 때 한 번만 실행되도록 합니다.
 
   const isActive = (path: string) => {
     return location.pathname === path
@@ -20,12 +50,17 @@ export function DashboardSidebar({
   return (
     <div className="dashboard-sidebar">
       <div className="user-image">
-        <img src={userImage} alt="user" />
+        {/* state 값 사용 */}
+        <img
+          src={user?.profileImagePath || '/assets/images/items-grid/author-2.jpg'}
+          alt="user"
+        />
         <div className="user-info">
-          <h3>{userName}</h3>
-          <a href="#" className="username">
-            {username}
-          </a>
+          {/* state 값 사용 */}
+          <h3>{user?.nickname || '홍길동'}</h3>
+          <Link to={`/member/profile/simple/${user?.mid}`} className="username">
+            {user?.email || '@username'}
+          </Link>
         </div>
       </div>
       <div className="dashboard-menu">

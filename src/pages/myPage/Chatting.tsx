@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {DashboardSidebar} from '../../components/DashboardSidebar'
 import './myPage.css'
 
@@ -16,6 +16,21 @@ export default function Chatting() {
     // 메시지 전송 로직 구현
     setMessage('')
   }
+
+  // ✅ 로그인 정보 콘솔 로그 확인
+  useEffect(() => {
+    const memberData = sessionStorage.getItem('member')
+    if (memberData) {
+      try {
+        const parsed = JSON.parse(memberData)
+        console.log('[Chatting 페이지] 로그인된 사용자 정보:', parsed)
+      } catch (err) {
+        console.error('[Chatting 페이지] sessionStorage member 파싱 오류:', err)
+      }
+    } else {
+      console.log('[Chatting 페이지] 로그인 정보가 없습니다.')
+    }
+  }, [])
 
   return (
     <div>
