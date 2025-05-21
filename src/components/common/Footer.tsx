@@ -21,13 +21,13 @@ const Footer: React.FC = () => {
               <h3>서비스</h3>
               <ul>
                 <li>
-                  <a href="javascript:void(0)">산책 서비스</a>
+                  <a href="#" onClick={e => e.preventDefault()}>산책 서비스</a>
                 </li>
                 <li>
-                  <a href="javascript:void(0)">펫시터 서비스</a>
+                  <a href="#" onClick={e => e.preventDefault()}>펫시터 서비스</a>
                 </li>
                 <li>
-                  <a href="javascript:void(0)">커뮤니티</a>
+                  <a href="#" onClick={e => e.preventDefault()}>커뮤니티</a>
                 </li>
               </ul>
             </div>
@@ -37,16 +37,16 @@ const Footer: React.FC = () => {
               <h3>고객센터</h3>
               <ul>
                 <li>
-                  <a href="javascript:void(0)">자주 묻는 질문</a>
+                  <a href="#" onClick={e => e.preventDefault()}>자주 묻는 질문</a>
                 </li>
                 <li>
-                  <a href="javascript:void(0)">1:1 문의</a>
+                  <a href="#" onClick={e => e.preventDefault()}>1:1 문의</a>
                 </li>
                 <li>
-                  <a href="javascript:void(0)">이용약관</a>
+                  <a href="#" onClick={e => e.preventDefault()}>이용약관</a>
                 </li>
                 <li>
-                  <a href="javascript:void(0)">개인정보처리방침</a>
+                  <a href="#" onClick={e => e.preventDefault()}>개인정보처리방침</a>
                 </li>
               </ul>
             </div>
@@ -76,17 +76,17 @@ const Footer: React.FC = () => {
                 <div className="right">
                   <ul>
                     <li>
-                      <a href="javascript:void(0)">
+                      <a href="#" onClick={e => e.preventDefault()}>
                         <i className="lni lni-facebook-filled"></i>
                       </a>
                     </li>
                     <li>
-                      <a href="javascript:void(0)">
+                      <a href="#" onClick={e => e.preventDefault()}>
                         <i className="lni lni-twitter-original"></i>
                       </a>
                     </li>
                     <li>
-                      <a href="javascript:void(0)">
+                      <a href="#" onClick={e => e.preventDefault()}>
                         <i className="lni lni-instagram"></i>
                       </a>
                     </li>

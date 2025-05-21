@@ -1,4 +1,4 @@
-import {useLocation, Routes, Route} from 'react-router-dom'
+import {useLocation, Routes, Route, ScrollRestoration} from 'react-router-dom'
 
 import Navigation from './Navigation'
 import Footer from './Footer'
@@ -9,8 +9,9 @@ import {List} from '../../pages/unknownPaw/List'
 import {About} from '../../pages/unknownPaw/About'
 import {PetOwner} from '../../pages/unknownPaw/PetOwner'
 import {PetSitter} from '../../pages/unknownPaw/PetSitter'
-import {Community} from '../../pages/unknownPaw/Community'
 import {ItemDetails} from '../../pages/unknownPaw/ItemDetails'
+import {Community} from '../../pages/community/Community'
+import CommunityPost from '../../pages/community/CommunityPost'
 
 /* ---------- 마이페이지 ---------- */
 import Dashboard from '../../pages/myPage/Dashboard'
@@ -23,7 +24,7 @@ import MyPosts from '../../pages/myPage/MyPosts'
 
 /* ---------- 멤버 ---------- */
 import MemberProfile from '../../pages/member/MemberProfile'
-import CommunityPost from '../../pages/unknownPaw/CommunityPost'
+
 import PostAd from '../../pages/postAd/PostAd'
 import MyFavorites from '../../pages/myPage/MyFavorites'
 
@@ -41,7 +42,7 @@ export default function Layout() {
         <Route path="/about" element={<About />} />
         <Route path="/petowner/list" element={<PetOwner />} />
         <Route path="/petsitter/list" element={<PetSitter />} />
-        <Route path="/community/list" element={<Community />} />
+        <Route path="/community/posts" element={<Community />} />
         <Route path="/communitypost/:postId" element={<CommunityPost />} />
         <Route path="/postAd" element={<PostAd />} />
 
@@ -59,7 +60,7 @@ export default function Layout() {
         <Route path="/myfavorites" element={<MyFavorites />} />
 
         {/* 멤버 */}
-        <Route path="/member/profile" element={<MemberProfile />} />
+        <Route path="/profile/simple/:mid" element={<MemberProfile />} />
         <Route path="/posts/:postType/read/postId" element={<ItemDetails />} />
 
         {/* 추후 기능

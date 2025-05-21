@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react'
-import {Link, useNavigate} from 'react-router-dom'
+import {Link, useNavigate, useLocation} from 'react-router-dom'
 import {Pagination} from '../../components/Pagination'
 import {formatTimeAgo} from '../../utils/timeAgo'
+import ScrollToTopButton from '../../components/ScrollToTopButton'
+import PawRating from '../../components/PawRating'
 
 interface MemberResponseDTO {
   mid: number
@@ -33,78 +35,126 @@ interface Post {
   member?: MemberResponseDTO
 }
 
-interface PageResultDTO {
-  dtoList: Post[]
-  totalPage: number
-  page: number
-  size: number
-  start: number
-  end: number
-  prev: boolean
-  next: boolean
-  pageList: number[]
-  content: Post[]
-}
-
 interface PageRequestDTO {
   page: number
   size: number
   type?: string
   keyword?: string
+  sortBy?: string
+  sortOrder?: 'ASC' | 'DESC'
+}
+
+interface SpringPageResponse {
+  content: Post[]
+  pageable: {
+    pageNumber: number
+    pageSize: number
+  }
+  totalElements: number
+  totalPages: number
+  last: boolean
+  first: boolean
+  empty: boolean
+  number: number
+  size: number
 }
 
 export function PetOwner() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [pageInfo, setPageInfo] = useState<PageResultDTO | null>(null)
-  const [pageRequest, setPageRequest] = useState<PageRequestDTO>({
-    page: 1,
-    size: 10
+  const [pageInfo, setPageInfo] = useState<SpringPageResponse | null>(null)
+  const [searchKeyword, setSearchKeyword] = useState('')
+  const [searchType, setSearchType] = useState<'title' | 'content' | 'author'>('title')
+  const [pageRequest, setPageRequest] = useState<PageRequestDTO>(() => {
+    const searchParams = new URLSearchParams(location.search)
+    const pageFromUrl = parseInt(searchParams.get('page') || '1')
+    const initialPage = pageFromUrl > 0 ? pageFromUrl - 1 : 0
+    const typeFromUrl = searchParams.get('type')
+    const keyword = searchParams.get('keyword') || undefined
+    const sortBy = searchParams.get('sortBy') || 'regDate'
+    const sortOrder =
+      searchParams.get('sortOrder')?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC'
+
+    return {
+      page: initialPage,
+      size: 12,
+      type: typeFromUrl || undefined,
+      keyword: keyword,
+      sortBy: sortBy,
+      sortOrder: sortOrder
+    }
   })
 
+  const handleClearSearch = () => {
+    setSearchKeyword('')
+    setPageRequest(prev => ({
+      ...prev,
+      page: 0,
+      keyword: undefined,
+      type: undefined
+    }))
+  }
+
   useEffect(() => {
-    console.log('>>> pageRequest 변경:', pageRequest)
-    console.log('>>> Posts 상태 (useEffect 시작):', posts)
+    const searchParams = new URLSearchParams(location.search)
+    const urlPage = pageRequest.page + 1
+    searchParams.set('page', urlPage.toString())
+    if (pageRequest.type) {
+      searchParams.set('type', pageRequest.type)
+    } else {
+      searchParams.delete('type')
+    }
+    if (pageRequest.keyword) {
+      searchParams.set('keyword', pageRequest.keyword)
+    } else {
+      searchParams.delete('keyword')
+    }
+    if (pageRequest.sortBy) {
+      searchParams.set('sortBy', pageRequest.sortBy)
+      searchParams.set('sortOrder', pageRequest.sortOrder || 'DESC')
+    }
+    navigate(`?${searchParams.toString()}`, {replace: true})
+  }, [pageRequest, navigate])
+
+  useEffect(() => {
     const fetchPosts = () => {
       setLoading(true)
       setError(null)
 
       const latestToken = sessionStorage.getItem('token')
-      console.log('>>> 토큰 값:', latestToken)
 
       if (!latestToken) {
-        console.error('No token found in sessionStorage. User is not logged in.')
         setError('로그인이 필요합니다.')
         setLoading(false)
-        navigate('/login')
         return
       }
 
-      const queryParams = new URLSearchParams({
-        page: pageRequest.page.toString(),
-        size: pageRequest.size.toString(),
-        ...(pageRequest.type && {type: pageRequest.type}),
-        ...(pageRequest.keyword && {keyword: pageRequest.keyword})
-      })
+      const pageParam = pageRequest.page
+      let apiUrl = `/api/posts/petowner/list?page=${pageParam}&size=${pageRequest.size}`;
 
-      console.log('>>> 요청 파라미터:', queryParams.toString())
+      if (pageRequest.type) {
+        apiUrl += `&type=${pageRequest.type}`
+      }
+      if (pageRequest.keyword) {
+        apiUrl += `&keyword=${pageRequest.keyword}`
+      }
+      if (pageRequest.sortBy) {
+        apiUrl += `&sort=${pageRequest.sortBy},${pageRequest.sortOrder || 'DESC'}`
+      }
 
-      fetch(`/api/posts/petowner/list?${queryParams.toString()}`, {
+      fetch(apiUrl, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${latestToken}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
+          'Content-Type': 'application/json'
         }
       })
         .then(async response => {
-          console.log('>>> Response received:', response)
           if (!response.ok) {
             const errorText = await response.text()
-            console.error('Error response:', errorText)
-
             if (response.status === 401 || response.status === 403) {
               sessionStorage.removeItem('token')
               navigate('/login')
@@ -114,19 +164,13 @@ export function PetOwner() {
           }
           return response.json()
         })
-        .then((data: PageResultDTO) => {
-          console.log('>>> API 응답 데이터:', data)
-          console.log('>>> API 응답 데이터 pageInfo.pageList:', data.pageList)
-          if (data.content) {
-            console.log('>>> 첫 번째 게시글 데이터:', data.content[0])
-            setPosts(prevPosts => [...data.content] as Post[])
-            console.log('>>> Posts 상태 업데이트 (then):', posts)
-          }
+        .then((data: SpringPageResponse) => {
+          setPosts(data.content || [])
           setPageInfo(data)
         })
         .catch(err => {
           console.error('Error fetching posts:', err)
-          setError(err.message || '게시글을 불러오는데 실패했습니다.')
+          setError('게시글을 불러오는데 실패했습니다.')
         })
         .finally(() => {
           setLoading(false)
@@ -140,12 +184,21 @@ export function PetOwner() {
     setPageRequest(prev => ({...prev, page}))
   }
 
+  const handleSortChange = (sortBy: string, sortOrder: 'ASC' | 'DESC') => {
+    setPageRequest(prev => ({
+      ...prev,
+      page: 0,
+      sortBy: sortBy,
+      sortOrder: sortOrder
+    }))
+  }
+
   if (loading) return <div>로딩 중...</div>
   if (error) return <div>{error}</div>
 
   return (
     <div className="pet-owner-page">
-      {/* */}
+      <ScrollToTopButton />
       <section className="items-grid section custom-padding">
         <div className="container">
           <div className="row">
@@ -157,6 +210,117 @@ export function PetOwner() {
                 <p className="wow fadeInUp" data-wow-delay=".6s">
                   서비스를 요청하고 제안을 받아보세요!
                 </p>
+              </div>
+            </div>
+          </div>
+          <div className="row mb-4">
+            <div className="col-18">
+              <div className="search-bar-wrap">
+                <select
+                  className="search-select"
+                  value={searchType}
+                  onChange={e =>
+                    setSearchType(e.target.value as 'title' | 'content' | 'author')
+                  }
+                  style={{marginRight: '10px'}}>
+                  <option value="title">제목</option>
+                  <option value="content">내용</option>
+                  <option value="author">작성자</option>
+                </select>
+                <input
+                  type="text"
+                  className="search-input"
+                  placeholder="검색어를 입력하세요"
+                  value={searchKeyword}
+                  onChange={e => setSearchKeyword(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      setPageRequest(prev => ({
+                        ...prev,
+                        page: 0,
+                        keyword: searchKeyword,
+                        type: searchType
+                      }))
+                    }
+                  }}
+                />
+                <button
+                  className="search-btn"
+                  onClick={() => {
+                    setPageRequest(prev => ({
+                      ...prev,
+                      page: 0,
+                      keyword: searchKeyword,
+                      type: searchType
+                    }))
+                  }}
+                  type="button">
+                  <i className="lni lni-search"></i>
+                </button>
+                {searchKeyword && (
+                  <button
+                    className={`clear-btn visible`}
+                    onClick={handleClearSearch}
+                    type="button">
+                    <i className="lni lni-close"></i>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="row mb-3 align-items-center">
+            <div className="col-md-6 col-12">
+              {pageInfo?.totalElements !== undefined && (
+                <p className="total-items-count" style={{fontSize: '1rem', margin: 0}}>
+                  총{' '}
+                  <strong style={{color: '#F1A852'}}>
+                    {pageInfo.totalElements.toLocaleString()}
+                  </strong>{' '}
+                  건
+                </p>
+              )}
+            </div>
+            <div className="col-md-6 col-12 text-md-end text-start">
+              <div className="sort-options">
+                <button
+                  className={`sort-button ${
+                    pageRequest.sortBy === 'regDate' && pageRequest.sortOrder === 'DESC'
+                      ? 'active'
+                      : ''
+                  }`}
+                  onClick={() => handleSortChange('regDate', 'DESC')}>
+                  최신순
+                </button>
+                <span className="separator">|</span>
+                <button
+                  className={`sort-button ${
+                    pageRequest.sortBy === 'likes' && pageRequest.sortOrder === 'DESC'
+                      ? 'active'
+                      : ''
+                  }`}
+                  onClick={() => handleSortChange('likes', 'DESC')}>
+                  좋아요순
+                </button>
+                <span className="separator">|</span>
+                <button
+                  className={`sort-button ${
+                    pageRequest.sortBy === 'hourlyRate' && pageRequest.sortOrder === 'ASC'
+                      ? 'active'
+                      : ''
+                  }`}
+                  onClick={() => handleSortChange('hourlyRate', 'ASC')}>
+                  낮은 가격순
+                </button>
+                <span className="separator">|</span>
+                <button
+                  className={`sort-button ${
+                    pageRequest.sortBy === 'hourlyRate' && pageRequest.sortOrder === 'DESC'
+                      ? 'active'
+                      : ''
+                  }`}
+                  onClick={() => handleSortChange('hourlyRate', 'DESC')}>
+                  높은 가격순
+                </button>
               </div>
             </div>
           </div>
@@ -174,24 +338,23 @@ export function PetOwner() {
                           className="thumbnail">
                           <img
                             src={
-                              post.image?.[0]?.imagePath ||
-                              '../assets/images/items-grid/img1.jpg'
+                              post.image?.[0]?.imagePath || '/assets/images/pet/dog-2.jpg'
                             }
                             alt="#"
                           />
                         </Link>
                         <div className="author">
                           <div className="author-image">
-                            <a href="javascript:void(0)">
+                            <Link to={`/profile/simple/${post.member?.mid}`}>
                               <img
                                 src={
                                   post.member?.profileImagePath ||
-                                  '../assets/images/items-grid/author-1.jpg'
+                                  '/assets/images/items-grid/author-1.jpg'
                                 }
                                 alt="#"
                               />
                               <span>{post.member?.nickname || 'Unknown'}</span>
-                            </a>
+                            </Link>
                           </div>
                           <p className="sale">예약하기</p>
                         </div>
@@ -204,28 +367,11 @@ export function PetOwner() {
                               {post.title}
                             </Link>
                           </h3>
-                          <p className="update-time">
-                            {/* 3일 전 */}
-                            {formatTimeAgo(post.regDate)}
-                          </p>
-                          <ul className="rating">
+                          <p className="update-time">{formatTimeAgo(post.regDate)}</p>
+                          <ul className="paw-rating">
                             <li>
-                              <i className="lni lni-star-filled"></i>
-                            </li>
-                            <li>
-                              <i className="lni lni-star-filled"></i>
-                            </li>
-                            <li>
-                              <i className="lni lni-star-filled"></i>
-                            </li>
-                            <li>
-                              <i className="lni lni-star-filled"></i>
-                            </li>
-                            <li>
-                              <i className="lni lni-star-filled"></i>
-                            </li>
-                            <li>
-                              <span>({post.likes || 0})</span>
+                              <PawRating rating={post.member?.pawRate || 0} />
+                              <p>({post.member?.pawRate?.toFixed(1)})</p>
                             </li>
                           </ul>
                           <ul className="info-list">
@@ -256,11 +402,18 @@ export function PetOwner() {
                   </div>
                 ))
               ) : !loading && posts?.length === 0 ? (
-                <div className="col-12">게시글이 없습니다.</div>
+                <div className="col-12 text-center p-4">
+                  <h5 className="mb-3">🔍 검색 결과가 없습니다.</h5>
+                  <p className="text-muted">다른 키워드로 다시 시도해보세요.</p>
+                  <button
+                    onClick={handleClearSearch}
+                    className="btn btn-outline-primary mt-3">
+                    ← 이전 페이지로 돌아가기
+                  </button>
+                </div>
               ) : null}
             </div>
           </div>
-
           {pageInfo && !loading && (
             <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
           )}

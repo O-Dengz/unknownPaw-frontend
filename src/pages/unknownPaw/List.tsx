@@ -149,7 +149,9 @@ export function List() {
       return (
         <div className="col-lg-4 col-md-6 col-12" key={post.postId}>
           <Link
-            to={`/post/${post.isPetSitterPost ? 'PETSITTER' : 'PETOWNER'}/${post.postId}`}
+            to={`/posts/${post.isPetSitterPost ? 'petsitter' : 'petowner'}/read/${
+              post.postId
+            }`}
             className="single-grid wow fadeInUp random-post-card"
             data-wow-delay=".2s">
             <div className="image">

@@ -111,7 +111,9 @@ export function ProfileSettings() {
             <div className="col-lg-6 col-md-6 col-12">
               <ul className="breadcrumb-nav">
                 <li>
-                  <a href="/">홈</a>
+                  <a href="/">
+                    <img src="/assets/images/logo/logo.png" alt="UnknownPaw" style={{ height: '30px' }} />
+                  </a>
                 </li>
                 <li>프로필 설정</li>
               </ul>
@@ -141,6 +143,7 @@ export function ProfileSettings() {
                     <input
                       id="profileImage"
                       type="file"
+                      multiple
                       onChange={e => handleFileChange(e, 'profile')}
                       accept="image/*"
                     />
@@ -205,6 +208,7 @@ export function ProfileSettings() {
                     <input
                       id="petImage"
                       type="file"
+                      multiple
                       onChange={e => handleFileChange(e, 'pet')}
                       accept="image/*"
                     />
