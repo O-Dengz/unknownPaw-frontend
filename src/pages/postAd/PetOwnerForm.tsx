@@ -29,7 +29,7 @@ interface PostFormData {
   serviceCategory: string
   hourlyRate: number
   defaultLocation: string
-  walkDate?: string
+  serviceDate?: string
   images?: File[]
   petId?: number
 }
@@ -50,7 +50,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
     serviceCategory: '',
     hourlyRate: 0,
     defaultLocation: '',
-    walkDate: ''
+    serviceDate: ''
   })
 
   useEffect(() => {
@@ -170,8 +170,8 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
           <label className="text-gray-700 font-medium">산책 희망 날짜</label>
           <input
             type="date"
-            value={postData.walkDate || ''}
-            onChange={e => setPostData({...postData, walkDate: e.target.value})}
+            value={postData.serviceDate || ''}
+            onChange={e => setPostData({...postData, serviceDate: e.target.value})}
             className="form-control"
           />
         </div>
@@ -194,10 +194,13 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
           <div className="border-2 border-dashed border-gray-300 p-6 rounded-lg text-center text-gray-500 relative">
             <div className="text-4xl mb-2">+</div>
             <p>파일 선택</p>
+
+            {/* 꼭 부모가 relative여야 inset-0이 동작합니다 */}
             <input
               type="file"
               onChange={handleImageUpload}
-              className="absolute inset-0 opacity-0 cursor-pointer"
+              style={{display: 'block'}}
+              className="absolute inset-0 opacity-0 cursor-pointer z-10"
               accept="image/*"
             />
             <p className="text-sm mt-2 text-gray-400">최대 업로드 용량: 10MB</p>

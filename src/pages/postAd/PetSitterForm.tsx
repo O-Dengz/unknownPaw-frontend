@@ -7,8 +7,8 @@ interface Member {
   introduction: string
   pawRate: number | undefined
   emailVerified: boolean
-  experience?: string
-  certificates?: string[]
+  petExperience?: string
+  license?: string[]
 }
 
 interface PostFormData {
@@ -17,10 +17,10 @@ interface PostFormData {
   serviceCategory: string
   hourlyRate: number
   defaultLocation: string
-  walkDate?: string
+  serviceDate?: string
   images?: File[]
-  experience?: string
-  certificates?: string[]
+  petExperience?: string
+  license?: string[]
 }
 
 interface PetSitterFormProps {
@@ -38,8 +38,8 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
     serviceCategory: '',
     hourlyRate: 0,
     defaultLocation: '',
-    experience: '',
-    certificates: []
+    petExperience: '',
+    license: []
   })
 
   // 🟡 1. 회원 정보 불러오기 (최초 1회)
@@ -64,8 +64,8 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
         // 경력, 자격증 프로필 정보 자동 세팅
         setPostData(prev => ({
           ...prev,
-          experience: data.experience || '',
-          certificates: data.certificates || []
+          petExperience: data.petExperience || '',
+          license: data.license || []
         }))
       } catch (error) {
         alert(
@@ -168,10 +168,13 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
           <div className="border-2 border-dashed border-gray-300 p-6 rounded-lg text-center text-gray-500 relative">
             <div className="text-4xl mb-2">+</div>
             <p>파일 선택</p>
+
+            {/* 꼭 부모가 relative여야 inset-0이 동작합니다 */}
             <input
               type="file"
               onChange={handleImageUpload}
-              className="absolute inset-0 opacity-0 cursor-pointer"
+              style={{display: 'block'}}
+              className="absolute inset-0 opacity-0 cursor-pointer z-10"
               accept="image/*"
             />
             <p className="text-sm mt-2 text-gray-400">최대 업로드 용량: 10MB</p>
@@ -244,8 +247,8 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
             <div className="form-group col-span-2">
               <label className="text-gray-700">반려동물 돌봄 경험</label>
               <textarea
-                value={postData.experience}
-                onChange={e => setPostData({...postData, experience: e.target.value})}
+                value={postData.petExperience}
+                onChange={e => setPostData({...postData, petExperience: e.target.value})}
                 placeholder="반려동물 돌봄 경험을 입력해주세요"
                 className="form-control"
                 rows={3}
@@ -254,13 +257,11 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
             <div className="form-group col-span-2">
               <label className="text-gray-700">자격증 및 교육 이수</label>
               <textarea
-                value={postData.certificates?.join('\n')}
+                value={postData.license?.join('\n')}
                 onChange={e =>
                   setPostData({
                     ...postData,
-                    certificates: e.target.value
-                      .split('\n')
-                      .filter(cert => cert.trim() !== '')
+                    license: e.target.value.split('\n').filter(cert => cert.trim() !== '')
                   })
                 }
                 placeholder="자격증 및 교육 이수 내역을 입력해주세요 (한 줄에 하나씩)"

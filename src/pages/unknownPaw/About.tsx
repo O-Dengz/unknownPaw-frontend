@@ -12,7 +12,7 @@ export function About() {
       <p className="browserupgrade">
         You are using an <strong>outdated</strong> browser. Please
         <a href="https://browsehappy.com/">upgrade your browser</a> to improve your
-        experience and security.
+        petExperience and security.
       </p>
       {/* <![endif]--> */}
 

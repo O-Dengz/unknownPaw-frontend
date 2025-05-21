@@ -1,5 +1,3 @@
-// src/pages/postAd/PostAd.tsx
-
 import {useState, useCallback} from 'react'
 import {useNavigate} from 'react-router-dom'
 import PetOwnerForm from './PetOwnerForm'
@@ -47,11 +45,11 @@ interface PostData {
   serviceCategory: string
   hourlyRate: number
   defaultLocation: string
-  walkDate?: string
+  serviceDate?: string
   images?: File[]
   petId?: number
-  experience?: string
-  certificates?: string[]
+  petExperience?: string
+  license?: string[]
 }
 
 export default function PostAd() {
@@ -81,11 +79,14 @@ export default function PostAd() {
     setStep(s => Math.max(s - 1, 1))
   }
 
-  const handleFormDataChange = useCallback(
-    (data: Partial<PostData>) => setPostData(prev => ({...prev, ...data})),
-    []
-  )
-
+  const handleFormDataChange = useCallback((data: Partial<PostData>) => {
+    const result: Partial<PostData> = {...data}
+    // serviceDate가 "YYYY-MM-DD"라면 자동 변환
+    if (result.serviceDate && /^\d{4}-\d{2}-\d{2}$/.test(result.serviceDate)) {
+      result.serviceDate = result.serviceDate + 'T00:00:00'
+    }
+    setPostData(prev => ({...prev, ...result}))
+  }, [])
   const ensureMemberId = async (token: string): Promise<string> => {
     const mid = sessionStorage.getItem('mid')
     if (mid) return mid
@@ -110,52 +111,53 @@ export default function PostAd() {
       if (!token) throw new Error('로그인이 필요합니다')
 
       const memberId = await ensureMemberId(token)
-
-      // ✅ 경로용 소문자 enum 문자열로 변환 (ex. PET_OWNER → pet_owner)
       const endpointType = toEndpointPath(category)
-      const baseUrl = `/api/posts/${endpointType}`
 
-      const dto = {
+      // 1️⃣ postDTO 데이터 구성
+      const postDTO = {
         title: postData.title,
         content: postData.content,
         serviceCategory: toServiceCategory(postData.serviceCategory),
-        hourlyRate: postData.hourlyRate,
+        hourlyRate: String(postData.hourlyRate),
         defaultLocation: postData.defaultLocation,
-        walkDate: postData.walkDate,
+        serviceDate: postData.serviceDate,
         petId: postData.petId,
-        postType: toPostTypeEnum(category) // 대문자 Enum (서버에 DTO로 넘김)
+        petExperience: postData.petExperience,
+        license: postData.license
       }
 
-      console.log('최종 전송 DTO:', JSON.stringify(dto, null, 2))
+      // 2️⃣ 이미지 유무에 따라 분기
+      let endpoint
+      let body: string | FormData
+      let headers: Record<string, string>
 
-      const postRes = await fetch(`${baseUrl}/register?memberId=${memberId}`, {
+      if (postData.images && postData.images.length > 0) {
+        // 이미지가 있다면 ➡️ registerWithImage + FormData
+        endpoint = `/api/posts/${endpointType}/registerWithImage?memberId=${memberId}`
+        body = new FormData()
+        body.append('post', JSON.stringify(postDTO)) // ⭐️ 백엔드에서 postJson으로 받음
+        postData.images.forEach(file => (body as FormData).append('file', file))
+        headers = {Authorization: `Bearer ${token}`} // Content-Type 지정 X!
+      } else {
+        // 이미지가 없다면 ➡️ register + JSON
+        endpoint = `/api/posts/${endpointType}/register?memberId=${memberId}`
+        body = JSON.stringify(postDTO)
+        headers = {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+
+      // 3️⃣ fetch 실행
+      const postRes = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(dto)
+        headers,
+        body
       })
+
       if (!postRes.ok) {
         const errorText = await postRes.text()
-        console.log('[전송되는 DTO]', dto)
-        console.error('[게시글 등록 실패]', errorText)
         throw new Error(errorText || '게시글 등록에 실패했습니다')
-      }
-      const {postId} = await postRes.json()
-
-      // ③ 이미지가 있으면 별도 업로드
-      if (postData.images?.length) {
-        const imgForm = new FormData()
-        postData.images.forEach(f => imgForm.append('file', f))
-        imgForm.append('targetId', String(postId))
-
-        const imgRes = await fetch(`/api/posts/image/upload/${category.toLowerCase()}`, {
-          method: 'POST',
-          headers: {Authorization: `Bearer ${token}`},
-          body: imgForm
-        })
-        if (!imgRes.ok) throw new Error('이미지 업로드에 실패했습니다')
       }
 
       alert('게시글이 성공적으로 등록되었습니다! 😄')
@@ -165,7 +167,6 @@ export default function PostAd() {
       alert(err instanceof Error ? err.message : '등록 중 오류가 발생했습니다')
     }
   }
-
   return (
     <section className="dashboard section">
       <div className="container">
