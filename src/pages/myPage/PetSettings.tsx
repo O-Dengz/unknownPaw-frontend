@@ -501,7 +501,7 @@ export function PetSettings() {
                       className="container"
                       style={{textAlign: 'center', padding: '20px'}}>
                       <p>등록된 펫 정보가 없습니다.</p>
-                      {/* 펫 등록 페이지로 이동하는 링크 추가 가능 */}
+                      {/* 펫 등록 페이지로 이동하는 링크 추가 가능 추후에 추가 */}
                       <div className="link-button">
                         <Link to="/register-pet">새 펫 등록하기</Link>
                       </div>
