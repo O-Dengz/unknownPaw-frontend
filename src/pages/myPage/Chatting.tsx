@@ -1,5 +1,7 @@
+
 import {useEffect, useState} from 'react'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
+import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
+
 import './myPage.css'
 
 export default function Chatting() {

@@ -149,7 +149,9 @@ export function Join() {
     petInfo?: PetFormType
   ) => {
     try {
+
       const response = await fetch('/api/member/register', {
+
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -583,5 +585,5 @@ export function Join() {
         </div>
       )}
     </div>
-  );  
+  )
 }

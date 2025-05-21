@@ -1,8 +1,10 @@
+
 import React, {useState, useEffect, ChangeEvent} from 'react'
+import './myPage.css'
+import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
 import {useNavigate, Link, NavLink} from 'react-router-dom'
 import Header from '../../components/common/Header' // Header 컴포넌트 import
 import Footer from '../../components/common/Footer' // Footer 컴포넌트 import
-import {DashboardSidebar} from '../../components/DashboardSidebar'
 import './myPage.css'
 import {useUserStore} from '../../store/userStore'
 
@@ -28,6 +30,9 @@ interface MemberResponseDTO {
   status: string
   // 다른 필드...
 }
+
+
+
 
 export function ProfileSettings() {
   // 통합 컴포넌트 이름

@@ -88,7 +88,7 @@ export function DashboardSidebar() {
             </a>
           </li>
           <li>
-            <a className={isActive('/post-item') ? 'active' : ''} href="/post-item">
+            <a className={isActive('/postad') ? 'active' : ''} href="/postad">
               <i className="lni lni-circle-plus"></i> 게시글 작성
             </a>
           </li>

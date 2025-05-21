@@ -49,24 +49,27 @@ export default function Navigation() {
                 <Link className="navbar-brand" to="/">
                   <img src="/assets/images/logo/모개로고.png" alt="Logo" />
                 </Link>
-                <button 
-                  className={`navbar-toggler mobile-menu-btn ${isMenuOpen ? 'active' : ''}`}
+                <button className={`navbar-toggler mobile-menu-btn ${
+                    isMenuOpen ? 'active' : '' }`}
                   type="button"
                   aria-label="Toggle navigation"
-                  onClick={toggleMenu}
-                >
+                  onClick={toggleMenu}>
                   <span className="toggler-icon"></span>
                   <span className="toggler-icon"></span>
                   <span className="toggler-icon"></span>
                 </button>
 
                 <div
-                  className={`collapse navbar-collapse sub-menu-bar ${isMenuOpen ? 'show' : ''}`}
-                  id="navbarSupportedContent"
-                >
+                  className={`collapse navbar-collapse sub-menu-bar ${ isMenuOpen ? 'show' : ''}`}
+                  id="navbarSupportedContent">
                   <ul className="navbar-nav ms-auto">
                     <li className="nav-item">
-                      <Link className="nav-link" to="/petowner/list" onClick={() => setIsMenuOpen(false)}>
+                      <Link className="nav-link" to="/" onClick={() => setIsMenuOpen(false)}>
+                        Home
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link className="nav-link" to="/petowner/list"onClick={() => setIsMenuOpen(false)}>
                         Pet Owner
                       </Link>
                     </li>
@@ -76,36 +79,34 @@ export default function Navigation() {
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/community/posts" onClick={() => setIsMenuOpen(false)}>
+                      <Link className="nav-link" to="/community" onClick={() => setIsMenuOpen(false)}>
                         Community
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/about" onClick={() => setIsMenuOpen(false)}>
-                        About Company
+                      <Link className="nav-link"to="/about" onClick={() => setIsMenuOpen(false)}>
+                        About
                       </Link>
                     </li>
                   </ul>
                 </div>
-
                 <div className="login-button">
                   <ul>
                     <li>
-                      <Link to="/login" style={{ backgroundColor: 'transparent' }}>
-                        <i className="lni lni-enter"></i> 로그인
+                      <Link to="/login">
+                        <i className="lni lni-enter"></i> Login
                       </Link>
                     </li>
                     <li>
-                      <Link to="/join" style={{ backgroundColor: 'transparent' }}>
-                        <i className="lni lni-user"></i> 회원가입
+                      <Link to="/join">
+                        <i className="lni lni-user"></i> Join
                       </Link>
                     </li>
                   </ul>
                 </div>
-
                 <div className="button header-button">
-                  <Link to="/postAd" className="btn" style={{ padding: '8px 16px', whiteSpace: 'nowrap', minWidth: '80px' }}>
-                    글쓰기
+                  <Link to="/postAd" className="btn">
+                    Post
                   </Link>
                 </div>
               </nav>

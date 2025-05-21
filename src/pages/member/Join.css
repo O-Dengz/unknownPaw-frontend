@@ -200,3 +200,155 @@
   max-width: 28rem;
   width: 100%;
 }
+
+.join-page {
+  min-height: calc(100vh - 160px);
+  padding: 120px 0 40px;
+  background-color: #f8f9fa;
+}
+
+.form-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100%;
+}
+
+.form-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 600px;
+  margin-top: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #34b7a7;
+  box-shadow: 0 0 0 3px rgba(52, 183, 167, 0.1);
+}
+
+.form-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.form-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.form-button-primary {
+  background-color: #34b7a7;
+  color: #fff;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+}
+
+.form-button-primary:hover {
+  background-color: #2da89a;
+}
+
+.form-link {
+  color: #34b7a7;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.form-link:hover {
+  text-decoration: underline;
+}
+
+.form-divider {
+  position: relative;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.form-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #e5e7eb;
+}
+
+.form-divider-text {
+  position: relative;
+  background-color: #fff;
+  padding: 0 10px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.form-social-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.form-social-button:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .join-page {
+    padding: 20px 0;
+  }
+
+  .form-card {
+    padding: 20px;
+  }
+}

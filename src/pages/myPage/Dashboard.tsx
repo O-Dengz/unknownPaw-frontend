@@ -1,5 +1,6 @@
 import {useState} from 'react'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
+import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
+import Header from '../../components/Layout/Header'
 
 interface ActivityLog {
   icon: string
@@ -70,15 +71,29 @@ export default function Dashboard() {
   }
 
   return (
-    <div>
-      <div className="breadcrumbs">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-6 col-md-6 col-12">
-              <div className="breadcrumbs-content">
-                <h1 className="page-title">대시보드</h1>
+    <>
+      <Header />
+      <main>
+        <div>
+          <div className="breadcrumbs">
+            <div className="container">
+              <div className="row align-items-center">
+                <div className="col-lg-6 col-md-6 col-12">
+                  <div className="breadcrumbs-content">
+                    <h1 className="page-title">대시보드</h1>
+                  </div>
+                </div>
+                <div className="col-lg-6 col-md-6 col-12">
+                  <ul className="breadcrumb-nav">
+                    <li>
+                      <a href="/">홈</a>
+                    </li>
+                    <li>대시보드</li>
+                  </ul>
+                </div>
               </div>
             </div>
+
             <div className="col-lg-6 col-md-6 col-12">
               <ul className="breadcrumb-nav">
                 <li>
@@ -89,112 +104,113 @@ export default function Dashboard() {
                 <li>대시보드</li>
               </ul>
             </div>
+
           </div>
-        </div>
-      </div>
 
-      <section className="dashboard section">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-3 col-md-4 col-12">
-              <DashboardSidebar />
-            </div>
-            <div className="col-lg-9 col-md-8 col-12">
-              <div className="main-content">
-                <div className="dashboard-stats">
-                  <div className="row">
-                    <div className="col-lg-4 col-md-4 col-12">
-                      <div className="stat-card">
-                        <div className="stat-icon">
-                          <i className="lni lni-checkmark-circle"></i>
-                        </div>
-                        <div className="stat-info">
-                          <h3>12</h3>
-                          <p>총 예약 건수</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-4 col-md-4 col-12">
-                      <div className="stat-card featured">
-                        <div className="stat-icon">
-                          <i className="lni lni-bolt"></i>
-                        </div>
-                        <div className="stat-info">
-                          <h3>3</h3>
-                          <p>진행중인 예약</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-4 col-md-4 col-12">
-                      <div className="stat-card expired">
-                        <div className="stat-icon">
-                          <i className="lni lni-emoji-sad"></i>
-                        </div>
-                        <div className="stat-info">
-                          <h3>2</h3>
-                          <p>만료된 예약</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+          <section className="dashboard section">
+            <div className="container">
+              <div className="row">
+                <div className="col-lg-3 col-md-4 col-12">
+                  <DashboardSidebar />
                 </div>
-
-                <div className="row">
-                  <div className="col-lg-6 col-md-12 col-12">
-                    <div className="activity-log dashboard-block">
-                      <h3 className="block-title">활동 내역</h3>
-                      <ul>
-                        {activityLogs.map((log, index) => (
-                          <li key={index} className="activity-item">
-                            <div className="activity-icon">
-                              <i className="lni lni-alarm"></i>
+                <div className="col-lg-9 col-md-8 col-12">
+                  <div className="main-content">
+                    <div className="dashboard-stats">
+                      <div className="row">
+                        <div className="col-lg-4 col-md-4 col-12">
+                          <div className="stat-card">
+                            <div className="stat-icon">
+                              <i className="lni lni-checkmark-circle"></i>
                             </div>
-                            <div className="activity-content">
-                              <h4>{log.title}</h4>
-                              <p>{log.time}</p>
+                            <div className="stat-info">
+                              <h3>12</h3>
+                              <p>총 예약 건수</p>
                             </div>
-                            <button
-                              className="remove-btn"
-                              onClick={() => handleRemove(index)}>
-                              <i className="lni lni-close"></i>
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-12">
+                          <div className="stat-card featured">
+                            <div className="stat-icon">
+                              <i className="lni lni-bolt"></i>
+                            </div>
+                            <div className="stat-info">
+                              <h3>3</h3>
+                              <p>진행중인 예약</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-12">
+                          <div className="stat-card expired">
+                            <div className="stat-icon">
+                              <i className="lni lni-emoji-sad"></i>
+                            </div>
+                            <div className="stat-info">
+                              <h3>2</h3>
+                              <p>만료된 예약</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-lg-6 col-md-12 col-12">
-                    <div className="recent-ads dashboard-block">
-                      <h3 className="block-title">최근 예약</h3>
-                      <ul>
-                        {recentAds.map((ad, index) => (
-                          <li key={index} className="ad-item">
-                            <div className="ad-image">
-                              <img
-                                src={'/assets/images/items-grid/img2.jpg'}
-                                alt={ad.title}
-                              />
-                            </div>
-                            <div className="ad-content">
-                              <h4>{ad.title}</h4>
-                              <p>{ad.time}</p>
-                            </div>
-                            <button
-                              className="remove-btn"
-                              onClick={() => handleRemove(index)}>
-                              <i className="lni lni-close"></i>
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
+
+                    <div className="row">
+                      <div className="col-lg-6 col-md-12 col-12">
+                        <div className="activity-log dashboard-block">
+                          <h3 className="block-title">활동 내역</h3>
+                          <ul>
+                            {activityLogs.map((log, index) => (
+                              <li key={index} className="activity-item">
+                                <div className="activity-icon">
+                                  <i className="lni lni-alarm"></i>
+                                </div>
+                                <div className="activity-content">
+                                  <h4>{log.title}</h4>
+                                  <p>{log.time}</p>
+                                </div>
+                                <button
+                                  className="remove-btn"
+                                  onClick={() => handleRemove(index)}>
+                                  <i className="lni lni-close"></i>
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                      <div className="col-lg-6 col-md-12 col-12">
+                        <div className="recent-ads dashboard-block">
+                          <h3 className="block-title">최근 예약</h3>
+                          <ul>
+                            {recentAds.map((ad, index) => (
+                              <li key={index} className="ad-item">
+                                <div className="ad-image">
+                                  <img
+                                    src={'/assets/images/items-grid/img2.jpg'}
+                                    alt={ad.title}
+                                  />
+                                </div>
+                                <div className="ad-content">
+                                  <h4>{ad.title}</h4>
+                                  <p>{ad.time}</p>
+                                </div>
+                                <button
+                                  className="remove-btn"
+                                  onClick={() => handleRemove(index)}>
+                                  <i className="lni lni-close"></i>
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </section>
         </div>
-      </section>
-    </div>
+      </main>
+    </>
   )
 }

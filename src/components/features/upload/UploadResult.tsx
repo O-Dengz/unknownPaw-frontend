@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react'
-import {useToken} from '../hooks' // 토큰을 가져오는 훅
+import {useToken} from '../../../hooks' // 토큰을 가져오는 훅
 
 interface FileData {
   fileName: string

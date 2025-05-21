@@ -1,8 +1,8 @@
 import {useLocation, Routes, Route, ScrollRestoration} from 'react-router-dom'
 
-import Navigation from './Navigation'
-import Footer from './Footer'
-import MainHeader from '../../components/MainHeader'
+import Header from './Header'
+
+import MainHeader from '../MainLayout/MainHeader'
 
 /* ---------- 공통 페이지 ---------- */
 import {List} from '../../pages/unknownPaw/List'
@@ -30,12 +30,14 @@ import MemberProfile from '../../pages/member/MemberProfile'
 import PostAd from '../../pages/postAd/PostAd'
 import {PetSettings} from '../../pages/myPage/PetSettings'
 
+import {Footer} from './Footer'
+
 export default function Layout() {
   const location = useLocation()
   const isListPage = location.pathname === '/' || location.pathname === '/list'
   return (
     <>
-      {isListPage ? <MainHeader /> : <Navigation />}
+      {isListPage ? <MainHeader /> : <Header />}
 
       <Routes>
         {/* 기본/공통 */}
