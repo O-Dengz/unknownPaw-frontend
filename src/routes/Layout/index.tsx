@@ -16,6 +16,7 @@ import {ItemDetails} from '../../pages/unknownPaw/ItemDetails'
 /* ---------- 마이페이지 ---------- */
 import Dashboard from '../../pages/myPage/Dashboard'
 import {ProfileSettings} from '../../pages/myPage/ProfileSettings'
+
 import Chatting from '../../pages/myPage/Chatting'
 import Faq from '../../pages/myPage/Faq'
 import Invoice from '../../pages/myPage/Invoice'
@@ -26,6 +27,7 @@ import MyFavourite from '../../pages/myPage/MyFavourite'
 import MemberProfile from '../../pages/member/MemberProfile'
 import CommunityPost from '../../pages/unknownPaw/CommunityPost'
 import PostAd from '../../pages/postAd/PostAd'
+import {PetSettings} from '../../pages/myPage/PetSettings'
 
 export default function Layout() {
   const location = useLocation()
@@ -56,6 +58,7 @@ export default function Layout() {
         <Route path="/invoice" element={<Invoice />} />
         <Route path="/my-items" element={<MyItems />} />
         <Route path="/myfavourite" element={<MyFavourite />} />
+        <Route path="/pet-settings" element={<PetSettings />} />
 
         {/* 멤버 */}
         <Route path="/profile/simple/:mid" element={<MemberProfile />} />
