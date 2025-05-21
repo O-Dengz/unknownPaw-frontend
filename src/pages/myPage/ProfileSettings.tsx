@@ -1,6 +1,6 @@
 import {useState} from 'react'
 import './myPage.css'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
+import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
 
 export function ProfileSettings() {
   const [formData, setFormData] = useState({

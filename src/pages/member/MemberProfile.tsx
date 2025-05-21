@@ -1,6 +1,8 @@
 import {useState} from 'react'
 import {useParams} from 'react-router-dom'
 import './memberProfile.css'
+import Header from '../../components/Layout/Header'
+import {Footer} from '../../components/Layout/Footer'
 
 export default function MemberProfile() {
   const {mid} = useParams()
@@ -52,167 +54,173 @@ export default function MemberProfile() {
   }
 
   return (
-    <div>
-      <div className="breadcrumbs">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-6 col-md-6 col-12">
-              <div className="breadcrumbs-content">
-                <h1 className="page-title">프로필 크기 맞추기 용</h1>
+    <>
+      <Header />
+      <main>
+        <div>
+          <div className="breadcrumbs">
+            <div className="container">
+              <div className="row align-items-center">
+                <div className="col-lg-6 col-md-6 col-12">
+                  <div className="breadcrumbs-content">
+                    <h1 className="page-title">프로필 크기 맞추기 용</h1>
+                  </div>
+                </div>
+                <div className="col-lg-6 col-md-6 col-12">
+                  <ul className="breadcrumb-nav">
+                    <li>
+                      <a href="/">멤버 프로필</a>
+                    </li>
+                    <li>00 멤버 프로필</li>
+                  </ul>
+                </div>
               </div>
             </div>
-            <div className="col-lg-6 col-md-6 col-12">
-              <ul className="breadcrumb-nav">
-                <li>
-                  <a href="/">멤버 프로필</a>
-                </li>
-                <li>00 멤버 프로필</li>
-              </ul>
-            </div>
           </div>
-        </div>
-      </div>
-      <div className="dashboard section">
-        <div className="container">
-          <div className="row">
-            <div className="col-12">
-              {/* 기본 프로필 섹션 */}
-              <div className="member-profile-container">
-                <div className="profile-header">
-                  <div className="profile-image">
-                    <img
-                      src="/assets/images/items-grid/author-3.jpg"
-                      alt={`${mockProfile.nickname}의 프로필`}
-                    />
-                  </div>
-                  <div className="profile-info">
-                    <div className="profile-top">
-                      <h2 className="nickname">{mockProfile.nickname}</h2>
-                      <div className="verification-badges">
-                        {mockProfile.verifications.map((badge, index) => (
-                          <span key={index} className="badge">
-                            {badge}
-                          </span>
-                        ))}
+          <div className="dashboard section">
+            <div className="container">
+              <div className="row">
+                <div className="col-12">
+                  {/* 기본 프로필 섹션 */}
+                  <div className="member-profile-container">
+                    <div className="profile-header">
+                      <div className="profile-image">
+                        <img
+                          src="/assets/images/items-grid/author-3.jpg"
+                          alt={`${mockProfile.nickname}의 프로필`}
+                        />
                       </div>
-                    </div>
-                    <p className="introduction">{mockProfile.introduction}</p>
-                    <div className="profile-details">
-                      <div className="detail-item">
-                        <i className="lni lni-map-marker"></i>
-                        <span>{mockProfile.location}</span>
-                      </div>
-                      <div className="detail-item">
-                        <i className="lni lni-calendar"></i>
-                        <span>{mockProfile.activeFrom}부터 활동 중</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 산책 통계 섹션 */}
-                <div className="walk-stats">
-                  <div className="stat-item">
-                    <div className="stat-value">{mockProfile.walkCount}</div>
-                    <div className="stat-label">산책 횟수</div>
-                  </div>
-                  <div className="stat-item">
-                    <div className="stat-value">{mockProfile.totalWalkTime}</div>
-                    <div className="stat-label">총 산책시간</div>
-                  </div>
-                  <div className="stat-item">
-                    <div className="stat-value">{mockProfile.pawRate}</div>
-                    <div className="stat-label">발자국 지수</div>
-                  </div>
-                  <div className="stat-item">
-                    <div className="stat-value">{mockProfile.matchedUsers}</div>
-                    <div className="stat-label">매칭된 산책메이트</div>
-                  </div>
-                </div>
-
-                {/* 반려견 정보 섹션 */}
-                <div className="pets-section">
-                  <h3 className="section-title">반려견 정보</h3>
-                  <div className="pets-list">
-                    {mockProfile.pets.map((pet, index) => (
-                      <div key={index} className="pet-card">
-                        <div className="pet-image">
-                          <img src="/assets/images/pet/dog-1.jpg" alt={pet.name} />
-                        </div>
-                        <div className="pet-info">
-                          <h4>{pet.name}</h4>
-                          <p>{pet.breed}</p>
-                          <p>{pet.age}살</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 후기 섹션 */}
-                <div className="reviews-section">
-                  <h3 className="section-title">받은 후기</h3>
-                  <div className="reviews-list">
-                    {mockProfile.reviews.map(review => (
-                      <div key={review.id} className="review-card">
-                        <div className="review-header">
-                          <span className="review-author">{review.author}</span>
-                          <div className="review-rating">
-                            {[...Array(review.rating)].map((_, i) => (
-                              <i key={i} className="lni lni-star-filled"></i>
+                      <div className="profile-info">
+                        <div className="profile-top">
+                          <h2 className="nickname">{mockProfile.nickname}</h2>
+                          <div className="verification-badges">
+                            {mockProfile.verifications.map((badge, index) => (
+                              <span key={index} className="badge">
+                                {badge}
+                              </span>
                             ))}
                           </div>
                         </div>
-                        <p className="review-content">{review.content}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 게시글 섹션 */}
-                <div className="posts-section">
-                  <h3 className="section-title">작성한 게시글</h3>
-                  <div className="posts-list">
-                    {mockProfile.posts.map(post => (
-                      <div key={post.id} className="post-card">
-                        <h4 className="post-title">강아지 훈련 도와드리겠습니다.</h4>
-                        <div className="post-stats">
-                          <span>
-                            <i className="lni lni-heart"></i> 10
-                          </span>
-                          <span>
-                            <i className="lni lni-comments"></i> 2
-                          </span>
+                        <p className="introduction">{mockProfile.introduction}</p>
+                        <div className="profile-details">
+                          <div className="detail-item">
+                            <i className="lni lni-map-marker"></i>
+                            <span>{mockProfile.location}</span>
+                          </div>
+                          <div className="detail-item">
+                            <i className="lni lni-calendar"></i>
+                            <span>{mockProfile.activeFrom}부터 활동 중</span>
+                          </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
 
-                {/* 게시글 섹션 */}
-                <div className="posts-section">
-                  <h3 className="section-title">커뮤니티 게시글</h3>
-                  <div className="posts-list">
-                    {mockProfile.posts.map(post => (
-                      <div key={post.id} className="post-card">
-                        <h4 className="post-title">{post.title}</h4>
-                        <div className="post-stats">
-                          <span>
-                            <i className="lni lni-heart"></i> {post.likes}
-                          </span>
-                          <span>
-                            <i className="lni lni-comments"></i> {post.comments}
-                          </span>
-                        </div>
+                    {/* 산책 통계 섹션 */}
+                    <div className="walk-stats">
+                      <div className="stat-item">
+                        <div className="stat-value">{mockProfile.walkCount}</div>
+                        <div className="stat-label">산책 횟수</div>
                       </div>
-                    ))}
+                      <div className="stat-item">
+                        <div className="stat-value">{mockProfile.totalWalkTime}</div>
+                        <div className="stat-label">총 산책시간</div>
+                      </div>
+                      <div className="stat-item">
+                        <div className="stat-value">{mockProfile.pawRate}</div>
+                        <div className="stat-label">발자국 지수</div>
+                      </div>
+                      <div className="stat-item">
+                        <div className="stat-value">{mockProfile.matchedUsers}</div>
+                        <div className="stat-label">매칭된 산책메이트</div>
+                      </div>
+                    </div>
+
+                    {/* 반려견 정보 섹션 */}
+                    <div className="pets-section">
+                      <h3 className="section-title">반려견 정보</h3>
+                      <div className="pets-list">
+                        {mockProfile.pets.map((pet, index) => (
+                          <div key={index} className="pet-card">
+                            <div className="pet-image">
+                              <img src="/assets/images/pet/dog-1.jpg" alt={pet.name} />
+                            </div>
+                            <div className="pet-info">
+                              <h4>{pet.name}</h4>
+                              <p>{pet.breed}</p>
+                              <p>{pet.age}살</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 후기 섹션 */}
+                    <div className="reviews-section">
+                      <h3 className="section-title">받은 후기</h3>
+                      <div className="reviews-list">
+                        {mockProfile.reviews.map(review => (
+                          <div key={review.id} className="review-card">
+                            <div className="review-header">
+                              <span className="review-author">{review.author}</span>
+                              <div className="review-rating">
+                                {[...Array(review.rating)].map((_, i) => (
+                                  <i key={i} className="lni lni-star-filled"></i>
+                                ))}
+                              </div>
+                            </div>
+                            <p className="review-content">{review.content}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 게시글 섹션 */}
+                    <div className="posts-section">
+                      <h3 className="section-title">작성한 게시글</h3>
+                      <div className="posts-list">
+                        {mockProfile.posts.map(post => (
+                          <div key={post.id} className="post-card">
+                            <h4 className="post-title">강아지 훈련 도와드리겠습니다.</h4>
+                            <div className="post-stats">
+                              <span>
+                                <i className="lni lni-heart"></i> 10
+                              </span>
+                              <span>
+                                <i className="lni lni-comments"></i> 2
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 게시글 섹션 */}
+                    <div className="posts-section">
+                      <h3 className="section-title">커뮤니티 게시글</h3>
+                      <div className="posts-list">
+                        {mockProfile.posts.map(post => (
+                          <div key={post.id} className="post-card">
+                            <h4 className="post-title">{post.title}</h4>
+                            <div className="post-stats">
+                              <span>
+                                <i className="lni lni-heart"></i> {post.likes}
+                              </span>
+                              <span>
+                                <i className="lni lni-comments"></i> {post.comments}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </main>
+      <Footer />
+    </>
   )
 }

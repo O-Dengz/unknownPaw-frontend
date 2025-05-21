@@ -40,7 +40,7 @@ export function Community() {
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch('http://localhost:8080/unknownPaw/api/community')
+      const response = await fetch('http://localhost:8080/api/community/posts')
       const data = await response.json()
       setPosts(data)
       setFilteredPosts(data)
@@ -63,8 +63,10 @@ export function Community() {
         case 'title':
           return post.title.toLowerCase().includes(searchTermLower)
         case 'author':
-          return post.authorName.toLowerCase().includes(searchTermLower) || 
-                 post.authorNickname.toLowerCase().includes(searchTermLower)
+          return (
+            post.authorName.toLowerCase().includes(searchTermLower) ||
+            post.authorNickname.toLowerCase().includes(searchTermLower)
+          )
         case 'content':
           return post.content.toLowerCase().includes(searchTermLower)
         default:
@@ -128,7 +130,7 @@ export function Community() {
         <div className="row">
           <div className="col-lg-8 col-md-7 col-12">
             <div className="row">
-              {filteredPosts.map((post) => (
+              {filteredPosts.map(post => (
                 <div key={post.communityId} className="col-lg-4 col-md-6 col-12 mb-4">
                   <div className="single-news wow fadeInUp" data-wow-delay=".2s">
                     <div className="image">
@@ -146,7 +148,9 @@ export function Community() {
                       </h4>
                       <p className="text-sm">{post.content}</p>
                       <div className="meta-details mt-2">
-                        <ul className="meta-details-top" style={{ display: 'flex', gap: '15px', marginBottom: '5px' }}>
+                        <ul
+                          className="meta-details-top"
+                          style={{display: 'flex', gap: '15px', marginBottom: '5px'}}>
                           <li>
                             <a href="#">{new Date(post.regDate).toLocaleDateString()}</a>
                           </li>
@@ -154,12 +158,18 @@ export function Community() {
                             <a href="#">{post.communityCategory}</a>
                           </li>
                         </ul>
-                        <ul className="meta-details-bottom" style={{ display: 'flex', gap: '15px' }}>
+                        <ul
+                          className="meta-details-bottom"
+                          style={{display: 'flex', gap: '15px'}}>
                           <li>
-                            <a href="#"><i className="lni lni-heart"></i> {post.likes}</a>
+                            <a href="#">
+                              <i className="lni lni-heart"></i> {post.likes}
+                            </a>
                           </li>
                           <li>
-                            <a href="#"><i className="lni lni-comments"></i> {post.commentCount}</a>
+                            <a href="#">
+                              <i className="lni lni-comments"></i> {post.commentCount}
+                            </a>
                           </li>
                         </ul>
                       </div>
@@ -205,27 +215,32 @@ export function Community() {
                   <span>게시글 검색</span>
                 </h5>
                 <div className="search-form">
-                  <select 
+                  <select
                     value={searchType}
-                    onChange={(e) => setSearchType(e.target.value as 'title' | 'author' | 'content')}
+                    onChange={e =>
+                      setSearchType(e.target.value as 'title' | 'author' | 'content')
+                    }
                     style={{
                       width: '100%',
                       padding: '8px',
                       borderRadius: '4px',
                       border: '1px solid #ddd',
                       marginBottom: '10px'
-                    }}
-                  >
+                    }}>
                     <option value="title">제목</option>
                     <option value="author">작성자</option>
                     <option value="content">내용</option>
                   </select>
-                  <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
-                    <input 
-                      type="text" 
-                      placeholder="검색어를 입력하세요." 
+                  <form
+                    onSubmit={e => {
+                      e.preventDefault()
+                      handleSearch()
+                    }}>
+                    <input
+                      type="text"
+                      placeholder="검색어를 입력하세요."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={e => setSearchTerm(e.target.value)}
                     />
                     <button type="submit">
                       <i className="lni lni-search-alt"></i>
@@ -241,18 +256,27 @@ export function Community() {
                 <div className="popular-feed-loop">
                   {posts
                     .sort((a, b) => {
-                      const scoreA = a.likes + a.commentCount;
-                      const scoreB = b.likes + b.commentCount;
-                      return scoreB - scoreA;
+                      const scoreA = a.likes + a.commentCount
+                      const scoreB = b.likes + b.commentCount
+                      return scoreB - scoreA
                     })
                     .slice(0, 3)
-                    .map((post) => (
+                    .map(post => (
                       <div key={post.communityId} className="single-popular-feed">
                         <div className="feed-desc">
                           <h6 className="post-title">
-                            <a href={`/communitypost/${post.communityId}`}>{post.title}</a>
+                            <a href={`/communitypost/${post.communityId}`}>
+                              {post.title}
+                            </a>
                           </h6>
-                          <div className="meta-info" style={{ display: 'flex', gap: '15px', fontSize: '0.9em', color: '#666' }}>
+                          <div
+                            className="meta-info"
+                            style={{
+                              display: 'flex',
+                              gap: '15px',
+                              fontSize: '0.9em',
+                              color: '#666'
+                            }}>
                             <span className="time">
                               <i className="lni lni-calendar"></i>{' '}
                               {new Date(post.regDate).toLocaleDateString()}

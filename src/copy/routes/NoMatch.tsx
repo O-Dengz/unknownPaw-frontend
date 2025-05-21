@@ -1,6 +1,6 @@
 import {useCallback} from 'react'
-import {Button} from '../theme/daisyui'
 import {useNavigate} from 'react-router-dom'
+import {Button} from '../../theme/daisyui'
 
 export default function NoMatch() {
   const navigate = useNavigate()

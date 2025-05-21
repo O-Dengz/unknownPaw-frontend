@@ -1,7 +1,8 @@
 import React, {useState} from 'react'
 import {Link} from 'react-router-dom'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
+import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
 import './myPage.css'
+import Header from '../../components/Layout/Header'
 
 interface Item {
   id: number
@@ -66,129 +67,137 @@ export default function MyItems() {
   const completed = items.filter(item => item.status === '완료').length
 
   return (
-    <div>
-      <div className="breadcrumbs">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-6 col-md-6 col-12">
-              <div className="breadcrumbs-content">
-                <h1 className="page-title">내 게시글</h1>
+    <>
+      <Header />
+      <main>
+        <div>
+          <div className="breadcrumbs">
+            <div className="container">
+              <div className="row align-items-center">
+                <div className="col-lg-6 col-md-6 col-12">
+                  <div className="breadcrumbs-content">
+                    <h1 className="page-title">내 게시글</h1>
+                  </div>
+                </div>
+                <div className="col-lg-6 col-md-6 col-12">
+                  <ul className="breadcrumb-nav">
+                    <li>
+                      <Link to="/">Home</Link>
+                    </li>
+                    <li>내 게시글</li>
+                  </ul>
+                </div>
               </div>
             </div>
-            <div className="col-lg-6 col-md-6 col-12">
-              <ul className="breadcrumb-nav">
-                <li>
-                  <Link to="/">Home</Link>
-                </li>
-                <li>내 게시글</li>
-              </ul>
-            </div>
           </div>
-        </div>
-      </div>
 
-      <section className="dashboard section">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-3 col-md-4 col-12">
-              <DashboardSidebar />
-            </div>
-            <div className="col-lg-9 col-md-8 col-12">
-              <div className="main-content">
-                <div className="dashboard-block mt-0">
-                  <div className="service-list">
-                    <div className="service-header">
-                      <div className="row">
-                        <div className="col-12">
-                          <div className="header-info">
-                            <span>전체 {total}</span>
-                            <span>진행중 {inProgress}</span>
-                            <span>예약중 {reserved}</span>
-                            <span>완료 {completed}</span>
+          <section className="dashboard section">
+            <div className="container">
+              <div className="row">
+                <div className="col-lg-3 col-md-4 col-12">
+                  <DashboardSidebar />
+                </div>
+                <div className="col-lg-9 col-md-8 col-12">
+                  <div className="main-content">
+                    <div className="dashboard-block mt-0">
+                      <div className="service-list">
+                        <div className="service-header">
+                          <div className="row">
+                            <div className="col-12">
+                              <div className="header-info">
+                                <span>전체 {total}</span>
+                                <span>진행중 {inProgress}</span>
+                                <span>예약중 {reserved}</span>
+                                <span>완료 {completed}</span>
+                              </div>
+                            </div>
                           </div>
+                        </div>
+
+                        <div className="service-items">
+                          {items.map(item => (
+                            <div key={item.id} className="service-item">
+                              <div className="row">
+                                <div className="col-lg-4 col-md-4 col-12">
+                                  <div className="service-title">
+                                    <img src={item.image} alt={item.title} />
+                                    <div className="title-info">
+                                      <h3>{item.title}</h3>
+                                      <p className="price">{item.price}</p>
+                                      <p className="location">{item.location}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="col-lg-2 col-md-2 col-12">
+                                  <div className="service-category">
+                                    <span>{item.category}</span>
+                                  </div>
+                                </div>
+                                <div className="col-lg-4 col-md-4 col-12">
+                                  <div className="service-status">
+                                    <div className="status-bar">
+                                      <div
+                                        className={`status-progress ${item.status}`}></div>
+                                    </div>
+                                    <span className="status-text">{item.status}</span>
+                                  </div>
+                                </div>
+                                <div className="col-lg-2 col-md-2 col-12">
+                                  <div className="service-actions">
+                                    <Link
+                                      to="#"
+                                      onClick={() => alert('수정 기능은 준비 중입니다.')}
+                                      className="action-btn edit">
+                                      <i className="lni lni-pencil"></i>
+                                    </Link>
+                                    <Link
+                                      to={`/post/${item.id}`}
+                                      className="action-btn view">
+                                      <i className="lni lni-eye"></i>
+                                    </Link>
+                                    <Link
+                                      to="#"
+                                      onClick={() => handleDelete(item.id)}
+                                      className="action-btn delete">
+                                      <i className="lni lni-trash"></i>
+                                    </Link>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="pagination">
+                          <ul className="pagination-list">
+                            <li>
+                              <Link to="#">1</Link>
+                            </li>
+                            <li className="active">
+                              <Link to="#">2</Link>
+                            </li>
+                            <li>
+                              <Link to="#">3</Link>
+                            </li>
+                            <li>
+                              <Link to="#">4</Link>
+                            </li>
+                            <li>
+                              <Link to="#">
+                                <i className="lni lni-chevron-right"></i>
+                              </Link>
+                            </li>
+                          </ul>
                         </div>
                       </div>
-                    </div>
-
-                    <div className="service-items">
-                      {items.map(item => (
-                        <div key={item.id} className="service-item">
-                          <div className="row">
-                            <div className="col-lg-4 col-md-4 col-12">
-                              <div className="service-title">
-                                <img src={item.image} alt={item.title} />
-                                <div className="title-info">
-                                  <h3>{item.title}</h3>
-                                  <p className="price">{item.price}</p>
-                                  <p className="location">{item.location}</p>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-2 col-md-2 col-12">
-                              <div className="service-category">
-                                <span>{item.category}</span>
-                              </div>
-                            </div>
-                            <div className="col-lg-4 col-md-4 col-12">
-                              <div className="service-status">
-                                <div className="status-bar">
-                                  <div className={`status-progress ${item.status}`}></div>
-                                </div>
-                                <span className="status-text">{item.status}</span>
-                              </div>
-                            </div>
-                            <div className="col-lg-2 col-md-2 col-12">
-                              <div className="service-actions">
-                                <Link
-                                  to="#"
-                                  onClick={() => alert('수정 기능은 준비 중입니다.')}
-                                  className="action-btn edit">
-                                  <i className="lni lni-pencil"></i>
-                                </Link>
-                                <Link to={`/post/${item.id}`} className="action-btn view">
-                                  <i className="lni lni-eye"></i>
-                                </Link>
-                                <Link
-                                  to="#"
-                                  onClick={() => handleDelete(item.id)}
-                                  className="action-btn delete">
-                                  <i className="lni lni-trash"></i>
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="pagination">
-                      <ul className="pagination-list">
-                        <li>
-                          <Link to="#">1</Link>
-                        </li>
-                        <li className="active">
-                          <Link to="#">2</Link>
-                        </li>
-                        <li>
-                          <Link to="#">3</Link>
-                        </li>
-                        <li>
-                          <Link to="#">4</Link>
-                        </li>
-                        <li>
-                          <Link to="#">
-                            <i className="lni lni-chevron-right"></i>
-                          </Link>
-                        </li>
-                      </ul>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </section>
         </div>
-      </section>
-    </div>
+      </main>
+    </>
   )
 }
