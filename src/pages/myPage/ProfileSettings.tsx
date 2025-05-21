@@ -388,6 +388,17 @@ export function ProfileSettings() {
                 </ul>
               </div>
             </div>
+            <div className="col-lg-6 col-md-6 col-12">
+              <ul className="breadcrumb-nav">
+                <li>
+                  <a href="/">
+                    <img src="/assets/images/logo/logo.png" alt="UnknownPaw" style={{ height: '30px' }} />
+                  </a>
+                </li>
+                <li>프로필 설정</li>
+              </ul>
+
+            </div>
           </div>
         </div>
         {/* <div className="settings-container container"> */}{' '}

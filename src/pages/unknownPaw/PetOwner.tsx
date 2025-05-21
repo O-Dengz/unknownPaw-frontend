@@ -35,6 +35,15 @@ interface Post {
   member?: MemberResponseDTO
 }
 
+interface PageRequestDTO {
+  page: number
+  size: number
+  type?: string
+  keyword?: string
+  sortBy?: string
+  sortOrder?: 'ASC' | 'DESC'
+}
+
 interface SpringPageResponse {
   content: Post[]
   pageable: {
@@ -50,13 +59,6 @@ interface SpringPageResponse {
   size: number
 }
 
-interface PageRequestDTO {
-  page: number
-  size: number
-  type?: string
-  keyword?: string
-}
-
 export function PetOwner() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -64,15 +66,12 @@ export function PetOwner() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [pageInfo, setPageInfo] = useState<SpringPageResponse | null>(null)
-
   const [searchKeyword, setSearchKeyword] = useState('')
   const [searchType, setSearchType] = useState<'title' | 'content' | 'author'>('title')
-
   const [pageRequest, setPageRequest] = useState<PageRequestDTO>(() => {
-    // URL에서 페이지 정보 가져오기
     const searchParams = new URLSearchParams(location.search)
     const pageFromUrl = parseInt(searchParams.get('page') || '1')
-    const initialPage = pageFromUrl > 0 ? pageFromUrl - 1 : 0 // URL이 1 미만일 경우 0으로 처리
+    const initialPage = pageFromUrl > 0 ? pageFromUrl - 1 : 0
     const typeFromUrl = searchParams.get('type')
     const keyword = searchParams.get('keyword') || undefined
     const sortBy = searchParams.get('sortBy') || 'regDate'
@@ -88,6 +87,7 @@ export function PetOwner() {
       sortOrder: sortOrder
     }
   })
+
   const handleClearSearch = () => {
     setSearchKeyword('')
     setPageRequest(prev => ({
@@ -114,10 +114,8 @@ export function PetOwner() {
     }
     if (pageRequest.sortBy) {
       searchParams.set('sortBy', pageRequest.sortBy)
-      // sortOrder는 sortBy와 함께 항상 추가
       searchParams.set('sortOrder', pageRequest.sortOrder || 'DESC')
     }
-
     navigate(`?${searchParams.toString()}`, {replace: true})
   }, [pageRequest, navigate])
 
@@ -129,15 +127,13 @@ export function PetOwner() {
       const latestToken = sessionStorage.getItem('token')
 
       if (!latestToken) {
-        console.error('No token found in sessionStorage. User is not logged in.')
         setError('로그인이 필요합니다.')
         setLoading(false)
         return
       }
 
-      // page가 1일 때는 0으로 변환
       const pageParam = pageRequest.page
-      let apiUrl = `http://localhost:8080/unknownPaw/api/posts/petowner/list?page=${pageParam}&size=${pageRequest.size}`
+      let apiUrl = `/api/posts/petowner/list?page=${pageParam}&size=${pageRequest.size}`;
 
       if (pageRequest.type) {
         apiUrl += `&type=${pageRequest.type}`
@@ -145,10 +141,7 @@ export function PetOwner() {
       if (pageRequest.keyword) {
         apiUrl += `&keyword=${pageRequest.keyword}`
       }
-
-      // 정렬 파라미터 추가
       if (pageRequest.sortBy) {
-        // 'sort=필드명,정렬방식' 형식으로 파라미터 이름을 'sort'로 변경
         apiUrl += `&sort=${pageRequest.sortBy},${pageRequest.sortOrder || 'DESC'}`
       }
 
@@ -161,13 +154,18 @@ export function PetOwner() {
       })
         .then(async response => {
           if (!response.ok) {
-            const errorBody = await response.text().catch(() => 'No response body')
-            throw new Error(`HTTP error! status: ${response.status}`)
+            const errorText = await response.text()
+            if (response.status === 401 || response.status === 403) {
+              sessionStorage.removeItem('token')
+              navigate('/login')
+              throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.')
+            }
+            throw new Error(`서버 오류: ${errorText || response.status}`)
           }
           return response.json()
         })
         .then((data: SpringPageResponse) => {
-          setPosts(data.content || []) // content가 null일 경우 빈 배열 설정
+          setPosts(data.content || [])
           setPageInfo(data)
         })
         .catch(err => {
@@ -180,13 +178,13 @@ export function PetOwner() {
     }
 
     fetchPosts()
-  }, [pageRequest]) // pageRequest 상태가 변경될 때마다 이 effect 실행
+  }, [pageRequest, navigate])
 
   const handlePageChange = (page: number) => {
     setPageRequest(prev => ({...prev, page}))
   }
+
   const handleSortChange = (sortBy: string, sortOrder: 'ASC' | 'DESC') => {
-    // 정렬 기준 변경 시 첫 페이지로 이동
     setPageRequest(prev => ({
       ...prev,
       page: 0,
@@ -201,8 +199,6 @@ export function PetOwner() {
   return (
     <div className="pet-owner-page">
       <ScrollToTopButton />
-
-      {/* */}
       <section className="items-grid section custom-padding">
         <div className="container">
           <div className="row">
@@ -217,8 +213,6 @@ export function PetOwner() {
               </div>
             </div>
           </div>
-          {/* 검색, 필터, 정렬 기능 추가 시 넣을 곳 */}
-          {/* 검색 바 */}
           <div className="row mb-4">
             <div className="col-18">
               <div className="search-bar-wrap">
@@ -274,12 +268,8 @@ export function PetOwner() {
               </div>
             </div>
           </div>
-          {/* 아이템 개수 / 정렬 조건  */}
           <div className="row mb-3 align-items-center">
-            {' '}
-            {/* 세로 중앙 정렬 */}
             <div className="col-md-6 col-12">
-              {/* 총 게시물 개수 표시 */}
               {pageInfo?.totalElements !== undefined && (
                 <p className="total-items-count" style={{fontSize: '1rem', margin: 0}}>
                   총{' '}
@@ -291,11 +281,7 @@ export function PetOwner() {
               )}
             </div>
             <div className="col-md-6 col-12 text-md-end text-start">
-              {' '}
-              {/* 모바일에서는 왼쪽, md 이상에서 오른쪽 정렬 */}
-              {/* 정렬 버튼 영역 */}
               <div className="sort-options">
-                {/* 최신순 */}
                 <button
                   className={`sort-button ${
                     pageRequest.sortBy === 'regDate' && pageRequest.sortOrder === 'DESC'
@@ -306,7 +292,6 @@ export function PetOwner() {
                   최신순
                 </button>
                 <span className="separator">|</span>
-                {/* 좋아요순 - 백엔드에서 'likes' 필드로 정렬 지원해야 함 */}
                 <button
                   className={`sort-button ${
                     pageRequest.sortBy === 'likes' && pageRequest.sortOrder === 'DESC'
@@ -317,7 +302,6 @@ export function PetOwner() {
                   좋아요순
                 </button>
                 <span className="separator">|</span>
-                {/* 낮은 가격순 */}
                 <button
                   className={`sort-button ${
                     pageRequest.sortBy === 'hourlyRate' && pageRequest.sortOrder === 'ASC'
@@ -328,11 +312,9 @@ export function PetOwner() {
                   낮은 가격순
                 </button>
                 <span className="separator">|</span>
-                {/* 높은 가격순 */}
                 <button
                   className={`sort-button ${
-                    pageRequest.sortBy === 'hourlyRate' &&
-                    pageRequest.sortOrder === 'DESC'
+                    pageRequest.sortBy === 'hourlyRate' && pageRequest.sortOrder === 'DESC'
                       ? 'active'
                       : ''
                   }`}
@@ -342,8 +324,6 @@ export function PetOwner() {
               </div>
             </div>
           </div>
-
-          {/* 게시글 시작 */}
           <div className="single-head">
             <div className="row">
               {!loading && posts?.length > 0 ? (
@@ -387,19 +367,13 @@ export function PetOwner() {
                               {post.title}
                             </Link>
                           </h3>
-                          <p className="update-time">
-                            {/* 3일 전 */}
-                            {formatTimeAgo(post.regDate)}
-                          </p>
-                          {/* 발바닥 지수 */}
+                          <p className="update-time">{formatTimeAgo(post.regDate)}</p>
                           <ul className="paw-rating">
                             <li>
                               <PawRating rating={post.member?.pawRate || 0} />
-                              {/* <PawRating rating={3.1} /> */}
                               <p>({post.member?.pawRate?.toFixed(1)})</p>
                             </li>
                           </ul>
-
                           <ul className="info-list">
                             <li>
                               <span>
@@ -440,7 +414,6 @@ export function PetOwner() {
               ) : null}
             </div>
           </div>
-
           {pageInfo && !loading && (
             <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
           )}

@@ -5,17 +5,16 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   server: {
     proxy: {
-      '/uploadAjax': {
-        target: 'http://localhost:8080/unknownPaw/api/',
-        changeOrigin: true,
-        secure: false
-      },
       '/api': {
-        target: 'http://localhost:8080/unknownPaw',
+        target: 'http://localhost:8080',
         changeOrigin: true,
-        secure: false
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '/unknownPaw/api')
       }
     }
   },
-  plugins: [react(), tailwindcss()]
+  plugins: [react(), tailwindcss()],
+  css: {
+    devSourcemap: false
+  }
 })

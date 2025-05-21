@@ -1,9 +1,7 @@
 import {useState, useEffect} from 'react' // useEffect와 useState import
 import {Link, useParams} from 'react-router-dom'
 import './memberProfile.css'
-import {post} from 'axios'
 import PawRating from '../../components/PawRating'
-import {useToken} from '../../hooks'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
 
 interface MemberResponseDTO {
@@ -95,11 +93,13 @@ export default function MemberProfile() {
 
       try {
         const response = await fetch(
-          `http://localhost:8080/unknownPaw/api/member/profile/simple/${mid}`,
+          `/api/member/profile/simple/${mid}`,
           {
             method: 'GET',
             headers: {
-              Authorization: `Bearer ${token}`
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
             }
           }
         )
@@ -130,10 +130,11 @@ export default function MemberProfile() {
       try {
         // ✨✨✨ 새로운 펫 목록 API 엔드포인트 호출
         const response = await fetch(
-          `http://localhost:8080/unknownPaw/api/member/${mid}/pets`,
+          `/api/member/${mid}/pets`,
           {
             headers: {
-              Authorization: `Bearer ${token}`
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
             }
           }
         )
@@ -165,10 +166,12 @@ export default function MemberProfile() {
       setErrorPosts(null)
       try {
         const response = await fetch(
-          `http://localhost:8080/unknownPaw/api/member/${mid}/posts`,
+          `/api/member/${mid}/posts`,
           {
             headers: {
-              Authorization: `Bearer ${token}`
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
             }
           }
         )

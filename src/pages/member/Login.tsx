@@ -56,7 +56,11 @@ export function Login() {
       /* 2) 서버 요청 — context‑path 포함 */
       const res = await fetch('/api/member/login', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        credentials: 'include', // 쿠키를 포함하여 요청
         body: JSON.stringify({email, password})
       })
 

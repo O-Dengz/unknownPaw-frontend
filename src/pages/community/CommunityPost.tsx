@@ -1,4 +1,3 @@
-// src/pages/unknownPaw/CommunityPost.tsx
 import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import '../../../public/assets/css/LineIcons.2.0.css'
@@ -8,6 +7,20 @@ import '../../../public/assets/css/glightbox.min.css'
 import '../../../public/assets/css/main.css'
 import '../../../public/assets/css/tiny-slider.css'
 import './CommunityPost.css'
+
+// 랜덤 이미지 목록
+const randomImages = [
+  '/src/assets/무료나눔.png',
+  '/src/assets/오댕이.jpg',
+  '/src/assets/피카츄 군침싹.jpg',
+  '/src/assets/no-img.gif'
+]
+
+// 랜덤 이미지 선택 함수
+const getRandomImage = () => {
+  const randomIndex = Math.floor(Math.random() * randomImages.length)
+  return randomImages[randomIndex]
+}
 
 interface CommunityPost {
   communityId: number
@@ -40,26 +53,84 @@ export default function CommunityPost() {
 
   const fetchPost = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/unknownPaw/api/community/${postId}`)
-      if (!response.ok) {
-        throw new Error('게시글을 불러오는데 실패했습니다.')
+      const token = sessionStorage.getItem('token')
+      if (!token) {
+        setError('로그인이 필요합니다.')
+        window.location.href = '/login'
+        return
       }
+
+      console.log('Fetching post from:', `/api/community/posts/${postId}`)
+      const response = await fetch(`/api/community/posts/${postId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('API Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText
+        })
+        throw new Error(`게시글을 불러오는데 실패했습니다. (${response.status})`)
+      }
+
       const data = await response.json()
+      console.log('API Response:', data)
       setPost(data)
       setLoading(false)
     } catch (error) {
-      setError('게시글을 불러오는데 실패했습니다.')
+      console.error('Error fetching post:', error)
+      setError(error instanceof Error ? error.message : '게시글을 불러오는데 실패했습니다.')
       setLoading(false)
     }
   }
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch('http://localhost:8080/unknownPaw/api/community')
+      const token = sessionStorage.getItem('token')
+      if (!token) {
+        setError('로그인이 필요합니다.')
+        window.location.href = '/login'
+        return
+      }
+
+      console.log('Fetching posts from:', '/api/community/posts')
+      const response = await fetch('/api/community/posts', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('API Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText
+        })
+        throw new Error(`게시물을 불러오는데 실패했습니다. (${response.status})`)
+      }
+
       const data = await response.json()
-      setPosts(data)
+      console.log('API Response:', data)
+      if (Array.isArray(data)) {
+        setPosts(data)
+      } else {
+        console.error('API 응답이 배열이 아닙니다:', data)
+        setPosts([])
+      }
     } catch (error) {
-      console.error('게시물을 불러오는 데 실패했습니다.')
+      console.error('Error fetching posts:', error)
+      setPosts([])
     }
   }
 
@@ -106,7 +177,9 @@ export default function CommunityPost() {
             <div className="col-lg-6 col-md-6 col-12">
               <ul className="breadcrumb-nav">
                 <li>
-                  <a href="/">홈</a>
+                  <a href="/">
+                    <img src="/assets/images/logo/logo.png" alt="UnknownPaw" style={{ height: '30px' }} />
+                  </a>
                 </li>
                 <li>
                   <a href="/community">커뮤니티</a>
@@ -126,7 +199,7 @@ export default function CommunityPost() {
               <div className="single-inner">
                 <div className="post-thumbnils">
                   <img 
-                    src={post.communityImages[0] || '/src/assets/no-img.gif'} 
+                    src={post.communityImages[0] || getRandomImage()} 
                     alt={post.title} 
                     style={{
                       width: '100%',
@@ -184,7 +257,7 @@ export default function CommunityPost() {
               </div>
             </div>
 
-            {/* 사이드바 영역 (오른쪽 4컬럼) */}
+            {/* 사이드바 영역 */}
             <aside className="col-lg-4 col-md-5 col-12">
               <div className="sidebar blog-grid-page">
                 {/* 검색 위젯 */}
@@ -230,10 +303,9 @@ export default function CommunityPost() {
                   <div className="popular-feed-loop">
                     {posts
                       .sort((a, b) => {
-                        // 좋아요와 댓글 수를 합산한 점수로 정렬
-                        const scoreA = a.likes + a.commentCount;
-                        const scoreB = b.likes + b.commentCount;
-                        return scoreB - scoreA;
+                        const scoreA = a.likes + a.commentCount
+                        const scoreB = b.likes + b.commentCount
+                        return scoreB - scoreA
                       })
                       .slice(0, 3)
                       .map((post) => (
@@ -275,11 +347,11 @@ const styles = {
     gap: '15px',
     marginTop: '5px',
     fontSize: '0.9em',
-    color: '#666',
+    color: '#666'
   },
   popularFeedItem: {
     marginBottom: '15px',
     paddingBottom: '15px',
-    borderBottom: '1px solid #eee',
+    borderBottom: '1px solid #eee'
   }
 }
