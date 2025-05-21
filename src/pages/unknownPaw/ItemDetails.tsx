@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
+import React, {useEffect, useState} from 'react'
+import {useParams, useNavigate, useLocation, Link} from 'react-router-dom'
 import './Post.css'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
 import KakaoMap from './components/KakaoMap'
@@ -38,7 +38,7 @@ interface PostDTO {
 export function ItemDetails() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { postId, postType } = useParams()
+  const {postId, postType} = useParams()
   const [postDTO, setPostDTO] = useState<PostDTO | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -129,8 +129,7 @@ export function ItemDetails() {
                     onClick={e => {
                       e.preventDefault()
                       handleBack()
-                    }}
-                  >
+                    }}>
                     홈
                   </a>
                 </li>
@@ -171,8 +170,12 @@ export function ItemDetails() {
                         />
                       </div>
                       <div className="author-meta">
-                        <div className="author-name">{postDTO.member.nickname || 'nickname'}</div>
-                        <div className="author-location">{postDTO.defaultLocation || '부산시'}</div>
+                        <div className="author-name">
+                          {postDTO.member.nickname || 'nickname'}
+                        </div>
+                        <div className="author-location">
+                          {postDTO.defaultLocation || '부산시'}
+                        </div>
                       </div>
                       <div className="author-rating">
                         <span>🐾 {postDTO.member.pawRate.toFixed(1) || '1.4'}</span>
@@ -184,10 +187,16 @@ export function ItemDetails() {
             </div>
             <div className="item-right-area">
               <h2 className="item-title">{postDTO.title}</h2>
-              <div className="item-price">{postDTO.hourlyRate.toLocaleString()}원/시간</div>
-              <div className="post-service-category" style={{ display: 'flex', alignItems: 'center' }}>
-                <p style={{ marginRight: '6px' }}>{postDTO.serviceCategory}</p>
-                <span style={{ color: '#888' }}>· {new Date(postDTO.regDate).toLocaleDateString()}</span>
+              <div className="item-price">
+                {postDTO.hourlyRate.toLocaleString()}원/시간
+              </div>
+              <div
+                className="post-service-category"
+                style={{display: 'flex', alignItems: 'center'}}>
+                <p style={{marginRight: '6px'}}>{postDTO.serviceCategory}</p>
+                <span style={{color: '#888'}}>
+                  · {new Date(postDTO.regDate).toLocaleDateString()}
+                </span>
               </div>
               <div className="item-notice">
                 {postDTO.content.split('\n').map((line, i) => (
@@ -210,8 +219,7 @@ export function ItemDetails() {
                   gap: '10px',
                   marginTop: '12px',
                   alignItems: 'center'
-                }}
-              >
+                }}>
                 <button className="reserve-button">예약하기</button>
                 <button className="likes" onClick={() => setLiked(!liked)}>
                   <i className={`lni ${liked ? 'lni-heart-filled' : 'lni-heart'}`}></i>
@@ -221,9 +229,17 @@ export function ItemDetails() {
           </div>
           <div className="map-area">
             {postDTO.latitude != null && postDTO.longitude != null ? (
-              <KakaoMap latitude={postDTO.latitude} longitude={postDTO.longitude} address={postDTO.defaultLocation} />
+              <KakaoMap
+                latitude={postDTO.latitude}
+                longitude={postDTO.longitude}
+                address={postDTO.defaultLocation}
+              />
             ) : (
-              <KakaoMap latitude={null} longitude={null} address={postDTO.defaultLocation} />
+              <KakaoMap
+                latitude={null}
+                longitude={null}
+                address={postDTO.defaultLocation}
+              />
             )}
           </div>
           <button className="report-button">🚨 신고하기</button>
