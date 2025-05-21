@@ -5,7 +5,6 @@ import Footer from '../../components/common/Footer' // Footer 컴포넌트 impor
 import {DashboardSidebar} from '../../components/DashboardSidebar'
 import './myPage.css'
 import {useUserStore} from '../../store/userStore'
-import MemberProfile from '../member/MemberProfile'
 
 interface UserProfile {
   email?: string
