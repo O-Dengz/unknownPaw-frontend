@@ -3,8 +3,8 @@ import React, {useState, useEffect, ChangeEvent} from 'react'
 import './myPage.css'
 import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
 import {useNavigate, Link, NavLink} from 'react-router-dom'
-import Header from '../../components/common/Header' // Header 컴포넌트 import
-import Footer from '../../components/common/Footer' // Footer 컴포넌트 import
+import Header from '../../components/Layout/Header' // Header 컴포넌트 import
+import { Footer } from '../../components/Layout/Footer' // Footer 컴포넌트 import
 import './myPage.css'
 import {useUserStore} from '../../store/userStore'
 

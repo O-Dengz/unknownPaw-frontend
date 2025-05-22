@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
 import axios from 'axios'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
+import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
 
 // 예약 내역 데이터 타입 정의
 type ReservationDetailsItem = {

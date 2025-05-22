@@ -37,6 +37,7 @@ export default function Layout() {
   const isListPage = location.pathname === '/' || location.pathname === '/list'
   return (
     <>
+    
       {isListPage ? <MainHeader /> : <Header />}
 
       <Routes>
@@ -66,7 +67,6 @@ export default function Layout() {
 
         {/* 멤버 */}
         <Route path="/profile/simple/:mid" element={<MemberProfile />} />
-        <Route path="/posts/:postType/read/postId" element={<ItemDetails />} />
 
         {/* 추후 기능
         <Route path="/post" element={<Post />} />
@@ -74,6 +74,8 @@ export default function Layout() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/register" element={<Register />} />
         */}
+       
+
       </Routes>
 
       <Footer />
