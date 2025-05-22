@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react' // useState 추가
 import {Link, useLocation} from 'react-router-dom'
-import {useUserStore} from '../store/userStore'
+import {useUserStore} from '../../../store/userStore'
 
 interface UserProfile {
   mid: number
