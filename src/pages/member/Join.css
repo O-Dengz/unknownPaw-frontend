@@ -1,4 +1,338 @@
 /* Form Container */
+/* Variables for main colors */
+:root {
+  --primary-color: #32ade6; /* 청록 계열 */
+  --secondary-color: #f1a852; /* 주황 계열 */
+  --text-color-dark: #333;
+  --text-color-medium: #666;
+  --text-color-light: #a0a0a0;
+  --border-color: #ced4da;
+  --bg-light: #f8f9fa;
+  --bg-white: #ffffff;
+  --shadow-base: rgba(0, 0, 0, 0.08);
+  --shadow-modal: rgba(0, 0, 0, 0.15);
+}
+
+/* Base Styling */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 폰트 변경 */
+  line-height: 1.6;
+  color: var(--text-color-dark);
+}
+
+/* Join Container & Wrapper */
+.join-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--bg-light);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.join-wrapper {
+  width: 100%;
+  max-width: 500px; /* 폼 최대 너비 */
+  background-color: var(--bg-white);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px var(--shadow-base);
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+/* Card Header */
+.join-title {
+  color: var(--text-color-dark);
+  font-size: 2.25rem; /* ~36px */
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.join-subtitle {
+  color: var(--text-color-medium);
+  font-size: 0.875rem; /* ~14px */
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.join-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.join-link:hover {
+  text-decoration: underline;
+  color: var(--secondary-color);
+}
+
+/* Form Elements */
+.join-form {
+  margin-top: 1.5rem;
+}
+
+.form-field {
+  margin-bottom: 1.25rem; /* 20px */
+}
+
+.form-label {
+  display: block;
+  font-size: 0.95rem; /* ~15px */
+  font-weight: 500;
+  color: var(--text-color-dark);
+  margin-bottom: 0.5rem;
+}
+
+.input-group,
+.password-input-group {
+  position: relative;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--text-color-light);
+  opacity: 1;
+}
+
+/* Password Toggle Button */
+.password-input-group .form-input {
+  padding-right: 3rem; /* Space for the eye icon */
+}
+
+.password-toggle-button {
+  position: absolute;
+  right: 1rem; /* 16px from the right edge */
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  color: var(--text-color-light); /* Icon color */
+}
+
+.icon-eye,
+.icon-eye-slash {
+  height: 1.25rem; /* 20px */
+  width: 1.25rem; /* 20px */
+}
+
+/* Toggle Buttons for Pet Ownership */
+.toggle-group {
+  display: flex;
+  gap: 1rem; /* 16px between buttons */
+  margin-top: 0.5rem;
+}
+
+.toggle-button {
+  flex-grow: 1;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-white);
+  color: var(--text-color-medium);
+}
+
+.toggle-button.is-active {
+  background-color: var(--primary-color);
+  color: var(--bg-white);
+  border-color: var(--primary-color);
+}
+
+.toggle-button:hover:not(.is-active) {
+  background-color: var(--bg-light);
+  border-color: #a0a0a0;
+}
+
+/* Action Buttons (Submit, Modal buttons) */
+.form-actions {
+  margin-top: 2rem; /* 32px */
+}
+
+.button {
+  padding: 0.85rem 1.5rem; /* 13.6px 24px */
+  font-size: 1.1rem; /* 17.6px */
+  font-weight: 600;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  border: none; /* Default to no border, primary/secondary will add */
+  width: 100%; /* Default to full width for main form button */
+}
+
+.button-primary {
+  background-color: var(--secondary-color); /* Main CTA button color */
+  color: var(--bg-white);
+}
+
+.button-primary:hover {
+  background-color: #e6913c; /* Darker secondary color */
+}
+
+.button-secondary {
+  background-color: #e0e0e0;
+  color: var(--text-color-dark);
+}
+
+.button-secondary:hover {
+  background-color: #ccc;
+}
+
+/* Social Login Section */
+.social-divider {
+  position: relative;
+  text-align: center;
+  margin: 2rem 0; /* 32px */
+}
+
+.social-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #e0e0e0;
+  z-index: 1;
+}
+
+.social-divider-text {
+  background-color: var(--bg-white);
+  padding: 0 1rem; /* 16px */
+  position: relative;
+  z-index: 2;
+  color: var(--text-color-medium);
+  font-size: 0.875rem; /* 14px */
+}
+
+.social-login-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* 2열 반응형 */
+  gap: 1rem; /* 16px */
+  margin-top: 1.5rem; /* 24px */
+}
+
+.social-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.75rem 1rem; /* 12px 16px */
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-weight: 500;
+  color: var(--text-color-dark);
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+}
+
+.social-button:hover {
+  background-color: var(--bg-light);
+  border-color: var(--text-color-light);
+}
+
+.social-icon {
+  margin-right: 0.75rem; /* 12px */
+  height: 1.25rem; /* 20px */
+  width: 1.25rem; /* 20px */
+}
+
+/* Modals (Pet Ownership & Pet Form) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Darker overlay for modal */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px); /* Optional: add blur effect */
+}
+
+.modal-content {
+  background-color: var(--bg-white);
+  padding: 2.5rem; /* 40px */
+  border-radius: 12px;
+  box-shadow: 0 10px 25px var(--shadow-modal);
+  max-width: 480px;
+  width: 90%;
+  box-sizing: border-box;
+}
+
+.modal-title {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+  color: var(--text-color-dark);
+  margin-bottom: 1.5rem; /* 24px */
+  text-align: center;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem; /* 16px */
+  margin-top: 2rem; /* 32px */
+}
+
+.modal-actions .button {
+  width: auto; /* Allow buttons to size content, not full width */
+  flex-basis: 50%; /* Each button takes roughly half width in flex container */
+  max-width: 150px; /* Optional: limit individual button width */
+}
+
+/* Pet Form Grid */
+.pet-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 2열 반응형 */
+  gap: 1rem; /* 16px */
+}
+
+.pet-form-grid .form-field {
+  margin-bottom: 0; /* Remove default margin from form-field */
+}
+
+.pet-form-grid .form-input,
+.pet-form-grid .form-select,
+.pet-form-grid .form-textarea {
+  margin-top: 0.25rem; /* 4px */
+  padding: 0.6rem 1rem; /* 9.6px 16px */
+  font-size: 0.95rem; /* 15.2px */
+  border-radius: 0.4rem; /* 6.4px */
+}
+
+.pet-form-grid .full-width {
+  grid-column: 1 / -1; /* Take full width in the grid */
+}
+
+/* Screen reader only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 .form-container {
   min-height: 100vh;
   background-color: #f9fafb;
@@ -71,27 +405,79 @@
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
-.form-select {
-  appearance: none;
+.form-input,
+.form-select,
+.form-textarea {
   display: block;
   width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  font-size: 0.875rem;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.5rem center;
-  background-repeat: no-repeat;
-  background-size: 1.5em 1.5em;
-  padding-right: 2.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.5rem; /* 약간 둥글게 */
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  box-sizing: border-box; /* 패딩이 너비에 포함되도록 */
 }
 
-.form-select:focus {
-  outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: #32ade6; /* 포커스 시 메인 색상 1 */
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(50, 173, 230, 0.25); /* 투명도를 낮춰 부드럽게 */
 }
+
+.form-input::placeholder {
+  color: #a0a0a0;
+  opacity: 1;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.password-input-wrapper {
+  position: relative; /* input과 버튼의 기준이 됨 */
+  display: flex; /* input과 버튼이 같은 줄에 있도록 (선택 사항, 필요에 따라) */
+  align-items: center; /* 세로 중앙 정렬 */
+  width: 100%;
+}
+
+/* input 필드에는 padding-right를 줘서 아이콘과 겹치지 않게 */
+.password-input-wrapper .form-input {
+  width: 100%; /* 부모 너비를 차지 */
+  padding-right: 3rem; /* 아이콘이 들어갈 공간 확보 (아이콘 크기 + 여백) */
+}
+
+/* 비밀번호 토글 버튼 스타일 */
+.password-toggle-button {
+  position: absolute;
+  right: 1rem; /* input 필드 오른쪽 끝에서 1rem */
+  top: 50%; /* password-input-wrapper 내에서 세로 중앙 */
+  transform: translateY(
+    -50%
+  ); /* 버튼 자신의 높이의 절반만큼 위로 올려 정확한 중앙 정렬 */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex; /* 아이콘을 flex로 감싸서 중앙 정렬 */
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  color: #a0a0a0; /* 아이콘 색상 (Tailwind text-gray-400 대체) */
+}
+
+.password-toggle-button svg {
+  height: 1.25rem; /* h-5 (20px) */
+  width: 1.25rem; /* w-5 (20px) */
+}
+
+/* 기존에 있던 비밀번호 관련 CSS 삭제 */
+/* .form-group .absolute { ... } 이 부분 삭제 */
 
 /* Form Buttons */
 .form-button {
@@ -199,4 +585,105 @@
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   max-width: 28rem;
   width: 100%;
+}
+
+/* 닉네임 입력 그룹 스타일 */
+.nickname-input-group {
+  display: flex; /* input과 버튼을 한 줄에 정렬 */
+  align-items: center;
+  gap: 0.5rem; /* input과 버튼 사이 간격 */
+}
+
+.nickname-input-group .form-input {
+  flex-grow: 1; /* input이 남은 공간을 채우도록 */
+  /* padding-right를 3rem에서 기본값으로 되돌림 (버튼이 옆에 있으므로) */
+  padding-right: 1rem; /* 기본 input padding-right 유지 */
+}
+
+.check-duplicate-button {
+  padding: 0.75rem 1rem; /* input과 유사한 패딩 */
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  background-color: var(--primary-color); /* 주색상으로 버튼 강조 */
+  color: var(--bg-white);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+}
+
+.check-duplicate-button:hover {
+  background-color: #2a9cd9; /* 살짝 어둡게 */
+}
+
+/* 유효성 검사 메시지 (기존 validation-message에 추가 또는 수정) */
+.validation-message {
+  color: #dc3545; /* 빨간색 오류 메시지 */
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  padding: 0 0.25rem; /* 좌우 패딩만 */
+  /* background-color: #f8d7da; 화살표 모양이 필요하면 위에 제안된 대로 가상 요소를 사용 */
+  /* border-radius: 0.25rem; */
+  /* position: relative; */
+}
+
+/* 성공 메시지 스타일 */
+.success-message {
+  color: #28a745; /* 녹색 성공 메시지 */
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  padding: 0 0.25rem;
+}
+
+/* is-invalid 클래스 (기존 CSS에 있을 수 있음) */
+.form-input.is-invalid {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+/* input과 버튼이 함께 있는 그룹 */
+.input-with-button-group {
+  display: flex; /* input과 버튼을 한 줄에 나열 */
+  gap: 0.5rem; /* input과 버튼 사이 간격 */
+}
+
+.input-with-button-group .form-input {
+  flex-grow: 1; /* input이 남은 공간을 채우도록 */
+  /* 비밀번호 필드처럼 패딩을 줄 필요는 없음 */
+}
+
+/* 중복 확인 버튼 스타일 */
+.button-check {
+  background-color: var(--primary-color); /* 중복확인 버튼 색상 */
+  color: var(--bg-white);
+  padding: 0.75rem 1rem; /* input과 높이 맞추기 */
+  font-size: 0.9rem; /* 폰트 사이즈 조정 */
+  flex-shrink: 0; /* 버튼이 줄어들지 않도록 */
+  width: auto; /* 버튼 내용에 맞춰 너비 자동 조절 */
+  min-width: 100px; /* 최소 너비 지정 */
+}
+
+.button-check:hover:not(:disabled) {
+  background-color: #2a9cd9; /* Hover effect */
+}
+
+.button-check:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* 유효성 검사 메시지 스타일 (success/error) */
+.validation-message {
+  font-size: 0.875rem; /* 14px */
+  margin-top: 0.5rem;
+  padding-left: 0.25rem; /* 아이콘이 있다면 여백 */
+}
+
+.validation-message.success {
+  color: #28a745; /* 초록색 (성공) */
+}
+
+.validation-message.error {
+  color: #dc3545; /* 빨간색 (에러) */
 }

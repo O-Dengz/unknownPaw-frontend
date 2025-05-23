@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react' // useState 추가
-import {Link, useLocation} from 'react-router-dom'
+import {Link, useLocation, useNavigate} from 'react-router-dom'
 import {useUserStore} from '../store/userStore'
+import toast from 'react-hot-toast'
 
 interface UserProfile {
   mid: number
@@ -17,6 +18,7 @@ interface UserProfile {
 }
 export function DashboardSidebar() {
   const location = useLocation()
+  const navigate = useNavigate()
   const {user, setUser} = useUserStore()
   // user 상태 가져오기
   const currentUser = useUserStore(state => state.user)
@@ -45,6 +47,17 @@ export function DashboardSidebar() {
 
   const isActive = (path: string) => {
     return location.pathname === path
+  }
+
+  // --- 로그아웃 핸들러 함수 ---
+  const handleLogout = () => {
+    sessionStorage.removeItem('token') // 세션 스토리지에서 토큰 제거
+    sessionStorage.removeItem('member') // 사용자 정보도 함께 제거
+    // 필요한 경우 다른 사용자 관련 데이터도 제거 (예:
+    localStorage.removeItem('token')
+
+    toast.success('성공적으로 로그아웃 되었습니다.') // 사용자에게 알림
+    navigate('/login') // 로그인 페이지로 리다이렉트
   }
 
   return (
@@ -111,7 +124,7 @@ export function DashboardSidebar() {
           </li>
         </ul>
         <div className="button">
-          <a className="btn" href="#" onClick={e => e.preventDefault()}>
+          <a className="btn" href="#" onClick={handleLogout}>
             로그아웃
           </a>
         </div>
