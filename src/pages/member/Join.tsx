@@ -58,14 +58,22 @@ export function Join() {
   const [showPetForm, setShowPetForm] = useState(false)
   const [hasPet, setHasPet] = useState<boolean | null>(null)
 
-  // 닉네임 중복 확인 관련 상태 추가
-  const [nicknameDuplicated, setNicknameDuplicated] = useState<boolean | null>(null) // null: 확인 전, true: 중복, false: 사용 가능
-  const [nicknameError, setNicknameError] = useState<string | null>(null) // 닉네임 유효성 오류 메시지
-
-  // Join 컴포넌트 내부에 추가
+  // 닉네임 중복 확인 관련 상태
   const [isNicknameChecked, setIsNicknameChecked] = useState(false) // 닉네임 중복 확인을 했는지 여부
   const [isNicknameAvailable, setIsNicknameAvailable] = useState<boolean | null>(null) // 닉네임 사용 가능 여부 (true/false/null)
-  const [nicknameErrorMessage, setNicknameErrorMessage] = useState('') // 닉네임 에러 메시지
+  const [nicknameErrorMessage, setNicknameErrorMessage] = useState('') // 닉네임 에러/성공 메시지
+
+  // 이메일 중복 확인 관련 상태
+  const [emailDuplicateStatus, setEmailDuplicateStatus] = useState<
+    'idle' | 'checking' | 'available' | 'duplicate' | 'error'
+  >('idle')
+  const [emailCheckMessage, setEmailCheckMessage] = useState<string>('')
+
+  // 휴대폰 번호 중복 확인 관련 상태
+  const [phoneDuplicateStatus, setPhoneDuplicateStatus] = useState<
+    'idle' | 'checking' | 'available' | 'duplicate' | 'error'
+  >('idle')
+  const [phoneCheckMessage, setPhoneCheckMessage] = useState<string>('')
 
   const changed = useCallback(
     (key: string) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -101,9 +109,26 @@ export function Join() {
     setNicknameErrorMessage('') // 에러 메시지 초기화
   }, [])
 
-  // 닉네임 중복 확인 API 호출 함수 (이전 checkNicknameAvailability와 동일)
+  // 이메일 입력 변경 핸들러
+  const handleEmailChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const {value} = e.target
+    setForm(prev => ({...prev, email: value})) // setFormData 대신 setForm 사용
+    // 입력이 다시 시작되면 중복 확인 상태 초기화
+    setEmailDuplicateStatus('idle')
+    setEmailCheckMessage('')
+  }, [])
+
+  // 휴대폰 번호 입력 변경 핸들러
+  const handlePhoneChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const {value} = e.target
+    setForm(prev => ({...prev, phoneNumber: value})) // setFormData 대신 setForm 사용
+    // 입력이 다시 시작되면 중복 확인 상태 초기화
+    setPhoneDuplicateStatus('idle')
+    setPhoneCheckMessage('')
+  }, [])
+
+  // 닉네임 중복 확인 API 호출 함수
   const checkNicknameAvailability = useCallback(async (currentNickname: string) => {
-    // 인자명 충돌 피함
     if (currentNickname.trim() === '') {
       setNicknameErrorMessage('닉네임을 입력해주세요.')
       setIsNicknameAvailable(false) // 입력 안 했으니 사용 불가능
@@ -120,7 +145,6 @@ export function Join() {
       )
 
       if (!response.ok) {
-        // 서버에서 에러 응답 (예: 409 Conflict, 500 Internal Server Error 등)
         const errorData = await response
           .json()
           .catch(() => ({message: '알 수 없는 오류 발생.'})) // JSON 파싱 실패 대비
@@ -149,13 +173,101 @@ export function Join() {
       setIsNicknameChecked(true)
     }
   }, [])
-  // **하나만 남길 최종 onSubmit 함수**
+
+  // 이메일 중복 확인 함수
+  const checkEmailDuplication = async (currentEmail: string) => {
+    // 인자명 충돌 피함
+    if (!currentEmail) {
+      // currentEmail로 변경
+      setEmailDuplicateStatus('idle')
+      setEmailCheckMessage('')
+      return
+    }
+
+    setEmailDuplicateStatus('checking')
+    setEmailCheckMessage('이메일 중복 확인 중...')
+
+    try {
+      const response = await fetch(`/api/member/check-email?email=${currentEmail}`) // 백엔드 API 경로 확인
+      const data = await response.json() // 백엔드 응답 형태: { isDuplicate: true/false }
+
+      if (response.ok) {
+        if (data.isDuplicate) {
+          setEmailDuplicateStatus('duplicate')
+          setEmailCheckMessage('이미 사용 중인 이메일입니다.')
+        } else {
+          setEmailDuplicateStatus('available')
+          setEmailCheckMessage('사용 가능한 이메일입니다.')
+        }
+      } else {
+        // 서버에서 에러 응답이 왔을 경우 (예: 500 Internal Server Error)
+        const errorData = await response
+          .json()
+          .catch(() => ({message: '알 수 없는 오류 발생.'}))
+        setEmailDuplicateStatus('error')
+        setEmailCheckMessage(
+          `오류: ${errorData.message || '이메일 중복 확인에 실패했습니다.'}`
+        )
+      }
+    } catch (error) {
+      console.error('이메일 중복 확인 중 네트워크 오류:', error)
+      setEmailDuplicateStatus('error')
+      setEmailCheckMessage('네트워크 오류가 발생했습니다.')
+    }
+  }
+
+  // 휴대폰 번호 중복 확인 함수
+  const checkPhoneDuplication = async (currentPhoneNumber: string) => {
+    // 인자명 충돌 피함
+    if (!currentPhoneNumber) {
+      // currentPhoneNumber로 변경
+      setPhoneDuplicateStatus('idle')
+      setPhoneCheckMessage('')
+      return
+    }
+
+    setPhoneDuplicateStatus('checking')
+    setPhoneCheckMessage('휴대폰 번호 중복 확인 중...')
+
+    try {
+      const response = await fetch(
+        `/api/member/check-phone?phoneNumber=${currentPhoneNumber}`
+      ) // 백엔드 API 경로 확인
+      const data = await response.json() // 백엔드 응답 형태: { isDuplicate: true/false }
+
+      if (response.ok) {
+        if (data.isDuplicate) {
+          setPhoneDuplicateStatus('duplicate')
+          setPhoneCheckMessage('이미 사용 중인 휴대폰 번호입니다.')
+        } else {
+          setPhoneDuplicateStatus('available')
+          setPhoneCheckMessage('사용 가능한 휴대폰 번호입니다.')
+        }
+      } else {
+        // 서버에서 에러 응답이 왔을 경우
+        const errorData = await response
+          .json()
+          .catch(() => ({message: '알 수 없는 오류 발생.'}))
+        setPhoneDuplicateStatus('error')
+        setPhoneCheckMessage(
+          `오류: ${errorData.message || '휴대폰 번호 중복 확인에 실패했습니다.'}`
+        )
+      }
+    } catch (error) {
+      console.error('휴대폰 번호 중복 확인 중 네트워크 오류:', error)
+      setPhoneDuplicateStatus('error')
+      setPhoneCheckMessage('네트워크 오류가 발생했습니다.')
+    }
+  }
+
+  // 최종 onSubmit 함수
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     let hasFormError = false // 폼 필드 유효성 검사 에러
 
     // 1. 필수 입력 필드 검사 (기존 로직 유지)
+    // 기존 유효성 검사 로직...
     if (!emailRef.current?.value) {
       emailRef.current?.setAttribute('placeholder', '이메일을 입력해주세요.')
       emailRef.current?.focus()
@@ -177,7 +289,7 @@ export function Join() {
       birthdayRef.current?.focus()
       hasFormError = true
     } else if (!genderRef.current?.value) {
-      genderRef.current?.setAttribute('placeholder', '성별을 선택해주세요.') // select는 placeholder가 동작 안함, 에러 메시지 UI 필요
+      // select는 placeholder가 동작 안함, 에러 메시지 UI 필요
       genderRef.current?.focus()
       hasFormError = true
     } else if (!addressRef.current?.value) {
@@ -186,16 +298,14 @@ export function Join() {
       hasFormError = true
     }
 
-    // 닉네임 필드는 별도로 검사
+    // 2. 닉네임 중복 확인 최종 검사
     if (!nicknameRef.current?.value.trim()) {
-      // .trim()으로 공백도 체크
       setNicknameErrorMessage('닉네임을 입력해주세요.')
       setIsNicknameAvailable(false)
-      setIsNicknameChecked(true) // 입력 필드 비어있음 = 확인 시도했지만 실패
+      setIsNicknameChecked(true)
       nicknameRef.current?.focus()
       hasFormError = true
     } else if (!isNicknameChecked || isNicknameAvailable === false) {
-      // 중복 확인 했는지, 사용 가능한지 체크
       setNicknameErrorMessage(
         '닉네임 중복 확인을 완료하거나, 사용 가능한 닉네임을 입력해주세요.'
       )
@@ -205,8 +315,30 @@ export function Join() {
       hasFormError = true
     }
 
+    // 3. 이메일 중복 확인 최종 검사
+    if (emailDuplicateStatus !== 'available') {
+      setEmailCheckMessage(
+        '이메일 중복 확인을 완료하거나, 사용 가능한 이메일을 입력해주세요.'
+      )
+      if (emailRef.current) {
+        emailRef.current.focus()
+      }
+      hasFormError = true
+    }
+
+    // 4. 휴대폰 번호 중복 확인 최종 검사
+    if (phoneDuplicateStatus !== 'available') {
+      setPhoneCheckMessage(
+        '휴대폰 번호 중복 확인을 완료하거나, 사용 가능한 번호를 입력해주세요.'
+      )
+      if (phoneNumberRef.current) {
+        phoneNumberRef.current.focus()
+      }
+      hasFormError = true
+    }
+
     if (hasFormError) {
-      // 폼 유효성 검사에서 에러가 발생했으면 제출 중단
+      // 모든 유효성 검사에서 에러가 발생했으면 제출 중단
       return
     }
 
@@ -289,6 +421,7 @@ export function Join() {
           </p>
 
           <form className="form-group" onSubmit={onSubmit}>
+            {/* 이메일 필드 */}
             <label htmlFor="email">이메일</label>
             <div className="form-group">
               <input
@@ -300,10 +433,21 @@ export function Join() {
                 ref={emailRef}
                 className="form-input"
                 placeholder="예: mogae@gee.com"
-                onChange={changed('email')}
+                value={email} // Controlled component로 유지
+                onChange={handleEmailChange} // 새로운 핸들러 사용
+                onBlur={() => checkEmailDuplication(email)} // onBlur 이벤트
               />
             </div>
+            {emailCheckMessage && (
+              <p
+                className={`validation-message ${
+                  emailDuplicateStatus === 'available' ? 'success' : 'error'
+                }`}>
+                {emailCheckMessage}
+              </p>
+            )}
 
+            {/* 비밀번호 필드 */}
             <div>
               <label htmlFor="password">비밀번호</label>
               <div className="password-input-wrapper">
@@ -332,6 +476,7 @@ export function Join() {
               </div>
             </div>
 
+            {/* 휴대폰 번호 필드 */}
             <div className="mt-20">
               <label htmlFor="phoneNumber">휴대전화</label>
               <div className="form-group">
@@ -344,11 +489,22 @@ export function Join() {
                   ref={phoneNumberRef}
                   className="form-input"
                   placeholder="예: 010-1234-1234"
-                  onChange={changed('phoneNumber')}
+                  value={phoneNumber} // Controlled component로 유지
+                  onChange={handlePhoneChange} // 새로운 핸들러 사용
+                  onBlur={() => checkPhoneDuplication(phoneNumber)} // onBlur 이벤트
                 />
               </div>
             </div>
+            {phoneCheckMessage && (
+              <p
+                className={`validation-message ${
+                  phoneDuplicateStatus === 'available' ? 'success' : 'error'
+                }`}>
+                {phoneCheckMessage}
+              </p>
+            )}
 
+            {/* 이름 필드 */}
             <div>
               <label htmlFor="name">이름</label>
               <div className="form-group">
@@ -366,6 +522,7 @@ export function Join() {
               </div>
             </div>
 
+            {/* 닉네임 필드 */}
             <div className="form-field">
               <label htmlFor="nickname" className="form-label">
                 닉네임
@@ -390,16 +547,17 @@ export function Join() {
                   중복 확인
                 </button>
               </div>
-              {nicknameErrorMessage && ( // 메시지가 있을 때만 표시
+              {nicknameErrorMessage && (
                 <p
                   className={`validation-message ${
-                    isNicknameAvailable ? 'success' : 'error'
+                    isNicknameAvailable ? 'success' : 'error' // 닉네임은 isNicknameAvailable로 성공/실패 구분
                   }`}>
                   {nicknameErrorMessage}
                 </p>
               )}
             </div>
 
+            {/* 출생년도 필드 */}
             <div>
               <label htmlFor="birthday">출생년도</label>
               <div className="form-group">
@@ -416,6 +574,7 @@ export function Join() {
               </div>
             </div>
 
+            {/* 성별 필드 */}
             <div className="form-field">
               <label htmlFor="gender" className="form-label">
                 성별
@@ -435,6 +594,7 @@ export function Join() {
               </div>
             </div>
 
+            {/* 주소 필드 */}
             <div>
               <label htmlFor="address">주소</label>
               <div className="form-group">
@@ -451,6 +611,7 @@ export function Join() {
               </div>
             </div>
 
+            {/* 반려동물 보유 여부 필드 */}
             <div className="form-field">
               <label className="form-label">반려동물 보유 여부</label>
               <div className="toggle-group">
@@ -470,7 +631,16 @@ export function Join() {
             </div>
 
             <div className="form-actions">
-              <button type="submit" className="button button-primary">
+              <button
+                type="submit"
+                className="button button-primary"
+                // 회원가입 버튼 비활성화 조건 추가
+                disabled={
+                  emailDuplicateStatus !== 'available' ||
+                  phoneDuplicateStatus !== 'available' ||
+                  !isNicknameChecked || // 닉네임 중복 확인 완료 여부
+                  isNicknameAvailable === false // 닉네임 사용 가능 여부
+                }>
                 회원가입
               </button>
             </div>
@@ -519,43 +689,6 @@ export function Join() {
       </div>
 
       {/* 반려동물 정보 입력 모달 */}
-      {showPetModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3 className="modal-title">지금 반려동물의 정보를 입력하시겠습니까?</h3>
-            <div className="modal-actions">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowPetModal(false)
-                  setShowPetForm(true)
-                }}
-                className="button button-primary">
-                예
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowPetModal(false)
-                  regist(
-                    email,
-                    pass,
-                    phoneNumber,
-                    name,
-                    nickname,
-                    birthday,
-                    gender,
-                    address
-                  )
-                }}
-                className="button button-secondary">
-                아니오
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {showPetModal && (
         <div className="modal-overlay">
           <div className="modal-content">

@@ -1,12 +1,14 @@
 import React, {useState, useEffect, ChangeEvent} from 'react'
 import {useNavigate, Link, NavLink} from 'react-router-dom'
-import Header from '../../components/common/Header' // Header 컴포넌트 import
-import Footer from '../../components/common/Footer' // Footer 컴포넌트 import
+import Header from '../../components/common/Header'
+import Footer from '../../components/common/Footer'
 import {DashboardSidebar} from '../../components/DashboardSidebar'
 import './myPage.css'
 import {useUserStore} from '../../store/userStore'
 import {PasswordInput} from '../../components/PasswordInput'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
+import {EyeIcon} from 'lucide-react'
+import {EyeSlashIcon} from '@heroicons/react/24/outline'
 
 interface UserProfile {
   email?: string
@@ -19,72 +21,67 @@ interface MemberResponseDTO {
   mid: number
   email: string
   nickname: string
-  profileImagePath?: string // 백엔드 응답에 맞게 수정
+  profileImagePath?: string
   pawRate: number
-  address?: string | null // 백엔드 응답에 맞게 수정
-  phoneNumber?: string | null // 백엔드 응답에 맞게 수정
+  address?: string | null
+  phoneNumber?: string | null
   emailVerified: boolean
   regDate?: string | null
   modDate?: string | null
   role: string
   status: string
-  // 다른 필드...
 }
 
 export function ProfileSettings() {
-  // 통합 컴포넌트 이름
   const navigate = useNavigate()
-
-  // Zustand 스토어의 setUser 액션만 가져옴
   const setUserGlobally = useUserStore(state => state.setUser)
-  const clearUserGlobally = useUserStore(state => state.clearUser) // Zustand clearUser 액션 추가
+  const clearUserGlobally = useUserStore(state => state.clearUser)
 
-  // --- State 관리 ---
-
-  // 사용자 정보를 저장할 state (초기값은 null 또는 빈 객체)
   const [userProfile, setUserProfile] = useState<MemberResponseDTO | null>(null)
-
-  // 일반 회원 정보 폼 입력 값을 관리할 state
+  const [showPassword, setShowPassword] = useState(false)
   const [profileFormValues, setProfileFormValues] = useState({
     nickname: '',
     address: '',
     phoneNumber: ''
-    // 다른 필드 초기값 추가
   })
 
-  // 비밀번호 변경 폼 입력 값을 관리할 state
   const [passwordFormValues, setPasswordFormValues] = useState({
     currentPassword: '',
     newPassword: '',
-    confirmNewPassword: '' // 새 비밀번호 확인 필드 (클라이언트 측 유효성 검사용)
+    confirmNewPassword: ''
+  })
+  const [showPasswords, setShowPasswords] = useState({
+    currentPassword: false,
+    newPassword: false,
+    confirmNewPassword: false
   })
 
-  // 로딩 상태 관리 (전체 페이지 로딩 및 개별 폼 제출 로딩)
-  const [pageLoading, setPageLoading] = useState(true) // 초기 페이지 로딩
-  const [profileUpdateLoading, setProfileUpdateLoading] = useState(false) // 프로필 업데이트 로딩
-  const [passwordChangeLoading, setPasswordChangeLoading] = useState(false) // 비밀번호 변경 로딩
+  const [pageLoading, setPageLoading] = useState(true)
+  const [profileUpdateLoading, setProfileUpdateLoading] = useState(false)
+  const [passwordChangeLoading, setPasswordChangeLoading] = useState(false)
 
-  // 에러 메시지 상태 관리 (개별 폼 또는 전체 페이지)
-  const [pageError, setPageError] = useState<string | null>(null) // 초기 데이터 로딩 에러
-  const [profileError, setProfileError] = useState<string | null>(null) // 프로필 업데이트 에러
-  const [passwordError, setPasswordError] = useState<string | null>(null) // 비밀번호 변경 에러
+  const [pageError, setPageError] = useState<string | null>(null)
+  const [profileError, setProfileError] = useState<string | null>(null)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
 
-  // 성공 메시지 상태 관리 (개별 폼)
-  const [profileSuccess, setProfileSuccess] = useState<string | null>(null) // 프로필 업데이트 성공
-  const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null) // 비밀번호 변경 성공
+  const [profileSuccess, setProfileSuccess] = useState<string | null>(null)
+  const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null)
 
-  // 이미지 관련 상태 관리
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [profilePreviewUrl, setProfilePreviewUrl] = useState<string | null>(null)
 
-  // 회원 탈퇴 관련 상태
   const [showWithdrawalModal, setShowWithdrawalModal] = useState(false)
   const [withdrawalPassword, setWithdrawalPassword] = useState('')
   const [withdrawalLoading, setWithdrawalLoading] = useState(false)
   const [withdrawalError, setWithdrawalError] = useState<string | null>(null)
   const [withdrawalSuccess, setWithdrawalSuccess] = useState<string | null>(null)
 
-  // --- useEffect 훅: 컴포넌트 마운트 시 사용자 정보 불러오기 ---
+  // ⭐ 전화번호 중복 확인 관련 상태 추가
+  const [phoneNumberDuplicationError, setPhoneNumberDuplicationError] = useState<
+    string | null
+  >(null)
+  const [isPhoneNumberChecked, setIsPhoneNumberChecked] = useState(false) // 전화번호 중복 확인 완료 여부
+
   useEffect(() => {
     const fetchUserProfile = async () => {
       const token = sessionStorage.getItem('token')
@@ -117,58 +114,106 @@ export function ProfileSettings() {
           const data: MemberResponseDTO = await res.json()
 
           setUserProfile(data)
-          setUserGlobally(data) // 전역 스토어 업데이트
+          setUserGlobally(data)
 
-          // 불러온 정보로 프로필 폼 state 초기화
           setProfileFormValues({
             nickname: data.nickname || '',
             address: data.address || '',
             phoneNumber: data.phoneNumber || ''
-            // 다른 필드 초기값 설정
           })
+          // ⭐ 초기 로딩 시 전화번호가 있으면 일단 확인 완료 상태로 설정 (원래 번호니까)
+          setIsPhoneNumberChecked(true)
         }
       } catch (err) {
         console.error('사용자 정보 가져오는 중 네트워크 오류:', err)
         setPageError('네트워크 오류가 발생했습니다.')
       } finally {
-        setPageLoading(false) // 초기 페이지 로딩 완료
+        setPageLoading(false)
       }
     }
 
     fetchUserProfile()
   }, [navigate, setUserGlobally])
 
-  // --- 일반 회원 정보 폼 입력 변경 핸들러 ---
   const handleProfileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = e.target
     setProfileFormValues(prevValues => ({
       ...prevValues,
       [name]: value
     }))
-    // 입력 시 관련 에러/성공 메시지 초기화
     setProfileError(null)
     setProfileSuccess(null)
+
+    // ⭐ 전화번호가 변경될 경우 중복 확인 상태 초기화
+    if (name === 'phoneNumber') {
+      setPhoneNumberDuplicationError(null)
+      setIsPhoneNumberChecked(false)
+    }
   }
 
-  // --- 비밀번호 변경 폼 입력 변경 핸들러 ---
-  const handlePasswordInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordInputChange = e => {
     const {name, value} = e.target
-    setPasswordFormValues(prevValues => ({
-      ...prevValues,
-      [name]: value
-    }))
-    // 입력 시 관련 에러/성공 메시지 초기화
-    setPasswordError(null)
-    setPasswordSuccess(null)
+    setPasswordFormValues(prev => ({...prev, [name]: value}))
   }
 
-  // --- 일반 회원 정보 업데이트 제출 핸들러 ---
+  const togglePasswordVisibility = fieldName => {
+    setShowPasswords(prev => ({
+      ...prev,
+      [fieldName]: !prev[fieldName]
+    }))
+  }
+
+  // ⭐ 전화번호 중복 확인 함수 추가
+  const checkPhoneNumberDuplication = async () => {
+    const phoneNumber = profileFormValues.phoneNumber.trim()
+
+    // 현재 사용자의 전화번호와 동일하면 중복 확인 불필요
+    if (userProfile && userProfile.phoneNumber === phoneNumber) {
+      setPhoneNumberDuplicationError(null)
+      setIsPhoneNumberChecked(true)
+      return
+    }
+
+    // 유효성 검사 (간단한 예시, 필요시 더 복잡한 정규식 추가)
+    if (!phoneNumber || !/^\d{2,3}-\d{3,4}-\d{4}$/.test(phoneNumber)) {
+      setPhoneNumberDuplicationError(
+        '유효한 전화번호 형식이 아닙니다. (예: 010-1234-5678)'
+      )
+      setIsPhoneNumberChecked(false)
+      return
+    }
+
+    setPhoneNumberDuplicationError(null)
+    setIsPhoneNumberChecked(false) // 확인 중임을 표시
+
+    try {
+      // 백엔드 API 경로 확인: /api/member/check-phone
+      const res = await fetch(`/api/member/check-phone?phoneNumber=${phoneNumber}`)
+      const data = await res.json()
+
+      if (data.exists) {
+        // 백엔드 응답이 { exists: true/false } 형태라고 가정
+        setPhoneNumberDuplicationError('이미 사용 중인 전화번호입니다.')
+        setIsPhoneNumberChecked(false)
+      } else {
+        setPhoneNumberDuplicationError(null)
+        setIsPhoneNumberChecked(true) // 중복 아님 확인 완료
+      }
+    } catch (error) {
+      console.error('전화번호 중복 확인 중 네트워크 오류:', error)
+      setPhoneNumberDuplicationError(
+        '전화번호 중복 확인 중 네트워크 오류가 발생했습니다.'
+      )
+      setIsPhoneNumberChecked(false)
+    }
+  }
+
   const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    setProfileUpdateLoading(true) // 프로필 업데이트 로딩 시작
-    setProfileError(null) // 에러 메시지 초기화
-    setProfileSuccess(null) // 성공 메시지 초기화
+    setProfileUpdateLoading(true)
+    setProfileError(null)
+    setProfileSuccess(null)
 
     const token = sessionStorage.getItem('token')
     if (!token) {
@@ -178,25 +223,24 @@ export function ProfileSettings() {
       return
     }
 
-    // TODO: 프로필 폼 프런트 단 유효성 검사 추가
-
-    // --- 이미지 정보 업데이트 핸들러 / 아직 구현 x  ---
-    // const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    //   const file = event.target.files ? event.target.files[0] : null
-    //   setSelectedFile(file) // 선택된 파일 객체를 상태에 저장
-
-    //   if (file) {
-    //     // 파일 미리보기 URL 생성 (선택 사항)
-    //     const reader = new FileReader()
-    //     reader.onloadend = () => {
-    //       setProfilePreviewUrl(reader.result as string)
-    //     }
-    //     reader.readAsDataURL(file)
-    //   } else {
-    //     setProfilePreviewUrl(null) // 파일이 없으면 미리보기 제거
-    //   }
-    //   console.log('이미지 업로드', file)
-    // }
+    // ⭐ 전화번호 중복 확인 여부 검사 (수정된 경우만)
+    // 현재 전화번호가 변경되었고, 중복 확인이 완료되지 않았거나 중복인 경우 업데이트를 막습니다.
+    if (
+      userProfile?.phoneNumber !== profileFormValues.phoneNumber &&
+      !isPhoneNumberChecked
+    ) {
+      setProfileError('전화번호 중복 확인을 완료해주세요.')
+      setProfileUpdateLoading(false)
+      return
+    }
+    if (
+      userProfile?.phoneNumber !== profileFormValues.phoneNumber &&
+      phoneNumberDuplicationError
+    ) {
+      setProfileError('중복된 전화번호이거나 유효하지 않은 전화번호입니다. 확인해주세요.')
+      setProfileUpdateLoading(false)
+      return
+    }
 
     try {
       const res = await fetch('/api/member/update', {
@@ -205,7 +249,7 @@ export function ProfileSettings() {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(profileFormValues) // 수정된 프로필 폼 값 전송
+        body: JSON.stringify(profileFormValues)
       })
 
       if (!res.ok) {
@@ -219,8 +263,6 @@ export function ProfileSettings() {
           navigate('/login')
         }
       } else {
-        // 업데이트 성공 처리
-        // 백엔드에서 업데이트된 사용자 정보를 반환한다면 받을 수 있습니다.
         const updatedRes = await fetch('/api/member/me', {
           method: 'GET',
           headers: {
@@ -237,9 +279,11 @@ export function ProfileSettings() {
           )
 
           setUserProfile(updatedData)
-          setUserGlobally(updatedData) // ✨ Zustand 전역 스토어 업데이트
-
+          setUserGlobally(updatedData)
           setProfileSuccess('프로필 정보가 성공적으로 업데이트되었습니다.')
+          // ⭐ 업데이트 성공 시 전화번호 중복 확인 상태 다시 초기화 (새로운 번호가 현재 번호가 됨)
+          setIsPhoneNumberChecked(true)
+          setPhoneNumberDuplicationError(null) // 혹시 남아있을 에러 메시지 초기화
         } else {
           const errorText = await updatedRes.text()
           console.error(
@@ -254,17 +298,16 @@ export function ProfileSettings() {
       console.error('프로필 정보 업데이트 중 네트워크 오류:', err)
       setProfileError('프로필 정보 업데이트 중 네트워크 오류가 발생했습니다.')
     } finally {
-      setProfileUpdateLoading(false) // 프로필 업데이트 로딩 완료
+      setProfileUpdateLoading(false)
     }
   }
 
-  // --- 비밀번호 변경 제출 핸들러 ---
   const handlePasswordChangeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    setPasswordChangeLoading(true) // 비밀번호 변경 로딩 시작
-    setPasswordError(null) // 에러 메시지 초기화
-    setPasswordSuccess(null) // 성공 메시지 초기화
+    setPasswordChangeLoading(true)
+    setPasswordError(null)
+    setPasswordSuccess(null)
 
     const token = sessionStorage.getItem('token')
     if (!token) {
@@ -274,7 +317,6 @@ export function ProfileSettings() {
       return
     }
 
-    // --- 비밀번호 변경 폼 프런트 단 유효성 검사 ---
     if (
       !passwordFormValues.currentPassword ||
       !passwordFormValues.newPassword ||
@@ -290,8 +332,6 @@ export function ProfileSettings() {
       setPasswordChangeLoading(false)
       return
     }
-
-    // TODO: 새 비밀번호 복잡성 규칙 등 추가 유효성 검사
 
     try {
       const res = await fetch('/api/member/change-password', {
@@ -315,38 +355,32 @@ export function ProfileSettings() {
           navigate('/login')
         }
       } else {
-        // 비밀번호 변경 성공 처리
         const successText = await res.text()
         console.log('비밀번호 변경 성공:', successText)
         setPasswordSuccess(successText || '비밀번호가 성공적으로 변경되었습니다.')
 
-        // 비밀번호 폼 필드 초기화
         setPasswordFormValues({
           currentPassword: '',
           newPassword: '',
           confirmNewPassword: ''
         })
-
-        // 성공 후 다른 페이지로 이동하거나 추가 작업 수행 가능
-        // navigate('/profile-settings'); // 예시: 프로필 설정 페이지로 이동
       }
     } catch (err) {
       console.error('비밀번호 변경 중 네트워크 오류:', err)
       setPasswordError('비밀번호 변경 중 네트워크 오류가 발생했습니다.')
     } finally {
-      setPasswordChangeLoading(false) // 비밀번호 변경 로딩 완료
+      setPasswordChangeLoading(false)
     }
   }
-  // --- 회원 탈퇴 관련 핸들러 ---
   const handleWithdrawalClick = () => {
-    setShowWithdrawalModal(true) // 탈퇴 확인 모달 표시
-    setWithdrawalPassword('') // 비밀번호 필드 초기화
+    setShowWithdrawalModal(true)
+    setWithdrawalPassword('')
     setWithdrawalError(null)
     setWithdrawalSuccess(null)
   }
 
   const handleWithdrawalModalClose = () => {
-    setShowWithdrawalModal(false) // 모달 닫기
+    setShowWithdrawalModal(false)
   }
 
   const handleWithdrawalPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -356,7 +390,7 @@ export function ProfileSettings() {
   }
 
   const handleWithdrawalConfirm = async (e: React.FormEvent) => {
-    e.preventDefault() // 폼 제출 기본 동작 방지
+    e.preventDefault()
 
     setWithdrawalLoading(true)
     setWithdrawalError(null)
@@ -378,13 +412,12 @@ export function ProfileSettings() {
 
     try {
       const res = await fetch('/api/member/withdraw', {
-        // 백엔드 API 경로 확인
-        method: 'PUT', // 상태 변경이므로 PUT 사용
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({password: withdrawalPassword}) // 비밀번호 전송
+        body: JSON.stringify({password: withdrawalPassword})
       })
 
       if (!res.ok) {
@@ -393,7 +426,7 @@ export function ProfileSettings() {
         setWithdrawalError(errorData || '회원 탈퇴에 실패했습니다.')
         if (res.status === 401) {
           sessionStorage.removeItem('token')
-          clearUserGlobally() // 전역 스토어 사용자 정보 삭제
+          clearUserGlobally()
           navigate('/login')
         }
       } else {
@@ -401,10 +434,9 @@ export function ProfileSettings() {
         setWithdrawalSuccess(successMessage || '회원 탈퇴가 성공적으로 처리되었습니다.')
         alert('회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.')
 
-        // --- 탈퇴 성공 후 처리 ---
-        sessionStorage.removeItem('token') // 토큰 삭제
-        clearUserGlobally() // Zustand 스토어의 사용자 정보 삭제 (로그아웃 처리)
-        navigate('/') // 메인 페이지나 로그아웃 페이지로 리다이렉트
+        sessionStorage.removeItem('token')
+        clearUserGlobally()
+        navigate('/')
       }
     } catch (err) {
       console.error('회원 탈퇴 중 네트워크 오류:', err)
@@ -414,9 +446,6 @@ export function ProfileSettings() {
     }
   }
 
-  // --- 렌더링 부분 ---
-
-  // 초기 페이지 로딩 중일 때
   if (pageLoading) {
     return (
       <>
@@ -431,7 +460,6 @@ export function ProfileSettings() {
     )
   }
 
-  // 초기 페이지 로딩 에러 발생 시
   if (pageError) {
     return (
       <>
@@ -448,21 +476,17 @@ export function ProfileSettings() {
     )
   }
 
-  // 사용자 정보가 성공적으로 로드되었을 때 전체 폼 렌더링
-  // userProfile이 null이 아님을 보장
   return (
     <>
       <Header />
       <main>
-        {/* Breadcrumbs 등 UI 요소 */}
         <ScrollToTopButton />
         <div className="breadcrumbs">
           <div className="container">
             <div className="row align-items-center">
               <div className="col-lg-6 col-md-6 col-12">
                 <div className="breadcrumbs-content">
-                  <h1 className="page-title">프로필 및 보안 설정</h1>{' '}
-                  {/* 통합 페이지 제목 */}
+                  <h1 className="page-title">프로필 및 보안 설정</h1>
                 </div>
               </div>
               <div className="col-lg-6 col-md-6 col-12">
@@ -470,7 +494,7 @@ export function ProfileSettings() {
                   <li>
                     <Link to="/">Home</Link>
                   </li>
-                  <li>프로필 및 보안 설정</li> {/* Breadcrumb */}
+                  <li>프로필 및 보안 설정</li>
                 </ul>
               </div>
             </div>
@@ -490,17 +514,13 @@ export function ProfileSettings() {
             </div>
           </div>
         </div>
-        {/* <div className="settings-container container"> */}{' '}
-        {/* 전체 설정을 위한 컨테이너 */}
         <div className="dashboard section">
-          {' '}
           <div className="container">
             <div className="row">
               <div className="col-lg-3 col-md-4 col-12">
                 <DashboardSidebar />
               </div>
               <div className="col-lg-9 col-md-8 col-12">
-                {/* 이동 펫 수정 페이지로 이동  */}
                 <NavLink
                   to="/profile-settings"
                   className={({isActive}) =>
@@ -511,11 +531,8 @@ export function ProfileSettings() {
                 <Link to={'/pet-settings'} className="link-button">
                   pet 수정
                 </Link>
-                {/* --- 회원 정보 수정 블록 --- */}
                 <div className="profile-settings">
                   <div className="profile-settings-block settings-box profile-settings-box">
-                    {' '}
-                    {/* 블록 컨테이너 */}
                     <h2>회원 정보</h2>
                     <div className="profile-image-preview">
                       <img
@@ -527,7 +544,6 @@ export function ProfileSettings() {
                       />
                     </div>
                     <form className="profile-form" onSubmit={handleProfileSubmit}>
-                      {/* 이미지 파일 업로드 공간 */}
                       <div className="form-group">
                         <label htmlFor="profileImage">프로필 이미지*</label>
                         <input
@@ -535,13 +551,11 @@ export function ProfileSettings() {
                           multiple
                           id="profileImage"
                           style={{display: 'none'}}
-                          // onChange={handleFileChange} // hook을 이용한 함수처리 추천
                         />
                         <label className="file-upload" htmlFor="profileImage">
                           <i className="lni lni-cloud-upload"></i> 선택된 파일 없음
                         </label>
                       </div>
-                      {/* 이메일 필드 (수정 불가) */}
                       <div className="row">
                         <div className="col-lg-6">
                           <div className="form-group">
@@ -557,7 +571,6 @@ export function ProfileSettings() {
                           </div>
                         </div>
                       </div>
-                      {/* 닉네임 필드 (수정 가능) */}
                       <div className="row">
                         <div className="col-lg-6">
                           <div className="form-group">
@@ -572,7 +585,6 @@ export function ProfileSettings() {
                             />
                           </div>
                         </div>
-                        {/* 연락처 정보 필드 */}
                         <div className="col-lg-6">
                           <div className="form-group">
                             <label htmlFor="phoneNumber">전화번호:</label>
@@ -582,11 +594,37 @@ export function ProfileSettings() {
                               name="phoneNumber"
                               value={profileFormValues.phoneNumber}
                               onChange={handleProfileInputChange}
+                              onBlur={checkPhoneNumberDuplication}
                               className="form-control"
                             />
+                            {/* ⭐ 중복 확인 메시지 표시 */}
+                            {phoneNumberDuplicationError && (
+                              <p
+                                style={{
+                                  color: 'red',
+                                  fontSize: '0.8em',
+                                  marginTop: '5px'
+                                }}>
+                                {phoneNumberDuplicationError}
+                              </p>
+                            )}
+                            {/* ⭐ 중복 확인 완료 메시지 (선택 사항) */}
+                            {/* {isPhoneNumberChecked &&
+                              !phoneNumberDuplicationError &&
+                              profileFormValues.phoneNumber.trim() !== '' &&
+                              userProfile?.phoneNumber !==
+                                profileFormValues.phoneNumber && (
+                                <p
+                                  style={{
+                                    color: 'green',
+                                    fontSize: '0.8em',
+                                    marginTop: '5px'
+                                  }}>
+                                  사용 가능한 전화번호입니다.
+                                </p>
+                              )} */}
                           </div>
                         </div>
-                        {/* 주소 정보 필드 */}
                         <div className="col-12">
                           <div className="form-group">
                             <label htmlFor="address">주소:</label>
@@ -600,9 +638,6 @@ export function ProfileSettings() {
                             />
                           </div>
                         </div>
-                        {/* 프로필 이미지 필드 (예시) */}
-                        {/* ... 이미지 업로드 필드 ... */}
-                        {/* 프로필 업데이트 관련 에러/성공 메시지 */}
                         {profileError && (
                           <div
                             className="alert alert-danger"
@@ -619,12 +654,18 @@ export function ProfileSettings() {
                             {profileSuccess}
                           </div>
                         )}
-                        {/* 정보 업데이트 버튼 */}
                         <div className="col-12">
                           <button
                             type="submit"
                             className="update-profile-btn"
-                            disabled={profileUpdateLoading}>
+                            // ⭐ 전화번호 중복 확인 상태에 따라 버튼 비활성화 (선택 사항)
+                            disabled={
+                              profileUpdateLoading ||
+                              (profileFormValues.phoneNumber !==
+                                userProfile?.phoneNumber &&
+                                !isPhoneNumberChecked) ||
+                              !!phoneNumberDuplicationError
+                            }>
                             {profileUpdateLoading ? '업데이트 중...' : '정보 업데이트'}
                           </button>
                         </div>
@@ -632,24 +673,19 @@ export function ProfileSettings() {
                     </form>
                   </div>
                 </div>
-                {/* --- 비밀번호 변경 블록 --- */}
-                {/* 별도의 블록으로 구분 */}
                 <div className="password-change">
                   <div
                     className="password-change-block settings-box profile-settings-box"
                     style={{marginTop: '40px'}}>
-                    {' '}
-                    {/* 상단 여백 추가 */}
                     <h2>비밀번호 변경</h2>
                   </div>
                   <form
                     className="password-change-form"
                     onSubmit={handlePasswordChangeSubmit}>
-                    {/* 현재 비밀번호 필드 */}
                     <div className="form-group">
                       <label htmlFor="currentPassword">현재 비밀번호:</label>
                       <input
-                        type="password"
+                        type={showPasswords.currentPassword ? 'text' : 'password'}
                         id="currentPassword"
                         name="currentPassword"
                         value={passwordFormValues.currentPassword}
@@ -657,27 +693,59 @@ export function ProfileSettings() {
                         className="form-control"
                         required
                       />
+                      <button
+                        type="button"
+                        className="password-toggle-button"
+                        onClick={() => togglePasswordVisibility('currentPassword')}>
+                        {showPasswords.currentPassword ? (
+                          <EyeSlashIcon
+                            className="h-5 w-5 text-gray-400 mt-4"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <EyeIcon
+                            className="h-5 w-5 text-gray-400 mt-4"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </button>
                     </div>
 
-                    {/* 새로운 비밀번호 필드 */}
                     <div className="form-group">
                       <label htmlFor="newPassword">새로운 비밀번호:</label>
-                      <input
-                        type="password"
-                        id="newPassword"
-                        name="newPassword"
-                        value={passwordFormValues.newPassword}
-                        onChange={handlePasswordInputChange}
-                        className="form-control"
-                        required
-                      />
+                      <div className="password-input-wrapper">
+                        <input
+                          type={showPasswords.newPassword ? 'text' : 'password'}
+                          id="newPassword"
+                          name="newPassword"
+                          value={passwordFormValues.newPassword}
+                          onChange={handlePasswordInputChange}
+                          className="form-control"
+                          required
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        className="password-toggle-button"
+                        onClick={() => togglePasswordVisibility('newPassword')}>
+                        {showPasswords.newPassword ? (
+                          <EyeSlashIcon
+                            className="h-5 w-5 text-gray-400 mt-4"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <EyeIcon
+                            className="h-5 w-5 text-gray-400 mt-4"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </button>
                     </div>
 
-                    {/* 새로운 비밀번호 확인 필드 */}
                     <div className="form-group">
                       <label htmlFor="confirmNewPassword">새로운 비밀번호 확인:</label>
                       <input
-                        type="password"
+                        type={showPasswords.confirmNewPassword ? 'text' : 'password'}
                         id="confirmNewPassword"
                         name="confirmNewPassword"
                         value={passwordFormValues.confirmNewPassword}
@@ -685,9 +753,23 @@ export function ProfileSettings() {
                         className="form-control"
                         required
                       />
+                      <button
+                        type="button"
+                        className="password-toggle-button"
+                        onClick={() => togglePasswordVisibility('confirmNewPassword')}>
+                        {showPasswords.confirmNewPassword ? (
+                          <EyeSlashIcon
+                            className="h-5 w-5 text-gray-400 mt-4"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <EyeIcon
+                            className="h-5 w-5 text-gray-400 mt-4"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </button>
                     </div>
-
-                    {/* 비밀번호 변경 관련 에러/성공 메시지 */}
                     {passwordError && (
                       <div
                         className="alert alert-danger"
@@ -705,7 +787,6 @@ export function ProfileSettings() {
                       </div>
                     )}
 
-                    {/* 제출 버튼 */}
                     <button
                       type="submit"
                       className="update-password-btn"
@@ -714,8 +795,6 @@ export function ProfileSettings() {
                     </button>
                   </form>
                 </div>
-
-                {/* --- 회원 탈퇴 블록 --- */}
 
                 <div className="withdrawal-section">
                   <div
@@ -732,7 +811,7 @@ export function ProfileSettings() {
                     </p>
                     <button
                       type="button"
-                      className="btn btn-danger" // 부트스트랩 클래스 또는 직접 스타일링
+                      className="btn btn-danger"
                       onClick={handleWithdrawalClick}
                       style={{padding: '10px 20px', fontSize: '16px'}}>
                       회원 탈퇴
@@ -740,15 +819,10 @@ export function ProfileSettings() {
                   </div>
                 </div>
 
-                {/* --- 회원 탈퇴 확인 모달 (조건부 렌더링) --- */}
                 {showWithdrawalModal && (
                   <div className="settings-header profile-header">
                     <div className="modal-overlay ">
-                      {' '}
-                      {/* 모달 오버레이 스타일링 필요 */}
                       <div className="modal-content">
-                        {' '}
-                        {/* 모달 내용 스타일링 필요 */}
                         <h3>회원 탈퇴 확인</h3>
                         <p>
                           정말로 회원 탈퇴를 진행하시겠습니까? 탈퇴하시면 모든 정보가 삭제
