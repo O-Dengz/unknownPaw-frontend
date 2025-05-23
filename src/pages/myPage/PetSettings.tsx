@@ -535,7 +535,7 @@ export function PetSettings() {
                           <button
                             type="button"
                             className="delete-button btn-danger"
-                            onClick={() => handleDeletePet(pet.petId)}>
+                            onClick={() => handleDeletePet(pet.petId, pet.petName)}>
                             삭제
                           </button>
                         </form>
