@@ -133,7 +133,7 @@ export function PetOwner() {
       }
 
       const pageParam = pageRequest.page
-      let apiUrl = `/api/posts/petowner/list?page=${pageParam}&size=${pageRequest.size}`;
+      let apiUrl = `/api/posts/petowner/list?page=${pageParam}&size=${pageRequest.size}`
 
       if (pageRequest.type) {
         apiUrl += `&type=${pageRequest.type}`
@@ -314,7 +314,8 @@ export function PetOwner() {
                 <span className="separator">|</span>
                 <button
                   className={`sort-button ${
-                    pageRequest.sortBy === 'hourlyRate' && pageRequest.sortOrder === 'DESC'
+                    pageRequest.sortBy === 'hourlyRate' &&
+                    pageRequest.sortOrder === 'DESC'
                       ? 'active'
                       : ''
                   }`}

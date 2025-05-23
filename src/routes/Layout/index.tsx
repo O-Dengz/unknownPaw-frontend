@@ -29,6 +29,7 @@ import MemberProfile from '../../pages/member/MemberProfile'
 
 import PostAd from '../../pages/postAd/PostAd'
 import {PetSettings} from '../../pages/myPage/PetSettings'
+import RegisterPetPage from '../../pages/myPage/RegisterPetPage'
 
 export default function Layout() {
   const location = useLocation()
@@ -61,6 +62,7 @@ export default function Layout() {
         <Route path="/my-posts" element={<MyPosts />} />
         <Route path="/myfavourite" element={<MyFavourite />} />
         <Route path="/pet-settings" element={<PetSettings />} />
+        <Route path="/register-pet" element={<RegisterPetPage />} />
 
         {/* 멤버 */}
         <Route path="/profile/simple/:mid" element={<MemberProfile />} />

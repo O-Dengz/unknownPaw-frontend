@@ -5,6 +5,8 @@ import Footer from '../../components/common/Footer' // Footer 컴포넌트 impor
 import {DashboardSidebar} from '../../components/DashboardSidebar'
 import './myPage.css'
 import {useUserStore} from '../../store/userStore'
+import {PasswordInput} from '../../components/PasswordInput'
+import ScrollToTopButton from '../../components/ScrollToTopButton'
 
 interface UserProfile {
   email?: string
@@ -35,6 +37,7 @@ export function ProfileSettings() {
 
   // Zustand 스토어의 setUser 액션만 가져옴
   const setUserGlobally = useUserStore(state => state.setUser)
+  const clearUserGlobally = useUserStore(state => state.clearUser) // Zustand clearUser 액션 추가
 
   // --- State 관리 ---
 
@@ -73,6 +76,13 @@ export function ProfileSettings() {
   // 이미지 관련 상태 관리
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [profilePreviewUrl, setProfilePreviewUrl] = useState<string | null>(null)
+
+  // 회원 탈퇴 관련 상태
+  const [showWithdrawalModal, setShowWithdrawalModal] = useState(false)
+  const [withdrawalPassword, setWithdrawalPassword] = useState('')
+  const [withdrawalLoading, setWithdrawalLoading] = useState(false)
+  const [withdrawalError, setWithdrawalError] = useState<string | null>(null)
+  const [withdrawalSuccess, setWithdrawalSuccess] = useState<string | null>(null)
 
   // --- useEffect 훅: 컴포넌트 마운트 시 사용자 정보 불러오기 ---
   useEffect(() => {
@@ -327,6 +337,82 @@ export function ProfileSettings() {
       setPasswordChangeLoading(false) // 비밀번호 변경 로딩 완료
     }
   }
+  // --- 회원 탈퇴 관련 핸들러 ---
+  const handleWithdrawalClick = () => {
+    setShowWithdrawalModal(true) // 탈퇴 확인 모달 표시
+    setWithdrawalPassword('') // 비밀번호 필드 초기화
+    setWithdrawalError(null)
+    setWithdrawalSuccess(null)
+  }
+
+  const handleWithdrawalModalClose = () => {
+    setShowWithdrawalModal(false) // 모달 닫기
+  }
+
+  const handleWithdrawalPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWithdrawalPassword(e.target.value)
+    setWithdrawalError(null)
+    setWithdrawalSuccess(null)
+  }
+
+  const handleWithdrawalConfirm = async (e: React.FormEvent) => {
+    e.preventDefault() // 폼 제출 기본 동작 방지
+
+    setWithdrawalLoading(true)
+    setWithdrawalError(null)
+    setWithdrawalSuccess(null)
+
+    const token = sessionStorage.getItem('token')
+    if (!token) {
+      alert('로그인이 필요합니다.')
+      navigate('/login')
+      setWithdrawalLoading(false)
+      return
+    }
+
+    if (!withdrawalPassword.trim()) {
+      setWithdrawalError('비밀번호를 입력해주세요.')
+      setWithdrawalLoading(false)
+      return
+    }
+
+    try {
+      const res = await fetch('/api/member/withdraw', {
+        // 백엔드 API 경로 확인
+        method: 'PUT', // 상태 변경이므로 PUT 사용
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({password: withdrawalPassword}) // 비밀번호 전송
+      })
+
+      if (!res.ok) {
+        const errorData = await res.text()
+        console.error('회원 탈퇴 실패:', res.status, errorData)
+        setWithdrawalError(errorData || '회원 탈퇴에 실패했습니다.')
+        if (res.status === 401) {
+          sessionStorage.removeItem('token')
+          clearUserGlobally() // 전역 스토어 사용자 정보 삭제
+          navigate('/login')
+        }
+      } else {
+        const successMessage = await res.text()
+        setWithdrawalSuccess(successMessage || '회원 탈퇴가 성공적으로 처리되었습니다.')
+        alert('회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.')
+
+        // --- 탈퇴 성공 후 처리 ---
+        sessionStorage.removeItem('token') // 토큰 삭제
+        clearUserGlobally() // Zustand 스토어의 사용자 정보 삭제 (로그아웃 처리)
+        navigate('/') // 메인 페이지나 로그아웃 페이지로 리다이렉트
+      }
+    } catch (err) {
+      console.error('회원 탈퇴 중 네트워크 오류:', err)
+      setWithdrawalError('네트워크 오류가 발생했습니다.')
+    } finally {
+      setWithdrawalLoading(false)
+    }
+  }
 
   // --- 렌더링 부분 ---
 
@@ -369,6 +455,7 @@ export function ProfileSettings() {
       <Header />
       <main>
         {/* Breadcrumbs 등 UI 요소 */}
+        <ScrollToTopButton />
         <div className="breadcrumbs">
           <div className="container">
             <div className="row align-items-center">
@@ -391,12 +478,15 @@ export function ProfileSettings() {
               <ul className="breadcrumb-nav">
                 <li>
                   <a href="/">
-                    <img src="/assets/images/logo/logo.png" alt="UnknownPaw" style={{ height: '30px' }} />
+                    <img
+                      src="/assets/images/logo/logo.png"
+                      alt="UnknownPaw"
+                      style={{height: '30px'}}
+                    />
                   </a>
                 </li>
                 <li>프로필 설정</li>
               </ul>
-
             </div>
           </div>
         </div>
@@ -550,85 +640,172 @@ export function ProfileSettings() {
                     style={{marginTop: '40px'}}>
                     {' '}
                     {/* 상단 여백 추가 */}
-                    <div className="settings-header profile-header">
-                      <h2>비밀번호 변경</h2>
+                    <h2>비밀번호 변경</h2>
+                  </div>
+                  <form
+                    className="password-change-form"
+                    onSubmit={handlePasswordChangeSubmit}>
+                    {/* 현재 비밀번호 필드 */}
+                    <div className="form-group">
+                      <label htmlFor="currentPassword">현재 비밀번호:</label>
+                      <input
+                        type="password"
+                        id="currentPassword"
+                        name="currentPassword"
+                        value={passwordFormValues.currentPassword}
+                        onChange={handlePasswordInputChange}
+                        className="form-control"
+                        required
+                      />
                     </div>
-                    <form
-                      className="password-change-form"
-                      onSubmit={handlePasswordChangeSubmit}>
-                      {/* 현재 비밀번호 필드 */}
-                      <div className="form-group">
-                        <label htmlFor="currentPassword">현재 비밀번호:</label>
-                        <input
-                          type="password"
-                          id="currentPassword"
-                          name="currentPassword"
-                          value={passwordFormValues.currentPassword}
-                          onChange={handlePasswordInputChange}
-                          className="form-control"
-                          required
-                        />
+
+                    {/* 새로운 비밀번호 필드 */}
+                    <div className="form-group">
+                      <label htmlFor="newPassword">새로운 비밀번호:</label>
+                      <input
+                        type="password"
+                        id="newPassword"
+                        name="newPassword"
+                        value={passwordFormValues.newPassword}
+                        onChange={handlePasswordInputChange}
+                        className="form-control"
+                        required
+                      />
+                    </div>
+
+                    {/* 새로운 비밀번호 확인 필드 */}
+                    <div className="form-group">
+                      <label htmlFor="confirmNewPassword">새로운 비밀번호 확인:</label>
+                      <input
+                        type="password"
+                        id="confirmNewPassword"
+                        name="confirmNewPassword"
+                        value={passwordFormValues.confirmNewPassword}
+                        onChange={handlePasswordInputChange}
+                        className="form-control"
+                        required
+                      />
+                    </div>
+
+                    {/* 비밀번호 변경 관련 에러/성공 메시지 */}
+                    {passwordError && (
+                      <div
+                        className="alert alert-danger"
+                        role="alert"
+                        style={{color: 'red', marginTop: '10px'}}>
+                        {passwordError}
                       </div>
-
-                      {/* 새로운 비밀번호 필드 */}
-                      <div className="form-group">
-                        <label htmlFor="newPassword">새로운 비밀번호:</label>
-                        <input
-                          type="password"
-                          id="newPassword"
-                          name="newPassword"
-                          value={passwordFormValues.newPassword}
-                          onChange={handlePasswordInputChange}
-                          className="form-control"
-                          required
-                        />
+                    )}
+                    {passwordSuccess && (
+                      <div
+                        className="alert alert-success"
+                        role="alert"
+                        style={{color: 'green', marginTop: '10px'}}>
+                        {passwordSuccess}
                       </div>
+                    )}
 
-                      {/* 새로운 비밀번호 확인 필드 */}
-                      <div className="form-group">
-                        <label htmlFor="confirmNewPassword">새로운 비밀번호 확인:</label>
-                        <input
-                          type="password"
-                          id="confirmNewPassword"
-                          name="confirmNewPassword"
-                          value={passwordFormValues.confirmNewPassword}
-                          onChange={handlePasswordInputChange}
-                          className="form-control"
-                          required
-                        />
-                      </div>
+                    {/* 제출 버튼 */}
+                    <button
+                      type="submit"
+                      className="update-password-btn"
+                      disabled={passwordChangeLoading}>
+                      {passwordChangeLoading ? '변경 중...' : '비밀번호 변경'}
+                    </button>
+                  </form>
+                </div>
 
-                      {/* 비밀번호 변경 관련 에러/성공 메시지 */}
-                      {passwordError && (
-                        <div
-                          className="alert alert-danger"
-                          role="alert"
-                          style={{color: 'red', marginTop: '10px'}}>
-                          {passwordError}
-                        </div>
-                      )}
-                      {passwordSuccess && (
-                        <div
-                          className="alert alert-success"
-                          role="alert"
-                          style={{color: 'green', marginTop: '10px'}}>
-                          {passwordSuccess}
-                        </div>
-                      )}
+                {/* --- 회원 탈퇴 블록 --- */}
 
-                      {/* 제출 버튼 */}
-                      <button
-                        type="submit"
-                        className="update-password-btn"
-                        disabled={passwordChangeLoading}>
-                        {passwordChangeLoading ? '변경 중...' : '비밀번호 변경'}
-                      </button>
-                    </form>
+                <div className="withdrawal-section">
+                  <div
+                    className="settings-box profile-settings"
+                    style={{marginTop: '40px'}}>
+                    <div
+                      className="password-change-block settings-box profile-settings-box"
+                      style={{marginTop: '40px'}}></div>
+                    <h2>회원 탈퇴</h2>
+                    <p>
+                      더 이상 서비스를 이용하지 않으시려면 아래 버튼을 클릭하여 회원
+                      탈퇴를 진행할 수 있습니다. 탈퇴 후에는 계정 복구가 어려울 수
+                      있습니다.
+                    </p>
+                    <button
+                      type="button"
+                      className="btn btn-danger" // 부트스트랩 클래스 또는 직접 스타일링
+                      onClick={handleWithdrawalClick}
+                      style={{padding: '10px 20px', fontSize: '16px'}}>
+                      회원 탈퇴
+                    </button>
                   </div>
                 </div>
+
+                {/* --- 회원 탈퇴 확인 모달 (조건부 렌더링) --- */}
+                {showWithdrawalModal && (
+                  <div className="settings-header profile-header">
+                    <div className="modal-overlay ">
+                      {' '}
+                      {/* 모달 오버레이 스타일링 필요 */}
+                      <div className="modal-content">
+                        {' '}
+                        {/* 모달 내용 스타일링 필요 */}
+                        <h3>회원 탈퇴 확인</h3>
+                        <p>
+                          정말로 회원 탈퇴를 진행하시겠습니까? 탈퇴하시면 모든 정보가 삭제
+                          처리되며, 복구되지 않을 수 있습니다.
+                        </p>
+                        <form onSubmit={handleWithdrawalConfirm}>
+                          <PasswordInput
+                            id="withdrawalPassword"
+                            name="withdrawalPassword"
+                            value={withdrawalPassword}
+                            onChange={handleWithdrawalPasswordChange}
+                            label="확인을 위해 비밀번호를 입력해주세요"
+                            required={true}
+                          />
+                          {withdrawalError && (
+                            <div
+                              className="alert alert-danger"
+                              style={{color: 'red', marginTop: '10px'}}>
+                              {withdrawalError}
+                            </div>
+                          )}
+                          {withdrawalSuccess && (
+                            <div
+                              className="alert alert-success"
+                              style={{color: 'green', marginTop: '10px'}}>
+                              {withdrawalSuccess}
+                            </div>
+                          )}
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'flex-end',
+                              gap: '10px',
+                              marginTop: '20px'
+                            }}>
+                            <button
+                              type="button"
+                              className="btn btn-secondary"
+                              onClick={handleWithdrawalModalClose}
+                              disabled={withdrawalLoading}>
+                              취소
+                            </button>
+                            <button
+                              type="submit"
+                              className="btn btn-danger"
+                              disabled={withdrawalLoading}>
+                              {withdrawalLoading ? '탈퇴 처리 중...' : '확인 및 탈퇴'}
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          </div>{' '}
+          </div>
         </div>
       </main>
       <Footer />

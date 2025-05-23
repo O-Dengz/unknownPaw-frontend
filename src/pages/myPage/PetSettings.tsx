@@ -1,3 +1,4 @@
+// ------------ 펫 정보 수정 페이지 ------------
 import React, {useState, useEffect} from 'react'
 import {useNavigate, Link, useLocation, NavLink} from 'react-router-dom' // Link 추가
 import Header from '../../components/common/Header' // Header 컴포넌트 import
@@ -141,6 +142,45 @@ export function PetSettings() {
     }
   }
 
+  // --- 펫 삭제 핸들러 ---
+  const handleDeletePet = async (petId: number, petName: string) => {
+    const token = sessionStorage.getItem('token')
+    if (!token) {
+      alert('로그인이 필요합니다.')
+      navigate('/login')
+      return
+    }
+
+    // 사용자에게 정말 삭제할 것인지 확인
+    if (!window.confirm(`${petName}을(를) 정말로 삭제하시겠습니까?`)) {
+      return // 사용자가 취소하면 함수 종료
+    }
+
+    try {
+      // TODO: 펫 삭제 API 엔드포인트로 변경하세요
+      // 보통 DELETE 요청을 사용하며, 경로 변수로 petId를 넘깁니다.
+      const response = await fetch(`/api/pet/${petId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      if (response.ok) {
+        alert(`${petName}이(가) 성공적으로 삭제되었습니다.`)
+        // 삭제 성공 시, UI에서 해당 펫을 제거하여 즉시 반영
+        setPets(prevPets => prevPets.filter(pet => pet.petId !== petId))
+      } else {
+        const errorData = await response.text() // 또는 response.json()
+        console.error('펫 삭제 실패:', response.status, errorData)
+        alert(`펫 삭제에 실패했습니다: ${errorData || response.statusText}`)
+      }
+    } catch (error) {
+      console.error('펫 삭제 중 네트워크 오류:', error)
+      alert('펫 삭제 중 오류가 발생했습니다.')
+    }
+  }
+
   // --- 렌더링 부분 ---
 
   // 로딩 중일 때
@@ -227,7 +267,7 @@ export function PetSettings() {
                   {pets.length > 0 ? (
                     pets.map(pet => (
                       // 각 펫 정보를 위한 박스/폼 형태
-                      <div key={pet.petId} className="pet-info-box profile-settings-box">
+                      <div key={pet.petId} className="pet-info profile-one-box">
                         <div className="profile-settings-block settings-box profile-settings-box ">
                           {/* 블록 컨테이너 */}
                           <h2>나의 반려견 정보</h2>
@@ -492,7 +532,12 @@ export function PetSettings() {
                             {/* 적절한 버튼 클래스 사용 */}펫 정보 업데이트
                           </button>
                           {/* 삭제 버튼 추가 (선택 사항) */}
-                          {/* <button type="button" className="delete-button btn-danger" onClick={() => handleDeletePet(pet.petId)}>삭제</button> */}
+                          <button
+                            type="button"
+                            className="delete-button btn-danger"
+                            onClick={() => handleDeletePet(pet.petId)}>
+                            삭제
+                          </button>
                         </form>
                       </div>
                     ))
@@ -501,12 +546,12 @@ export function PetSettings() {
                       className="container"
                       style={{textAlign: 'center', padding: '20px'}}>
                       <p>등록된 펫 정보가 없습니다.</p>
-                      {/* 펫 등록 페이지로 이동하는 링크 추가 가능 추후에 추가 */}
-                      <div className="link-button">
-                        <Link to="/register-pet">새 펫 등록하기</Link>
-                      </div>
                     </div>
                   )}
+                  {/* 펫 등록 페이지로 이동하는 링크 추가 가능 추후에 추가 */}
+                  <div className="link-button">
+                    <Link to="/register-pet"> 새로운 반려동물 등록하기</Link>
+                  </div>
                 </div>
               </div>
             </div>

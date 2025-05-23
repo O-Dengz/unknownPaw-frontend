@@ -5,7 +5,14 @@ import {EyeIcon, EyeSlashIcon} from '@heroicons/react/24/outline'
 import './Join.css'
 
 type JoinFormType = Record<
-  'email' | 'pass' | 'mobile' | 'name' | 'nickname' | 'birthday' | 'gender' | 'address',
+  | 'email'
+  | 'pass'
+  | 'phoneNumber'
+  | 'name'
+  | 'nickname'
+  | 'birthday'
+  | 'gender'
+  | 'address',
   string
 >
 
@@ -23,7 +30,7 @@ type PetFormType = {
 const initialFormState = {
   email: '',
   pass: '',
-  mobile: '',
+  phoneNumber: '',
   name: '',
   nickname: '',
   birthday: '',
@@ -43,7 +50,7 @@ const initialPetFormState = {
 }
 
 export function Join() {
-  const [{email, pass, mobile, name, nickname, birthday, gender, address}, setForm] =
+  const [{email, pass, phoneNumber, name, nickname, birthday, gender, address}, setForm] =
     useState<JoinFormType>(initialFormState)
   const [petForm, setPetForm] = useState<PetFormType>(initialPetFormState)
   const [showPassword, setShowPassword] = useState(false)
@@ -69,7 +76,7 @@ export function Join() {
 
   const emailRef = useRef<HTMLInputElement>(null)
   const passRef = useRef<HTMLInputElement>(null)
-  const mobileRef = useRef<HTMLInputElement>(null)
+  const phoneNumberRef = useRef<HTMLInputElement>(null)
   const nameRef = useRef<HTMLInputElement>(null)
   const nicknameRef = useRef<HTMLInputElement>(null)
   const birthdayRef = useRef<HTMLInputElement>(null)
@@ -89,9 +96,9 @@ export function Join() {
       passRef.current?.focus()
       return
     }
-    if (!mobileRef.current?.value) {
-      mobileRef.current?.setAttribute('placeholder', 'Please Check Mobile')
-      mobileRef.current?.focus()
+    if (!phoneNumberRef.current?.value) {
+      phoneNumberRef.current?.setAttribute('placeholder', 'Please Check phoneNumber')
+      phoneNumberRef.current?.focus()
       return
     }
     if (!nameRef.current?.value) {
@@ -128,19 +135,19 @@ export function Join() {
     if (hasPet) {
       setShowPetModal(true)
     } else {
-      regist(email, pass, mobile, name, nickname, birthday, gender, address)
+      regist(email, pass, phoneNumber, name, nickname, birthday, gender, address)
     }
   }
 
   const handlePetSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    regist(email, pass, mobile, name, nickname, birthday, gender, address, petForm)
+    regist(email, pass, phoneNumber, name, nickname, birthday, gender, address, petForm)
   }
 
   const regist = async (
     email: string,
     pass: string,
-    mobile: string,
+    phoneNumber: string,
     name: string,
     nickname: string,
     birthday: string,
@@ -155,7 +162,7 @@ export function Join() {
         body: JSON.stringify({
           email,
           password: pass,
-          mobile,
+          phoneNumber,
           name,
           nickname,
           birthday: parseInt(birthday),
@@ -163,21 +170,22 @@ export function Join() {
           address,
           petInfo
         })
-      });
+      })
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || '회원가입에 실패했습니다.');
+        const errorText = await response.text()
+        throw new Error(errorText || '회원가입에 실패했습니다.')
       }
 
-      const result = await response.text();
+      const result = await response.text()
       if (result) {
-        alert(result);
-        navigate('/login');
+        // alert(result)
+        navigate('/login')
+        console.log('Sending password:', pass)
       }
     } catch (error) {
-      console.error('Registration error:', error);
-      alert(error instanceof Error ? error.message : '회원가입 중 오류가 발생했습니다.');
+      console.error('Registration error:', error)
+      alert(error instanceof Error ? error.message : '회원가입 중 오류가 발생했습니다.')
     }
   }
 
@@ -230,6 +238,7 @@ export function Join() {
                   className="form-input"
                   placeholder="Enter your password"
                   onChange={changed('pass')}
+                  value={pass}
                 />
                 <button
                   type="button"
@@ -245,20 +254,20 @@ export function Join() {
             </div>
 
             <div>
-              <label htmlFor="mobile" className="form-label">
+              <label htmlFor="phoneNumber" className="form-label">
                 휴대전화
               </label>
               <div className="mt-1">
                 <input
-                  id="mobile"
-                  name="mobile"
+                  id="phoneNumber"
+                  name="phoneNumber"
                   type="tel"
                   autoComplete="tel"
                   required
-                  ref={mobileRef}
+                  ref={phoneNumberRef}
                   className="form-input"
-                  placeholder="Enter your mobile number"
-                  onChange={changed('mobile')}
+                  placeholder="Enter your phoneNumber "
+                  onChange={changed('phoneNumber')}
                 />
               </div>
             </div>
@@ -453,7 +462,16 @@ export function Join() {
                 type="button"
                 onClick={() => {
                   setShowPetModal(false)
-                  regist(email, pass, mobile, name, nickname, birthday, gender, address)
+                  regist(
+                    email,
+                    pass,
+                    phoneNumber,
+                    name,
+                    nickname,
+                    birthday,
+                    gender,
+                    address
+                  )
                 }}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
                 아니오
@@ -572,7 +590,16 @@ export function Join() {
                   type="button"
                   onClick={() => {
                     setShowPetForm(false)
-                    regist(email, pass, mobile, name, nickname, birthday, gender, address)
+                    regist(
+                      email,
+                      pass,
+                      phoneNumber,
+                      name,
+                      nickname,
+                      birthday,
+                      gender,
+                      address
+                    )
                   }}
                   className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
                   취소
@@ -583,5 +610,5 @@ export function Join() {
         </div>
       )}
     </div>
-  );  
+  )
 }
