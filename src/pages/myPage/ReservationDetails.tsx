@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
 import axios from 'axios'
 import {DashboardSidebar} from '../../components/DashboardSidebar'
+import {ReservationEditModal} from '../../components/ReservationEditModal'
 
 // 예약 내역 데이터 타입 정의
 type ReservationDetailsItem = {
@@ -13,33 +14,36 @@ type ReservationDetailsItem = {
   duration: string
   price: string
   rating: string
+  confirmationDate: string
+  futureDate: string
+  defaultLocation: string
+  decideHourRate: number
+  serviceCategory: 'WALK' | 'CARE' | 'HOTEL'
+  mid: number
+  petId: number
+  postId: number // ✅ 추가
+  postType?: 'PET_OWNER' | 'PET_SITTER' // ✅ 선택적 추가
 }
 
 export default function ReservationDetails() {
-  // 원본 데이터 / 필터링된 데이터
   const [originalData, setOriginalData] = useState<ReservationDetailsItem[]>([])
   const [filteredData, setFilteredData] = useState<ReservationDetailsItem[]>([])
-
-  // 필터 옵션 상태
   const [filterType, setFilterType] = useState<'전체' | '산책' | '돌봄' | '호텔'>('전체')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-
-  // 로딩 및 에러 상태
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
-  // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1)
+  const [selectedReservation, setSelectedReservation] =
+    useState<ReservationDetailsItem | null>(null)
+
   const itemsPerPage = 5
   const pagesPerGroup = 10
 
-  // 현재 페이지에서 보여줄 데이터 계산
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem)
 
-  // 페이지 그룹 계산 (ex. 1~10, 11~20)
   const totalPages = Math.ceil(filteredData.length / itemsPerPage)
   const currentGroup = Math.ceil(currentPage / pagesPerGroup)
   const startPage = (currentGroup - 1) * pagesPerGroup + 1
@@ -49,40 +53,36 @@ export default function ReservationDetails() {
     (_, i) => startPage + i
   )
 
-  // 컴포넌트 마운트 시 데이터 요청
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        setError('')
-
-        const memberString = sessionStorage.getItem('member')
-        const member = memberString ? JSON.parse(memberString) : null
-        const mid = member?.mid
-        if (!mid) throw new Error('로그인이 필요합니다.')
-
-        const response = await axios.get<ReservationDetailsItem[]>(
-          `/api/appointment/member/${mid}`
-        )
-        if (!response.data) throw new Error('데이터가 없습니다.')
-
-        setOriginalData(response.data)
-        setFilteredData(response.data)
-      } catch (err) {
-        const apiError = err as any
-        if (apiError.response) {
-          setError(`내역 불러오기 실패: ${apiError.response.statusText}`)
-        } else {
-          setError((err as Error).message || '알 수 없는 오류 발생')
-        }
-      } finally {
-        setLoading(false)
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      setError('')
+      const memberString = sessionStorage.getItem('member')
+      const member = memberString ? JSON.parse(memberString) : null
+      const mid = member?.mid
+      if (!mid) throw new Error('로그인이 필요합니다.')
+      const response = await axios.get<ReservationDetailsItem[]>(
+        `/api/appointment/member/${mid}`
+      )
+      if (!response.data) throw new Error('데이터가 없습니다.')
+      setOriginalData(response.data)
+      setFilteredData(response.data)
+    } catch (err) {
+      const apiError = err as any
+      if (apiError.response) {
+        setError(`내역 불러오기 실패: ${apiError.response.statusText}`)
+      } else {
+        setError((err as Error).message || '알 수 없는 오류 발생')
       }
+    } finally {
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
     fetchData()
   }, [])
 
-  // 필터 적용 함수
   const handleFilter = () => {
     const filtered = originalData.filter(item => {
       const matchType = filterType === '전체' || item.type === filterType
@@ -94,7 +94,6 @@ export default function ReservationDetails() {
     setCurrentPage(1)
   }
 
-  // 페이지네이션 UI 출력 함수
   const renderPagination = () => (
     <div className="pagination mt-4 d-flex flex-wrap gap-1">
       {currentPage > 1 && (
@@ -138,7 +137,6 @@ export default function ReservationDetails() {
 
   return (
     <div>
-      {/* 페이지 제목 영역 */}
       <div className="breadcrumbs">
         <div className="container">
           <div className="row align-items-center">
@@ -157,7 +155,6 @@ export default function ReservationDetails() {
         </div>
       </div>
 
-      {/* 마이페이지 대시보드 구조 */}
       <section className="dashboard section">
         <div className="container">
           <div className="row">
@@ -168,8 +165,6 @@ export default function ReservationDetails() {
               <div className="main-content">
                 <div className="dashboard-block mt-0">
                   <h3 className="block-title">예약 내역</h3>
-
-                  {/* 필터 UI */}
                   <div className="mb-3 d-flex gap-3 align-items-center flex-wrap">
                     <select
                       className="form-select"
@@ -181,7 +176,6 @@ export default function ReservationDetails() {
                       <option value="돌봄">돌봄</option>
                       <option value="호텔">호텔</option>
                     </select>
-
                     <input
                       type="date"
                       value={startDate}
@@ -197,13 +191,11 @@ export default function ReservationDetails() {
                       className="form-control"
                       style={{maxWidth: '160px'}}
                     />
-
                     <button className="btn btn-sm btn-primary" onClick={handleFilter}>
                       조회
                     </button>
                   </div>
 
-                  {/* 데이터 출력 영역 */}
                   <div className="inner-block">
                     {loading ? (
                       <p>불러오는 중...</p>
@@ -230,7 +222,7 @@ export default function ReservationDetails() {
                                 <strong>서비스 시간:</strong> {service.duration}
                               </p>
                               <p>
-                                <strong>금액:</strong> {service.price}
+                                <strong>시급:</strong> {service.price}
                               </p>
                               <p>
                                 <strong>평점:</strong>{' '}
@@ -243,6 +235,17 @@ export default function ReservationDetails() {
                                 className="btn btn-primary">
                                 상세보기
                               </Link>
+                              <button
+                                className="btn btn-outline-secondary ms-2"
+                                onClick={() =>
+                                  setSelectedReservation({
+                                    ...service,
+                                    postId: service.postId, // 🔧 postId가 있어야 함
+                                    postType: service.petId ? 'PET_SITTER' : 'PET_OWNER' // 🔧 petId 유무로 postType 판별
+                                  })
+                                }>
+                                수정
+                              </button>
                             </div>
                           </div>
                         ))}
@@ -258,6 +261,13 @@ export default function ReservationDetails() {
           </div>
         </div>
       </section>
+
+      <ReservationEditModal
+        isOpen={selectedReservation !== null}
+        onClose={() => setSelectedReservation(null)}
+        reservation={selectedReservation!}
+        onUpdate={fetchData}
+      />
     </div>
   )
 }
