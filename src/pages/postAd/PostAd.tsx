@@ -31,7 +31,7 @@ const toServiceCategory = (kor: string): string => {
     case '산책':
       return 'WALK'
     case '호텔링':
-      return 'HOTELING'
+      return 'HOTEL'
     case '돌봄':
       return 'CARE'
     default:
@@ -117,7 +117,7 @@ export default function PostAd() {
       const postDTO = {
         title: postData.title,
         content: postData.content,
-        serviceCategory: toServiceCategory(postData.serviceCategory),
+        serviceCategory: postData.serviceCategory,
         hourlyRate: String(postData.hourlyRate),
         defaultLocation: postData.defaultLocation,
         serviceDate: postData.serviceDate,
@@ -125,6 +125,8 @@ export default function PostAd() {
         petExperience: postData.petExperience,
         license: postData.license
       }
+
+      console.log("전송하는 serviceCategory:", postData.serviceCategory);
 
       // 2️⃣ 이미지 유무에 따라 분기
       let endpoint

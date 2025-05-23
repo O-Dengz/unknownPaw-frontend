@@ -12,6 +12,7 @@
   "dependencies": {
     "@fontsource/material-icons": "^5.2.5",
     "@heroicons/react": "^2.2.0",
+    "@reduxjs/toolkit": "^2.8.2",
     "@types/axios": "^0.9.36",
     "axios": "^1.9.0",
     "chance": "^1.1.12",
@@ -31,6 +32,7 @@
     "@types/bootstrap": "^5.2.10",
     "@types/chance": "^1.1.6",
     "@types/luxon": "^3.6.2",
+    "@types/node": "^22.15.21",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react": "^4.2.1",

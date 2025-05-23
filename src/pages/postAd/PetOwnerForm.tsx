@@ -148,7 +148,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
             className="form-control">
             <option value="">카테고리를 선택하세요</option>
             <option value="WALK">산책</option>
-            <option value="HOTELING">호텔링</option>
+            <option value="HOTEL">호텔링</option>
             <option value="CARE">돌봄</option>
           </select>
         </div>

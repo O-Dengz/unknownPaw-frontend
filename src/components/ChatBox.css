@@ -1,0 +1,101 @@
+/*F1A852 오댕노랑
+  32ADE6 오댕파랑 */
+
+.chat-box {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 350px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #ccc;
+  background-color: #fff;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.chat-header {
+  padding: 16px;
+  font-weight: bold;
+  font-size: 18px;
+  border-bottom: 1px solid #ddd;
+  background-color: #f8f8f8;
+  text-align: center;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 기본 메시지 스타일 */
+.chat-message {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  line-height: 1.4;
+  word-break: break-word;
+  font-size: 14px;
+}
+
+/* 보내는 사람 (오렌지, 오른쪽) */
+.chat-message.sent {
+  background-color: #ffb347;
+  align-self: flex-end;
+  color: #fff;
+  border-bottom-right-radius: 0;
+}
+
+
+
+/* 받는 사람 (하늘색, 왼쪽) */
+.chat-message.received {
+  background-color: #32ADE6;
+  align-self: flex-start;
+  color: #333;
+  border-bottom-left-radius: 0;
+}
+
+.chat-input-area {
+  display: flex;
+  padding: 12px;
+  border-top: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  border: 2px solid #aaa;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.chat-input:focus {
+  border-color: #007bff;
+  background-color: #fffefb;
+}
+
+.chat-send-btn {
+  margin-left: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.chat-send-btn:hover {
+  background-color: #0056b3;
+}
