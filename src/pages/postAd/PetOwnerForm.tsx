@@ -23,7 +23,7 @@ interface Member {
 }
 
 // Post 기본 인터페이스
-interface PostFormData {
+export interface PostFormData {
   title: string
   content: string
   serviceCategory: string
@@ -34,9 +34,13 @@ interface PostFormData {
   petId?: number
 }
 
-interface PetOwnerFormProps {
+export interface PetOwnerFormProps {
   onDataChange: (data: PostFormData) => void
+  initialData?: Partial<PostFormData>
+  initialImageUrl?: string | null
+  mode?: 'create' | 'edit'
 }
+
 
 export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
   const [member, setMember] = useState<Member | null>(null)
@@ -108,7 +112,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
         ...postData,
         petId: selectedPet.petId,
         images: image ? [image] : undefined
-      })
+      })  
     }
   }, [postData, selectedPet, image, onDataChange])
 

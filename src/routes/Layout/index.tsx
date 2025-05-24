@@ -11,6 +11,7 @@ import {PetOwner} from '../../pages/unknownPaw/PetOwner'
 import {PetSitter} from '../../pages/unknownPaw/PetSitter'
 import {ItemDetails} from '../../pages/unknownPaw/ItemDetails'
 import {Community} from '../../pages/community/Community'
+import EditPetOwnerPost from '../../pages/postAd/ModifyPetOwnerPost'
 import CommunityPost from '../../pages/community/CommunityPost'
 
 /* ---------- 마이페이지 ---------- */
@@ -48,6 +49,7 @@ export default function Layout() {
 
         {/* 상세 · 동적 라우트 */}
         <Route path="/posts/:postType/read/:postId" element={<ItemDetails />} />
+        <Route path="/posts/:postType/edit/:postId" element={<EditPetOwnerPost />} />
 
         {/* 마이페이지 섹션 */}
         <Route path="/dashboard" element={<Dashboard />} />
@@ -61,7 +63,6 @@ export default function Layout() {
 
         {/* 멤버 */}
         <Route path="/profile/simple/:mid" element={<MemberProfile />} />
-        <Route path="/posts/:postType/read/postId" element={<ItemDetails />} />
 
         {/* 추후 기능
         <Route path="/post" element={<Post />} />

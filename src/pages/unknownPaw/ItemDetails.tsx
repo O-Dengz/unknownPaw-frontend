@@ -48,7 +48,9 @@ export function ItemDetails() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [liked, setLiked] = useState(false)
+  const myMemberId = Number(sessionStorage.getItem('mid'))
 
+  console.log('postType:', postType, 'postId:', postId, postDTO)
   // 뒤로 가기 핸들러
   const handleBack = () => navigate(-1)
 
@@ -257,6 +259,43 @@ export function ItemDetails() {
       <div className="chat-box-wrapper">
         {/* 채팅 UI */}
         <ChatBox />
+      </div>
+      <div
+        className="bottom-buttons"
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '12px',
+          margin: '40px 0 24px 0'
+        }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            background: '#eee',
+            color: '#333',
+            border: 'none',
+            padding: '8px 18px',
+            borderRadius: '8px',
+            fontWeight: 500,
+            cursor: 'pointer'
+          }}>
+          목록으로 돌아가기
+        </button>
+        {myMemberId === postDTO.member?.mid && (
+          <button
+            onClick={() => navigate(`/posts/${postType}/edit/${postId}`)}
+            style={{
+              background: '#f4c150',
+              color: '#222',
+              border: 'none',
+              padding: '8px 18px',
+              borderRadius: '8px',
+              fontWeight: 500,
+              cursor: 'pointer'
+            }}>
+            ✏️ 수정
+          </button>
+        )}
       </div>
     </>
   )
