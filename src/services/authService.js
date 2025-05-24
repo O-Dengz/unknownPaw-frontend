@@ -2,7 +2,7 @@
 
 // API 기본 URL (개발 환경과 배포 환경에 따라 달라질 수 있으므로 .env 파일 등으로 관리하는 것이 좋습니다)
 // 예: process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api'
-const API_BASE_URL = 'http://localhost:8080/unknownPaw/api' // 실제 백엔드 API 주소로 변경하세요
+const API_BASE_URL = '/unknownPaw/api' // 실제 백엔드 API 주소로 변경하세요
 
 // 1. 로그인 API 호출 함수
 export async function login(email, password) {

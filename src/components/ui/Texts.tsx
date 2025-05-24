@@ -1,5 +1,5 @@
 import type {FC, DetailedHTMLProps, HTMLAttributes} from 'react'
-import {makeClassName} from './textUtils'
+import {makeClassName} from '../utils/textUtils'
 
 // prettier-ignore
 type TextProps = 

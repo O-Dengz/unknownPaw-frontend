@@ -11,12 +11,11 @@ interface Member {
   certificates?: string[]
 }
 
-// Post 기본 인터페이스
 interface PostFormData {
   title: string
   content: string
   serviceCategory: string
-  desiredHourlyRate: number
+  hourlyRate: number
   defaultLocation: string
   walkDate?: string
   images?: File[]
@@ -37,20 +36,18 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
     title: '',
     content: '',
     serviceCategory: '',
-    desiredHourlyRate: 0,
+    hourlyRate: 0,
     defaultLocation: '',
     experience: '',
     certificates: []
   })
 
+  // 🟡 1. 회원 정보 불러오기 (최초 1회)
   useEffect(() => {
-    // 로그인된 사용자 정보 가져오기
     const fetchMemberData = async () => {
       try {
-        const token = localStorage.getItem('token') // JWT 토큰 가져오기
-        if (!token) {
-          throw new Error('로그인이 필요합니다.')
-        }
+        const token = sessionStorage.getItem('token')
+        if (!token) throw new Error('로그인이 필요합니다.')
 
         const response = await fetch('/api/member/profile/simple/me', {
           headers: {
@@ -59,23 +56,18 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
           }
         })
 
-        if (!response.ok) {
-          throw new Error('사용자 정보를 불러오는데 실패했습니다.')
-        }
+        if (!response.ok) throw new Error('사용자 정보를 불러오는데 실패했습니다.')
 
         const data = await response.json()
         setMember(data)
 
-        // 경험과 자격증 정보가 있다면 폼에 자동으로 설정
-        if (data.experience || data.certificates) {
-          setPostData(prev => ({
-            ...prev,
-            experience: data.experience,
-            certificates: data.certificates
-          }))
-        }
+        // 경력, 자격증 프로필 정보 자동 세팅
+        setPostData(prev => ({
+          ...prev,
+          experience: data.experience || '',
+          certificates: data.certificates || []
+        }))
       } catch (error) {
-        console.error('Failed to fetch member data:', error)
         alert(
           error instanceof Error
             ? error.message
@@ -83,24 +75,20 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
         )
       }
     }
-
     fetchMemberData()
   }, [])
 
+  // 🟡 2. 이미지 업로드
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0]
       setImage(file)
       setPreviewUrl(URL.createObjectURL(file))
-
-      onDataChange({
-        ...postData,
-        images: [file]
-      })
+      setPostData(prev => ({...prev, images: [file]}))
     }
   }
 
-  // 폼 데이터가 변경될 때마다 부모 컴포넌트에 알림
+  // 🟡 3. 부모 컴포넌트로 데이터 전달
   useEffect(() => {
     onDataChange({
       ...postData,
@@ -108,6 +96,7 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
     })
   }, [postData, image, onDataChange])
 
+  // 🟡 4. 폼 렌더링
   return (
     <div>
       <div className="main-content bg-white p-8 rounded-xl shadow-lg">
@@ -143,9 +132,9 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
             onChange={e => setPostData({...postData, serviceCategory: e.target.value})}
             className="form-control">
             <option value="">카테고리를 선택하세요</option>
-            <option value="산책">산책</option>
-            <option value="호텔링">호텔링</option>
-            <option value="돌봄">돌봄</option>
+            <option value="WALK">산책</option>
+            <option value="HOTELING">호텔링</option>
+            <option value="CARE">돌봄</option>
           </select>
         </div>
 
@@ -154,10 +143,8 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
           <label className="text-gray-700 font-medium">시급</label>
           <input
             type="number"
-            value={postData.desiredHourlyRate}
-            onChange={e =>
-              setPostData({...postData, desiredHourlyRate: Number(e.target.value)})
-            }
+            value={postData.hourlyRate}
+            onChange={e => setPostData({...postData, hourlyRate: Number(e.target.value)})}
             placeholder="시급을 입력하세요"
             className="form-control"
           />
@@ -189,7 +176,6 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
             />
             <p className="text-sm mt-2 text-gray-400">최대 업로드 용량: 10MB</p>
           </div>
-
           {previewUrl && (
             <div className="mt-4">
               <p className="text-gray-700 font-medium mb-2">미리보기</p>
@@ -203,7 +189,7 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
         </div>
       </div>
 
-      {/* 펫 시터 정보 표시 섹션 */}
+      {/* 펫 시터 정보 표시 */}
       <div className="main-content bg-white p-8 rounded-xl shadow-lg mt-6">
         <h4 className="text-xl font-semibold text-gray-800 mb-6">👤 펫 시터 정보</h4>
         {member && (
@@ -240,9 +226,7 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
               <div className="flex items-center space-x-2">
                 <span className="text-yellow-400">⭐</span>
                 <p>
-                  {member && member.pawRate !== undefined
-                    ? member.pawRate.toFixed(1)
-                    : '평점 없음'}
+                  {member.pawRate !== undefined ? member.pawRate.toFixed(1) : '평점 없음'}
                 </p>
               </div>
             </div>

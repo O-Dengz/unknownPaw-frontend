@@ -1,9 +1,9 @@
 import {useState, useEffect} from 'react' // useEffect와 useState import
 import {Link, useParams} from 'react-router-dom'
 import './memberProfile.css'
-import {post} from 'axios'
+import Header from '../../components/Layout/Header'
+import {Footer} from '../../components/Layout/Footer'
 import PawRating from '../../components/PawRating'
-import {useToken} from '../../hooks'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
 
 interface MemberResponseDTO {
@@ -48,6 +48,8 @@ interface PostDTO {
   }[]
   member?: MemberResponseDTO
 }
+
+
 
 export default function MemberProfile() {
   const {mid} = useParams() // URL 파라미터에서 mid를 가져옴
@@ -95,11 +97,13 @@ export default function MemberProfile() {
 
       try {
         const response = await fetch(
-          `http://localhost:8080/unknownPaw/api/member/profile/simple/${mid}`,
+          `/api/member/profile/simple/${mid}`,
           {
             method: 'GET',
             headers: {
-              Authorization: `Bearer ${token}`
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
             }
           }
         )
@@ -130,10 +134,11 @@ export default function MemberProfile() {
       try {
         // ✨✨✨ 새로운 펫 목록 API 엔드포인트 호출
         const response = await fetch(
-          `http://localhost:8080/unknownPaw/api/member/${mid}/pets`,
+          `/api/member/${mid}/pets`,
           {
             headers: {
-              Authorization: `Bearer ${token}`
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
             }
           }
         )
@@ -165,10 +170,12 @@ export default function MemberProfile() {
       setErrorPosts(null)
       try {
         const response = await fetch(
-          `http://localhost:8080/unknownPaw/api/member/${mid}/posts`,
+          `/api/member/${mid}/posts`,
           {
             headers: {
-              Authorization: `Bearer ${token}`
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
             }
           }
         )
@@ -241,6 +248,7 @@ export default function MemberProfile() {
     return <div className="profile-loading">프로필 정보 로딩 중...</div>
   }
 
+
   // 에라가 하나라도 있다면 에러 메시지 표시
   if (errorBasic || errorPets || errorPosts) {
     return (
@@ -259,173 +267,156 @@ export default function MemberProfile() {
 
   // --- 데이터가 모두 로드되었을 때 화면 표시 ---
   return (
-    <div className="dashboard section">
-      <ScrollToTopButton />
-      <div className="container">
-        <div className="row">
-          <div className="col-12">
-            <div className="box-jali">oo</div> {/* 전체 컨테이너 */}
-            <div className="member-profile-container">
-              {/* --- 1. 회원 기본 정보 섹션 --- */}
-              <div className="profile-header">
-                <div className="profile-image">
-                  <img
-                    src={
-                      memberDTO.profileImagePath?.trim()
-                        ? memberDTO.profileImagePath
-                        : '/assets/images/items-grid/author-3.jpg'
-                    }
-                    alt={`${memberDTO.nickname} 프로필 이미지`}
-                    className="profile-image"
-                  />
-                </div>
-                <div className="profile-info">
-                  <div className="profile-top"></div>
-                  <div className="author-name">
-                    닉네임: <strong>{memberDTO.nickname || '정보 없음'}</strong>
-                  </div>
-                  <ul className="paw-rating">
-                    <li>
-                      <PawRating rating={memberDTO.pawRate || 0} />
-                      {/* <PawRating rating={3.1} /> */}
-                      <p>({memberDTO.pawRate?.toFixed(1)})</p>
-                    </li>
-                  </ul>
-                  <p className="introduction"></p>
-                </div>
-                <div className="verification-badges">
-                  <span className="badge">
-                    {memberDTO.emailVerified ? '이메일 인증 완료' : '이메일 인증 안됨'}
-                  </span>
+    <>
+      <Header />
+      <main>
+        <ScrollToTopButton />
+  
+        {/* 페이지 상단 브레드크럼 + 제목 */}
+        <div className="breadcrumbs">
+          <div className="container">
+            <div className="row align-items-center">
+              <div className="col-lg-6 col-md-6 col-12">
+                <div className="breadcrumbs-content">
+                  <h1 className="page-title">프로필</h1>
                 </div>
               </div>
-
-              {/* --- 2. 회원의 Pet 정보 섹션 --- */}
-              <section className="profile-section ">
-                <h3 className="section-title">반려동물 정보</h3>
-                {/* ✨✨✨ pets 상태를 확인하여 데이터 표시 또는 정보 없음 메시지 표시 */}
-                {pets && pets.length > 0 ? ( // pets 배열이 존재하고 비어있지 않으면
-                  <div className="pets-list">
-                    {pets.map(
-                      (
-                        pet,
-                        index // 펫 목록을 순회하며 각 펫 정보를 표시
-                      ) => (
-                        <div key={`${pet.petId}-${index}`} className="pet-card">
-                          {' '}
-                          {/* 각 펫 아이템 컨테이너, 고유 key 필수 */}
-                          <div className="pet-image">
-                            <img
-                              src={
-                                pet.petImagePath?.trim()
-                                  ? pet.petImagePath
-                                  : '/assets/images/pet/dog-1.jpg'
-                              }
-                              alt={`${pet.petName} 이미지`}
-                              className="pet-image"
-                            />
-                          </div>
-                          <div className="pet-info">
-                            <h4>
-                              이름: <strong>{pet.petName || '정보 없음'}</strong>
-                            </h4>{' '}
-                            {/* 펫 이름 표시 */}
-                            <p>품종: {pet.breed || '정보 없음'}</p> {/* 펫 품종 표시 */}
-                            <p>MBTI: {pet.petMbti || '정보 없음'}</p> {/* 펫 MBTI 표시 */}
-                            <p>생년월일: {pet.petBirth || '정보 없음'}</p>{' '}
-                            {/* 펫 생일 표시 */}
-                            <p>
-                              몸무게:{' '}
-                              {pet.weight !== undefined ? pet.weight + 'kg' : '정보 없음'}
-                            </p>{' '}
-                            {/* 펫 몸무게 표시 */}
-                            <p>소개: {pet.petIntroduce || '정보 없음'}</p>{' '}
-                            {/* 펫 소개 표시 */}
-                            {/* ... PetDTO의 다른 필드들도 필요하다면 여기서 표시 ... */}
-                          </div>
-                        </div>
-                      )
-                    )}
-                  </div>
-                ) : (
-                  // ✨✨✨ pets 상태가 null이거나 비어있으면 "정보 없음" 메시지 표시
-                  <p>등록된 반려동물이 없습니다.</p>
-                )}
-              </section>
-              {/* --- 3. 회원이 작성한 Post 정보 섹션 --- */}
-              <section className="profile-section ">
-                <h3 className="section-title">작성한 게시글</h3>
-                {/* ✨✨✨ posts 상태를 확인하여 데이터 표시 또는 정보 없음 메시지 표시 */}
-                {posts && posts.length > 0 ? ( // posts 배열이 존재하고 비어있지 않으면
-                  <div className="posts-list">
-                    {posts.map(
-                      (
-                        post,
-                        index // 게시글 목록을 순회하며 각 게시글 정보를 표시
-                      ) => (
-                        <div key={`${post.postId}-${index}`} className="post-card">
-                          <Link
-                            to={`/posts/${post.postTypeUrlSegment}/read/${post.postId}`}>
-                            {' '}
-                            {/* 각 게시글 아이템 컨테이너, 고유 key 필수 */}
-                            {post?.image && ( // 게시글 대표 이미지 경로가 있다면 이미지 표시
-                              <img
-                                src={
-                                  post.image?.find(img => img.isMain)?.imagePath ??
-                                  post.image[0].imagePath
-                                }
-                                alt={`${post.title} 대표 이미지`}
-                                className="post-image"
-                              />
-                            )}
-                            <h4 className="post-title">{post.title || '제목 없음'}</h4>{' '}
-                            {/* 게시글 제목 표시 */}
-                            <p>카테고리: {post.serviceCategory || '정보 없음'}</p>{' '}
-                            {/* 게시글 카테고리 표시 */}
-                            {/* 시터글인 경우에만 시급 표시 (hourlyRate는 Optional일 수 있으니 체크) */}
-                            {post.serviceCategory === 'petsitter' &&
-                              post.hourlyRate !== undefined && (
-                                <p>시급: {post.hourlyRate}원</p>
-                              )}
-                            <p>지역: {post.defaultLocation || '정보 없음'}</p>{' '}
-                            {/* 지역 표시 */}
-                            <p>
-                              작성일:{' '}
-                              {post.regDate
-                                ? new Date(post.regDate).toLocaleDateString()
-                                : '정보 없음'}
-                            </p>{' '}
-                            {/* 날짜 형식화 */}
-                            <div className="post-stats">
-                              <span>
-                                <i className="lni lni-heart"></i>{' '}
-                                {post.likes !== undefined ? post.likes : '정보 없음'}
-                              </span>
-                              <span>
-                                <i className="lni lni-comments"></i>{' '}
-                                {post.chatCount !== undefined
-                                  ? post.chatCount
-                                  : '정보 없음'}
-                              </span>
-                            </div>
-                          </Link>
-                          {/* 좋아요 수 표시 */}
-                          {/* ... PostDTO의 다른 필드들도 필요하다면 여기서 표시 ... */}
-                          {/* 필요하다면 각 게시글 클릭 시 상세 페이지로 이동하는 Link 추가 */}
-                        </div>
-                      )
-                    )}
-                  </div>
-                ) : (
-                  // ✨✨✨ posts 상태가 null이거나 비어있으면 "정보 없음" 메시지 표시
-                  <p>작성한 게시글이 없습니다.</p>
-                )}
-              </section>
-              {/* ... 프로필 페이지의 나머지 레이아웃 요소들 ... */}
+              <div className="col-lg-6 col-md-6 col-12">
+                <ul className="breadcrumb-nav">
+                  <li><a href="/">홈</a></li>
+                  <li>멤버 프로필</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+  
+        {/* 프로필 본문 */}
+        <div className="dashboard section">
+          <div className="container">
+            <div className="row">
+              <div className="col-12">
+                {/* --- 회원 프로필 섹션 --- */}
+                <div className="member-profile-container">
+                  <div className="profile-header">
+                    <div className="profile-image">
+                      <img
+                        src={
+                          memberDTO.profileImagePath?.trim()
+                            ? memberDTO.profileImagePath
+                            : '/assets/images/items-grid/author-3.jpg'
+                        }
+                        alt={`${memberDTO.nickname} 프로필 이미지`}
+                        className="profile-image"
+                      />
+                    </div>
+                    <div className="profile-info">
+                      <div className="author-name">
+                        닉네임: <strong>{memberDTO.nickname || '정보 없음'}</strong>
+                      </div>
+                      <ul className="paw-rating">
+                        <li>
+                          <PawRating rating={memberDTO.pawRate || 0} />
+                          <p>({memberDTO.pawRate?.toFixed(1)})</p>
+                        </li>
+                      </ul>
+                    </div>
+                    <div className="verification-badges">
+                      <span className="badge">
+                        {memberDTO.emailVerified ? '이메일 인증 완료' : '이메일 인증 안됨'}
+                      </span>
+                    </div>
+                  </div>
+  
+                  {/* --- 반려동물 정보 섹션 --- */}
+                  <section className="profile-section">
+                    <h3 className="section-title">반려동물 정보</h3>
+                    {pets && pets.length > 0 ? (
+                      <div className="pets-list">
+                        {pets.map((pet, index) => (
+                          <div key={`${pet.petId}-${index}`} className="pet-card">
+                            <div className="pet-image">
+                              <img
+                                src={
+                                  pet.petImagePath?.trim()
+                                    ? pet.petImagePath
+                                    : '/assets/images/pet/dog-1.jpg'
+                                }
+                                alt={`${pet.petName} 이미지`}
+                                className="pet-image"
+                              />
+                            </div>
+                            <div className="pet-info">
+                              <h4>
+                                이름: <strong>{pet.petName || '정보 없음'}</strong>
+                              </h4>
+                              <p>품종: {pet.breed || '정보 없음'}</p>
+                              <p>MBTI: {pet.petMbti || '정보 없음'}</p>
+                              <p>생년월일: {pet.petBirth || '정보 없음'}</p>
+                              <p>몸무게: {pet.weight !== undefined ? `${pet.weight}kg` : '정보 없음'}</p>
+                              <p>소개: {pet.petIntroduce || '정보 없음'}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p>등록된 반려동물이 없습니다.</p>
+                    )}
+                  </section>
+  
+                  {/* --- 작성한 게시글 섹션 --- */}
+                  <section className="profile-section">
+                    <h3 className="section-title">작성한 게시글</h3>
+                    {posts && posts.length > 0 ? (
+                      <div className="posts-list">
+                        {posts.map((post, index) => (
+                          <div key={`${post.postId}-${index}`} className="post-card">
+                            <Link to={`/posts/${post.postTypeUrlSegment}/read/${post.postId}`}>
+                              {post?.image && (
+                                <img
+                                  src={
+                                    post.image.find(img => img.isMain)?.imagePath ??
+                                    post.image[0].imagePath
+                                  }
+                                  alt={`${post.title} 대표 이미지`}
+                                  className="post-image"
+                                />
+                              )}
+                              <h4 className="post-title">{post.title || '제목 없음'}</h4>
+                              <p>카테고리: {post.serviceCategory || '정보 없음'}</p>
+                              {post.serviceCategory === 'petsitter' && post.hourlyRate !== undefined && (
+                                <p>시급: {post.hourlyRate}원</p>
+                              )}
+                              <p>지역: {post.defaultLocation || '정보 없음'}</p>
+                              <p>
+                                작성일:{' '}
+                                {post.regDate
+                                  ? new Date(post.regDate).toLocaleDateString()
+                                  : '정보 없음'}
+                              </p>
+                              <div className="post-stats">
+                                <span>
+                                  <i className="lni lni-heart"></i> {post.likes ?? '정보 없음'}
+                                </span>
+                                <span>
+                                  <i className="lni lni-comments"></i> {post.chatCount ?? '정보 없음'}
+                                </span>
+                              </div>
+                            </Link>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p>작성한 게시글이 없습니다.</p>
+                    )}
+                  </section>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </>
   )
-}
+}  

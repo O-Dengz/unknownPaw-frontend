@@ -149,7 +149,9 @@ export function Join() {
     petInfo?: PetFormType
   ) => {
     try {
-      const response = await fetch('http://localhost:8080/apiserver/members/register', {
+
+      const response = await fetch('/api/member/register', {
+
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -163,14 +165,21 @@ export function Join() {
           address,
           petInfo
         })
-      })
-      const result = await response.text()
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || '회원가입에 실패했습니다.');
+      }
+
+      const result = await response.text();
       if (result) {
-        alert(result)
-        navigate('/login')
+        alert(result);
+        navigate('/login');
       }
     } catch (error) {
-      console.error('Registration error:', error)
+      console.error('Registration error:', error);
+      alert(error instanceof Error ? error.message : '회원가입 중 오류가 발생했습니다.');
     }
   }
 
@@ -576,5 +585,5 @@ export function Join() {
         </div>
       )}
     </div>
-  );  
+  )
 }

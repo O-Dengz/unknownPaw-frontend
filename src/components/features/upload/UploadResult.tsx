@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react'
-import {useToken} from '../hooks' // 토큰을 가져오는 훅
+import {useToken} from '../../../hooks' // 토큰을 가져오는 훅
 
 interface FileData {
   fileName: string
@@ -25,7 +25,7 @@ export function UploadResult({uploadedFiles = []}: UploadResultProps) {
 
   // 이미지 삭제 요청 함수
   const handleRemove = async (fileName: string) => {
-    const removeUrl = `http://localhost:8080/apiserver/removeFile?fileName=${fileName}`
+    const removeUrl = `/api/removeFile?fileName=${fileName}`
 
     try {
       const response = await fetch(removeUrl, {
@@ -64,7 +64,7 @@ export function UploadResult({uploadedFiles = []}: UploadResultProps) {
                   X
                 </button>
                 <img
-                  src={`http://localhost:8080/apiserver/display?fileName=${file.thumbnailURL}`}
+                  src={`/api/display?fileName=${file.thumbnailURL}`}
                   alt="Uploaded"
                 />
               </div>

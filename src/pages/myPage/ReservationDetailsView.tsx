@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {useParams, Link} from 'react-router-dom'
 import axios from 'axios'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
+import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
 
 interface ReservationDetails {
   rno: number
@@ -28,7 +28,7 @@ export default function ReservationDetailsView() {
         setLoading(true)
         setError('')
         const response = await axios.get(
-          `http://localhost:8080/unknownPaw/api/appointment/${rno}`
+          `/api/appointment/${rno}`
         )
         setDetail(response.data as ReservationDetails)
       } catch (err) {

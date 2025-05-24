@@ -1,20 +1,22 @@
 import {useLocation, Routes, Route, ScrollRestoration} from 'react-router-dom'
 
-import Navigation from './Navigation'
-import Footer from './Footer'
-import MainHeader from '../../components/MainHeader'
+import Header from './Header'
+
+import MainHeader from '../MainLayout/MainHeader'
 
 /* ---------- 공통 페이지 ---------- */
 import {List} from '../../pages/unknownPaw/List'
 import {About} from '../../pages/unknownPaw/About'
 import {PetOwner} from '../../pages/unknownPaw/PetOwner'
 import {PetSitter} from '../../pages/unknownPaw/PetSitter'
-import {Community} from '../../pages/unknownPaw/Community'
 import {ItemDetails} from '../../pages/unknownPaw/ItemDetails'
+import {Community} from '../../pages/community/Community'
+import CommunityPost from '../../pages/community/CommunityPost'
 
 /* ---------- 마이페이지 ---------- */
 import Dashboard from '../../pages/myPage/Dashboard'
 import {ProfileSettings} from '../../pages/myPage/ProfileSettings'
+
 import Chatting from '../../pages/myPage/Chatting'
 import Faq from '../../pages/myPage/Faq'
 import ReservationDetails from '../../pages/myPage/ReservationDetails'
@@ -24,15 +26,19 @@ import MyFavourite from '../../pages/myPage/MyFavourite'
 
 /* ---------- 멤버 ---------- */
 import MemberProfile from '../../pages/member/MemberProfile'
-import CommunityPost from '../../pages/unknownPaw/CommunityPost'
+
 import PostAd from '../../pages/postAd/PostAd'
+import {PetSettings} from '../../pages/myPage/PetSettings'
+
+import {Footer} from './Footer'
 
 export default function Layout() {
   const location = useLocation()
   const isListPage = location.pathname === '/' || location.pathname === '/list'
   return (
     <>
-      {isListPage ? <MainHeader /> : <Navigation />}
+    
+      {isListPage ? <MainHeader /> : <Header />}
 
       <Routes>
         {/* 기본/공통 */}
@@ -41,7 +47,7 @@ export default function Layout() {
         <Route path="/about" element={<About />} />
         <Route path="/petowner/list" element={<PetOwner />} />
         <Route path="/petsitter/list" element={<PetSitter />} />
-        <Route path="/community/list" element={<Community />} />
+        <Route path="/community/posts" element={<Community />} />
         <Route path="/communitypost/:postId" element={<CommunityPost />} />
         <Route path="/postAd" element={<PostAd />} />
 
@@ -57,10 +63,10 @@ export default function Layout() {
         <Route path="/reservation-details/:rno" element={<ReservationDetailsView />} />
         <Route path="/my-posts" element={<MyPosts />} />
         <Route path="/myfavourite" element={<MyFavourite />} />
+        <Route path="/pet-settings" element={<PetSettings />} />
 
         {/* 멤버 */}
         <Route path="/profile/simple/:mid" element={<MemberProfile />} />
-        <Route path="/posts/:postType/read/postId" element={<ItemDetails />} />
 
         {/* 추후 기능
         <Route path="/post" element={<Post />} />
@@ -68,6 +74,8 @@ export default function Layout() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/register" element={<Register />} />
         */}
+       
+
       </Routes>
 
       <Footer />

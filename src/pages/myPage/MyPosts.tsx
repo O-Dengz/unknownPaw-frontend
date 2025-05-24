@@ -2,7 +2,7 @@
 
 import React, {useEffect, useState} from 'react'
 import axios from 'axios'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
+import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
 import {Link} from 'react-router-dom'
 import './myPage.css'
 
@@ -41,9 +41,9 @@ export default function MyPosts() {
       if (!mid || !token) throw new Error('로그인이 필요합니다.')
 
       const urlMap: Record<TabType, string> = {
-        PET_OWNER: `http://localhost:8080/unknownPaw/api/posts/petowner/${mid}`,
-        PET_SITTER: `http://localhost:8080/unknownPaw/api/posts/petsitter/${mid}`,
-        COMMUNITY: `http://localhost:8080/unknownPaw/api/community/${mid}`
+        PET_OWNER: `/api/posts/petowner/${mid}`,
+        PET_SITTER: `/api/posts/petsitter/${mid}`,
+        COMMUNITY: `/api/community/${mid}`
       }
 
       const response = await axios.get(urlMap[type], {
