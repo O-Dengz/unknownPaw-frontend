@@ -888,12 +888,10 @@ ol {
 
 /* Bread Crumbs */
 .breadcrumbs {
-  position: relative;
-  padding-bottom: 45px;
-  padding-top: 140px;
-  background: #081828;
-  z-index: 2;
-  text-align: left;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 
 .breadcrumbs .breadcrumbs-content {

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import React, {useEffect, useState} from 'react'
+import {useParams, useNavigate, Link} from 'react-router-dom'
 import './Post.css'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
 import KakaoMap from './components/KakaoMap'
 import ChatBox from '../../components/ChatBox'
-import { getImageUrl } from '@/utils/getImageUrl'
+import {getImageUrl} from '@/utils/getImageUrl'
 
 interface MemberResponseDTO {
   mid: number
@@ -17,6 +17,7 @@ interface MemberResponseDTO {
 
 interface ImageDTO {
   imageId: number
+  path: string    
   imagePath: string
   thumbnailPath?: string
   isMain: boolean
@@ -42,7 +43,7 @@ interface PostDTO {
 
 export function ItemDetails() {
   const navigate = useNavigate()
-  const { postId, postType } = useParams()
+  const {postId, postType} = useParams()
   const [postDTO, setPostDTO] = useState<PostDTO | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -124,11 +125,10 @@ export function ItemDetails() {
       <div
         className="item-details"
         style={{
-          background: '#faf8f2',
+          background: '#f9f9f9',
           minHeight: '80vh',
           transition: 'background 0.2s'
-        }}
-      >
+        }}>
         <div className="container">
           <div
             className="item-main-row"
@@ -136,16 +136,16 @@ export function ItemDetails() {
               minHeight: 480,
               display: 'flex',
               alignItems: 'flex-start'
-            }}
-          >
+            }}>
             {/* 본문 분기 */}
             {loading ? (
-              <div style={{
-                flex: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
+              <div
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
                 <div
                   style={{
                     width: '100%',
@@ -157,22 +157,24 @@ export function ItemDetails() {
                 />
               </div>
             ) : error ? (
-              <div className="col-12 text-center p-5" style={{ flex: 1 }}>
+              <div className="col-12 text-center p-5" style={{flex: 1}}>
                 <h4 className="text-red-600 mb-3">{error}</h4>
                 <button
                   className="btn btn-outline-primary"
                   onClick={() => navigate(-1)}
-                  style={{ marginTop: 16 }}
-                >← 목록으로 돌아가기</button>
+                  style={{marginTop: 16}}>
+                  ← 목록으로 돌아가기
+                </button>
               </div>
             ) : !postDTO ? (
-              <div className="col-12 text-center p-5" style={{ flex: 1 }}>
+              <div className="col-12 text-center p-5" style={{flex: 1}}>
                 <h5>게시글을 찾을 수 없습니다.</h5>
                 <button
                   className="btn btn-outline-primary"
                   onClick={() => navigate(-1)}
-                  style={{ marginTop: 16 }}
-                >← 목록으로 돌아가기</button>
+                  style={{marginTop: 16}}>
+                  ← 목록으로 돌아가기
+                </button>
               </div>
             ) : (
               <>
@@ -183,9 +185,7 @@ export function ItemDetails() {
                       <img
                         src={
                           postDTO.images && postDTO.images[0]
-                            ? getImageUrl(
-                                postDTO.images[0].thumbnailPath ?? postDTO.images[0].imagePath
-                              )
+                            ? getImageUrl(postDTO.images[0].path) // ← 반드시 .path를 써야 해요!
                             : '/assets/images/pet/dog-2.jpg'
                         }
                         alt={postDTO.title}
@@ -229,9 +229,9 @@ export function ItemDetails() {
                   </div>
                   <div
                     className="post-service-category"
-                    style={{ display: 'flex', alignItems: 'center' }}>
-                    <p style={{ marginRight: '6px' }}>{postDTO.serviceCategory}</p>
-                    <span style={{ color: '#888' }}>
+                    style={{display: 'flex', alignItems: 'center'}}>
+                    <p style={{marginRight: '6px'}}>{postDTO.serviceCategory}</p>
+                    <span style={{color: '#888'}}>
                       · {new Date(postDTO.regDate).toLocaleDateString()}
                     </span>
                   </div>
@@ -261,12 +261,12 @@ export function ItemDetails() {
                     <button
                       className="reserve-button"
                       onClick={() => setIsChatOpen(true)}
-                      style={{ backgroundColor: '#6c5ce7' }}
-                    >
+                      style={{backgroundColor: '#6c5ce7'}}>
                       채팅 열기
                     </button>
                     <button className="likes" onClick={() => setLiked(!liked)}>
-                      <i className={`lni ${liked ? 'lni-heart-filled' : 'lni-heart'}`}></i>
+                      <i
+                        className={`lni ${liked ? 'lni-heart-filled' : 'lni-heart'}`}></i>
                     </button>
                   </div>
                 </div>
@@ -274,7 +274,7 @@ export function ItemDetails() {
             )}
           </div>
           {/* 지도/푸터는 항상 자리 보존 */}
-          <div className="map-area" style={{ minHeight: 180, marginTop: 32 }}>
+          <div className="map-area" style={{minHeight: 180, marginTop: 32}}>
             {postDTO ? (
               <KakaoMap
                 latitude={postDTO.latitude}
@@ -320,7 +320,7 @@ export function ItemDetails() {
               fontWeight: 500,
               cursor: 'pointer'
             }}>
-            ✏️ 수정
+            ✏️ 수정하기
           </button>
         )}
       </div>

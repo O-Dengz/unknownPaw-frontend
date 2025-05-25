@@ -21,6 +21,12 @@ interface Member {
   emailVerified: boolean
   pets: Pet[]
 }
+export interface PetOwnerFormProps {
+  onDataChange: (data: PostFormData) => void
+  initialData?: Partial<PostFormData>
+  initialImageUrl?: string | null
+  mode?: 'create' | 'edit'
+}
 
 // Post 기본 인터페이스
 export interface PostFormData {
@@ -34,20 +40,12 @@ export interface PostFormData {
   petId?: number
 }
 
-export interface PetOwnerFormProps {
-  onDataChange: (data: PostFormData) => void
-  initialData?: Partial<PostFormData>
-  initialImageUrl?: string | null
-  mode?: 'create' | 'edit'
-}
-
-
-export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
-  const [member, setMember] = useState<Member | null>(null)
-  const [selectedPet, setSelectedPet] = useState<Pet | null>(null)
-  const [image, setImage] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-
+export default function PetOwnerForm({
+  onDataChange,
+  initialData,
+  initialImageUrl,
+  mode = 'create'
+}: PetOwnerFormProps) {
   const [postData, setPostData] = useState<PostFormData>({
     title: '',
     content: '',
@@ -56,15 +54,42 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
     defaultLocation: '',
     serviceDate: ''
   })
-
+  const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl || null)
   useEffect(() => {
-    // 로그인된 사용자 정보 가져오기
+    setPreviewUrl(initialImageUrl || null)
+  }, [initialImageUrl])
+  const [member, setMember] = useState<Member | null>(null)
+  const [selectedPet, setSelectedPet] = useState<Pet | null>(null)
+  const [image, setImage] = useState<File | null>(null)
+
+  // 1. member와 initialData(수정모드)가 들어오면 폼에 값 채우기
+  useEffect(() => {
+    if (member && initialData && mode === 'edit') {
+      // (1) 기존 pet 선택
+      const found = member.pets.find(pet => pet.petId === initialData.petId)
+      if (found) setSelectedPet(found)
+      // (2) postData 채우기
+      setPostData(prev => ({...prev, ...initialData}))
+    }
+  }, [member, initialData, mode])
+
+  // 2. 폼 데이터가 바뀔 때 부모에게 전달
+  useEffect(() => {
+    if (selectedPet && postData.title !== '') {
+      onDataChange({
+        ...postData,
+        petId: selectedPet.petId,
+        images: image ? [image] : undefined
+      })
+    }
+  }, [postData, selectedPet, image, onDataChange])
+
+  // 3. 마운트시 멤버 정보 가져오기
+  useEffect(() => {
     const fetchMemberData = async () => {
       try {
-        const token = sessionStorage.getItem('token') // JWT 토큰 가져오기
-        if (!token) {
-          throw new Error('로그인이 필요합니다.')
-        }
+        const token = sessionStorage.getItem('token')
+        if (!token) throw new Error('로그인이 필요합니다.')
 
         const response = await fetch('/api/member/profile/simple/me', {
           headers: {
@@ -73,18 +98,12 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
           }
         })
 
-        if (!response.ok) {
-          throw new Error('사용자 정보를 불러오는데 실패했습니다.')
-        }
+        if (!response.ok) throw new Error('사용자 정보를 불러오는데 실패했습니다.')
 
         const data = await response.json()
-        console.log('🐶 받은 데이터:', data)
         setMember(data)
-        if (data?.pets?.length > 0) {
-          setSelectedPet(data.pets[0])
-        }
+        if (data?.pets?.length > 0) setSelectedPet(data.pets[0])
       } catch (error) {
-        console.error('Failed to fetch member data:', error)
         alert(
           error instanceof Error
             ? error.message
@@ -92,7 +111,6 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
         )
       }
     }
-
     fetchMemberData()
   }, [])
 
@@ -112,7 +130,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
         ...postData,
         petId: selectedPet.petId,
         images: image ? [image] : undefined
-      })  
+      })
     }
   }, [postData, selectedPet, image, onDataChange])
 
@@ -214,7 +232,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
             <div className="mt-4">
               <p className="text-gray-700 font-medium mb-2">미리보기</p>
               <img
-                src={previewUrl}
+                src={`http://localhost:8080/unknownPaw/${previewUrl}`}
                 alt="미리보기"
                 className="w-full h-64 object-cover rounded-md border"
               />

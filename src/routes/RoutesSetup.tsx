@@ -19,7 +19,10 @@ import MyPosts from '../pages/myPage/MyPosts'
 import MyFavourite from '../pages/myPage/MyFavourite'
 import MemberProfile from '../pages/member/MemberProfile'
 import PostAd from '../pages/postAd/PostAd'
+import EditPetOwnerPost from '@/pages/postAd/ModifyPetOwnerPost'
 import { PetSettings } from '../pages/myPage/PetSettings'
+import NoMatch from './NoMatch'
+import ModifyPetOwnerPost from '@/pages/postAd/ModifyPetOwnerPost'
 
 export default function RoutesSetup() {
   return (
@@ -45,10 +48,14 @@ export default function RoutesSetup() {
         <Route path="/myfavourite" element={<MyFavourite />} />
         <Route path="/pet-settings" element={<PetSettings />} />
         <Route path="/profile/simple/:mid" element={<MemberProfile />} />
+        <Route path="/posts/:postType/edit/:postId" element={<ModifyPetOwnerPost />} />
       </Route>
       {/* Layout 없이 보여야 하는 페이지 */}
       <Route path="/login" element={<Login />} />
       <Route path="/join" element={<Join />} />
+
+      <Route path="*" element={<NoMatch />} />
+
     </Routes>
   )
 }

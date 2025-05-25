@@ -1,10 +1,10 @@
 import {useCallback, useEffect, useState} from 'react'
 import {useParams, useNavigate} from 'react-router-dom'
-import PetOwnerForm from './PetOwnerForm'
-import type {PostFormData} from './PetOwnerForm'
+import PetSitterForm from './PetSitterForm'
+import type {PostFormData} from './PetSitterForm'
 import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
 
-export default function ModifyPetOwnerPost() {
+export default function ModifySitterPost() {
   const {postType, postId} = useParams()
   const [initialData, setInitialData] = useState<Partial<PostFormData> | null>(null)
   const [initialImageUrl, setInitialImageUrl] = useState<string | null>(null)
@@ -13,22 +13,17 @@ export default function ModifyPetOwnerPost() {
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
 
-  // 기존 데이터 불러오기
+  // 🟡 기존 게시글 데이터 불러오기
   useEffect(() => {
     const fetchPost = async () => {
       setLoading(true)
-
       try {
         const res = await fetch(`/api/posts/${postType}/read/${postId}`, {
           headers: {Authorization: `Bearer ${sessionStorage.getItem('token')}`}
         })
         if (!res.ok) throw new Error('게시글을 불러오지 못했습니다.')
         const data = await res.json()
-        console.log('불러온 data:', data)
-        console.log('불러온 이미지 URL:', data.images?.[0]?.imagePath)
-        setInitialData({...data, petId: data.petId})
-        setInitialImageUrl(data.images?.[0]?.imagePath ?? null)
-        setInitialData({...data, petId: data.petId})
+        setInitialData({...data, petExperience: data.petExperience, license: data.license, images: undefined})
         setInitialImageUrl(data.images?.[0]?.imagePath ?? null)
       } catch (e) {
         setError('게시글 정보를 불러올 수 없습니다.')
@@ -39,10 +34,13 @@ export default function ModifyPetOwnerPost() {
     fetchPost()
   }, [postType, postId])
 
+  // 🟢 폼 데이터 변화 감지
   const handleFormDataChange = useCallback(
     (data: PostFormData) => setEditedData(data),
     []
   )
+
+  // 🟢 수정 제출
   const handleSubmit = async () => {
     if (!editedData) {
       alert('수정된 내용이 없습니다.')
@@ -97,8 +95,8 @@ export default function ModifyPetOwnerPost() {
           {/* 오른쪽: 게시글 수정 폼 */}
           <div className="col-lg-9 col-md-8 col-12">
             <div className="main-content bg-white p-8 rounded-xl shadow-lg">
-              <h2 className="text-xl font-bold mb-6">게시글 수정</h2>
-              <PetOwnerForm
+              <h2 className="text-xl font-bold mb-6">시터 게시글 수정</h2>
+              <PetSitterForm
                 onDataChange={handleFormDataChange}
                 initialData={initialData}
                 initialImageUrl={initialImageUrl}
