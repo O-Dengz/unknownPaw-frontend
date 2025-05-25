@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from 'axios'
+import { PersonStanding } from 'lucide-react'
 
 interface Props {
   isOpen: boolean
@@ -37,14 +38,17 @@ export function ReservationModal({
         mid: memberId,
         flexibleLocation: '',
         chat: '',
-        readTheOriginalText: true,
-        postId: postId
+        readTheOriginalText: true
       }
+      
+      if (postType === 'PET_SITTER') {
+        if (petId) payload.petId = petId
+        payload.petSitterPostId = postId
+      } else if (postType === 'PET_OWNER') {
+        payload.petOwnerPostId = postId
+      }
+      console.log('🟡 수정 payload 확인:', payload)
 
-      // 🎯 오너(PET_SITTER 글에서 예약)인 경우에만 petId 추가
-      if (postType === 'PET_SITTER' && petId) {
-        payload.petId = petId
-      }
       await axios.post('http://localhost:8080/unknownPaw/api/appointment', payload)
       alert('✅ 예약이 완료되었습니다!')
       onClose()

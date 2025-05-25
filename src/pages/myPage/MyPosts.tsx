@@ -1,9 +1,9 @@
 // src/pages/myPage/MyPosts.tsx
 
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
-import {Link} from 'react-router-dom'
+import { DashboardSidebar } from '../../components/DashboardSidebar'
+import { Link } from 'react-router-dom'
 import './myPage.css'
 
 interface PostItem {
@@ -18,7 +18,7 @@ interface PostItem {
 type TabType = 'PET_OWNER' | 'PET_SITTER' | 'COMMUNITY'
 
 interface ApiError {
-  response?: {status: number; statusText: string}
+  response?: { status: number; statusText: string }
   request?: any
   message?: string
 }
@@ -110,15 +110,14 @@ export default function MyPosts() {
                   {(['PET_OWNER', 'PET_SITTER', 'COMMUNITY'] as TabType[]).map(tab => (
                     <button
                       key={tab}
-                      className={`btn ${
-                        activeTab === tab ? 'btn-primary' : 'btn-outline-primary'
-                      }`}
+                      className={`btn ${activeTab === tab ? 'btn-primary' : 'btn-outline-primary'
+                        }`}
                       onClick={() => setActiveTab(tab)}>
                       {tab === 'PET_OWNER'
                         ? '펫오너'
                         : tab === 'PET_SITTER'
-                        ? '펫시터'
-                        : '커뮤니티'}
+                          ? '펫시터'
+                          : '커뮤니티'}
                     </button>
                   ))}
                 </div>
@@ -137,7 +136,7 @@ export default function MyPosts() {
                       <img
                         src={post.imageUrl || '/assets/images/default-thumbnail.jpg'}
                         alt="thumbnail"
-                        style={{width: 120, height: 80, objectFit: 'cover'}}
+                        style={{ width: 120, height: 80, objectFit: 'cover' }}
                       />
                       <div>
                         <h5>{post.title}</h5>
@@ -145,10 +144,13 @@ export default function MyPosts() {
                         <p>좋아요 ❤️: {post.likes}</p>
                         {post.category && <p>카테고리: {post.category}</p>}
                         <Link
-                          to={`/post/${post.id}`}
-                          className="btn btn-sm btn-outline-secondary mt-1">
+                          to={`/posts/${post.postType.toLowerCase()}/read/${post.id}`}
+                          className="btn btn-outline-primary w-100 mt-2"
+                        >
                           상세보기
                         </Link>
+
+
                       </div>
                     </div>
                   ))

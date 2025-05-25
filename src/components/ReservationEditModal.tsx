@@ -11,8 +11,32 @@ interface Reservation {
   decideHourRate: number
   mid: number
   petId?: number
-  postType: 'PET_OWNER' | 'PET_SITTER'
-  postId: number
+  postType?: 'PET_OWNER' | 'PET_SITTER'
+  petOwnerPostId?: number
+  petSitterPostId?: number
+}
+
+interface FormData {
+  confirmationDate: string;
+  futureDate: string;
+  defaultLocation: string;
+  serviceCategory: '산책' | '돌봄' | '호텔';
+  decideHourRate: string;
+}
+
+interface ReservationPayload {
+  confirmationDate: string;
+  futureDate: string;
+  defaultLocation: string;
+  serviceCategory: 'WALK' | 'CARE' | 'HOTEL';
+  decideHourRate: number;
+  mid: number;
+  chat: string;
+  readTheOriginalText: true;
+  flexibleLocation: string;
+  petId?: number;
+  petOwnerPostId?: number;
+  petSitterPostId?: number;
 }
 
 interface Props {
@@ -25,30 +49,32 @@ interface Props {
 export function ReservationEditModal({isOpen, onClose, reservation, onUpdate}: Props) {
   if (!isOpen || !reservation) return null
 
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (formData: FormData) => {
     try {
-      const korToEnum = {
+      const korToEnum: Record<FormData['serviceCategory'], ReservationPayload['serviceCategory']> = {
         산책: 'WALK',
         돌봄: 'CARE',
         호텔: 'HOTEL'
       } as const
 
-      const payload: Record<string, any> = {
+      const payload: ReservationPayload = {
         confirmationDate: formData.confirmationDate,
         futureDate: formData.futureDate,
         defaultLocation: formData.defaultLocation,
         serviceCategory: korToEnum[formData.serviceCategory],
         decideHourRate: Number(formData.decideHourRate),
         mid: reservation.mid,
-        postId: reservation.postId,
         chat: '',
         readTheOriginalText: true,
         flexibleLocation: ''
       }
 
-      // ✅ 시터글일 때만 petId 추가
-      if (reservation.postType === 'PET_SITTER' && reservation.petId) {
-        payload.petId = reservation.petId
+      // 역할에 따라 postId 설정
+      if (reservation.postType === 'PET_SITTER') {
+        if (reservation.petId) payload.petId = reservation.petId;
+        payload.petSitterPostId = reservation.petSitterPostId;
+      } else if (reservation.postType === 'PET_OWNER') {
+         payload.petOwnerPostId = reservation.petOwnerPostId;
       }
 
       await axios.put(
@@ -57,7 +83,7 @@ export function ReservationEditModal({isOpen, onClose, reservation, onUpdate}: P
       )
 
       alert('✅ 예약이 수정되었습니다!')
-      if (onUpdate) onUpdate()
+      onUpdate?.()
       onClose()
     } catch (error) {
       console.error('❌ 수정 실패', error)
@@ -73,9 +99,8 @@ export function ReservationEditModal({isOpen, onClose, reservation, onUpdate}: P
       await axios.delete(
         `http://localhost:8080/unknownPaw/api/appointment/${reservation.rno}`
       )
-
       alert('🚫 예약이 취소되었습니다.')
-      if (onUpdate) onUpdate()
+      onUpdate?.()
       onClose()
     } catch (error) {
       console.error('❌ 예약 취소 실패', error)
@@ -110,17 +135,16 @@ export function ReservationEditModal({isOpen, onClose, reservation, onUpdate}: P
           onSubmit={e => {
             e.preventDefault()
             const form = e.target as HTMLFormElement
-            const formData = {
+            const formData: FormData = {
               confirmationDate: form.confirmationDate.value,
               futureDate: form.futureDate.value,
               defaultLocation: form.defaultLocation.value,
-              serviceCategory: form.serviceCategory.value,
+              serviceCategory: form.serviceCategory.value as FormData['serviceCategory'],
               decideHourRate: form.decideHourRate.value
             }
             handleSubmit(formData)
           }}
           className="space-y-5">
-          {/* 필드 렌더링 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               서비스 종류
