@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react' // useState 추가
 import {Link, useLocation} from 'react-router-dom'
-import {useUserStore} from '../store/userStore'
+import {useUserStore} from '../../../store/userStore'
 
 interface UserProfile {
   mid: number
@@ -83,12 +83,12 @@ export function DashboardSidebar() {
             </a>
           </li>
           <li>
-            <a className={isActive('/myfavorites') ? 'active' : ''} href="/myfavorites">
+            <a className={isActive('/myfavourite') ? 'active' : ''} href="/myfavourite">
               <i className="lni lni-heart"></i> 찜한 게시글
             </a>
           </li>
           <li>
-            <a className={isActive('/post-item') ? 'active' : ''} href="/post-item">
+            <a className={isActive('/postad') ? 'active' : ''} href="/postad">
               <i className="lni lni-circle-plus"></i> 게시글 작성
             </a>
           </li>

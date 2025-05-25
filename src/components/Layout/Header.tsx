@@ -1,10 +1,12 @@
-import {useState, useEffect, useRef} from 'react'
-import {Link} from 'react-router-dom'
+import React, {useState, useEffect, useRef} from 'react'
+import {Link, useNavigate} from 'react-router-dom'
+import './Header.css'
 
-export default function Navigation() {
+export default function Header() {
   const [scrollPos, setScrollPos] = useState(0)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const mainNavRef = useRef<HTMLElement | null>(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,7 +40,6 @@ export default function Navigation() {
     setIsMenuOpen(prev => !prev)
   }
 
-  // prettier-ignore
   return (
     <header ref={mainNavRef} className="header navbar-area">
       <div className="container">
@@ -49,64 +50,72 @@ export default function Navigation() {
                 <Link className="navbar-brand" to="/">
                   <img src="/assets/images/logo/모개로고.png" alt="Logo" />
                 </Link>
-                <button 
-                  className={`navbar-toggler mobile-menu-btn ${isMenuOpen ? 'active' : ''}`}
+                <button
+                  className={`navbar-toggler mobile-menu-btn ${
+                    isMenuOpen ? 'active' : ''
+                  }`}
                   type="button"
                   aria-label="Toggle navigation"
-                  onClick={toggleMenu}
-                >
+                  onClick={toggleMenu}>
                   <span className="toggler-icon"></span>
                   <span className="toggler-icon"></span>
                   <span className="toggler-icon"></span>
                 </button>
 
                 <div
-                  className={`collapse navbar-collapse sub-menu-bar ${isMenuOpen ? 'show' : ''}`}
-                  id="navbarSupportedContent"
-                >
+                  className={`collapse navbar-collapse sub-menu-bar ${
+                    isMenuOpen ? 'show' : ''
+                  }`}
+                  id="navbarSupportedContent">
                   <ul className="navbar-nav ms-auto">
                     <li className="nav-item">
-                      <Link className="nav-link" to="/petowner/list" onClick={() => setIsMenuOpen(false)}>
+                      <Link
+                        className="nav-link"
+                        to="/"
+                        onClick={() => setIsMenuOpen(false)}>
+                        Home
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link
+                        className="nav-link"
+                        to="/petowner/list"
+                        onClick={() => setIsMenuOpen(false)}>
                         Pet Owner
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/petsitter/list" onClick={() => setIsMenuOpen(false)}>
+                      <Link
+                        className="nav-link"
+                        to="/petsitter/list"
+                        onClick={() => setIsMenuOpen(false)}>
                         Pet Sitter
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/community/posts" onClick={() => setIsMenuOpen(false)}>
+                      <Link
+                        className="nav-link"
+                        to="/community/posts"
+                        onClick={() => setIsMenuOpen(false)}>
                         Community
                       </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" to="/about" onClick={() => setIsMenuOpen(false)}>
-                        About Company
+                      <Link
+                        className="nav-link"
+                        to="/about"
+                        onClick={() => setIsMenuOpen(false)}>
+                        About
                       </Link>
                     </li>
                   </ul>
                 </div>
 
-                <div className="login-button">
-                  <ul>
-                    <li>
-                      <Link to="/login" style={{ backgroundColor: 'transparent' }}>
-                        <i className="lni lni-enter"></i> 로그인
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/join" style={{ backgroundColor: 'transparent' }}>
-                        <i className="lni lni-user"></i> 회원가입
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="button header-button">
-                  <Link to="/postAd" className="btn" style={{ padding: '8px 16px', whiteSpace: 'nowrap', minWidth: '80px' }}>
-                    글쓰기
-                  </Link>
+                <div className="header-button">
+                  <a href="/dashboard" className="btn">
+                    <i className="fas fa-user-circle"></i>
+                    My Page
+                  </a>
                 </div>
               </nav>
             </div>

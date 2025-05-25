@@ -1,7 +1,7 @@
 import type {FC, DetailedHTMLProps, HTMLAttributes, PropsWithChildren} from 'react'
-import type {WidthHeight} from './WidthHeight'
-import type {LeftRightTopBottom} from './LeftRightTopBottom'
-import type {MinMaxWidthHeight} from './MinMaxWidthHeight'
+import {WidthHeight} from '../utils/WidthHeight'
+import {LeftRightTopBottom} from '../utils/LeftRightTopBottom'
+import {MinMaxWidthHeight} from '../utils/MinMaxWidthHeight'
 
 // prettier-ignore
 export type ReactDivProps = 

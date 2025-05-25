@@ -2,7 +2,7 @@ import {useCallback, useEffect, useState} from 'react'
 import {useParams, useNavigate} from 'react-router-dom'
 import PetOwnerForm from './PetOwnerForm'
 import type {PostFormData} from './PetOwnerForm'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
+import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
 
 export default function EditPetOwnerPost() {
   const {postId} = useParams()

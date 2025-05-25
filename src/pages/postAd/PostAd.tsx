@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom'
 import PetOwnerForm from './PetOwnerForm'
 import PetSitterForm from './PetSitterForm'
 import CommunityForm from './CommunityForm'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
+import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
 
 const toPostTypeEnum = (category: string): string => {
   const normalized = category.trim().toLowerCase()
@@ -126,7 +126,7 @@ export default function PostAd() {
         license: postData.license
       }
 
-      console.log("전송하는 serviceCategory:", postData.serviceCategory);
+      console.log('전송하는 serviceCategory:', postData.serviceCategory)
 
       // 2️⃣ 이미지 유무에 따라 분기
       let endpoint
@@ -170,7 +170,7 @@ export default function PostAd() {
     }
   }
   return (
-    <section className="dashboard section">
+    <section className="dashboard section" style={{paddingTop: '100px'}}>
       <div className="container">
         <div className="row">
           <div className="col-lg-3 col-md-4 col-12">

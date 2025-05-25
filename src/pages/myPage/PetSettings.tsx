@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import {useNavigate, Link, useLocation, NavLink} from 'react-router-dom' // Link 추가
-import Header from '../../components/common/Header' // Header 컴포넌트 import
-import Footer from '../../components/common/Footer' // Footer 컴포넌트 import
-import {DashboardSidebar} from '../../components/DashboardSidebar'
+import Header from '../../components/Layout/Header' // Header 컴포넌트 import
+import { Footer } from '../../components/Layout/Footer' // Footer 컴포넌트 import
+import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
 import toast, {Toaster} from 'react-hot-toast'
 
 // npm install react-hot-toast <- ❗❗❗ 설치하세요

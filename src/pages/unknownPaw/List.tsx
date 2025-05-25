@@ -3,8 +3,8 @@
 import React, {useEffect, useState} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 
-import BackgroundVideo from '../../components/BackgroundVideo'
-import MainHeader from '../../components/MainHeader'
+import BackgroundVideo from '../../components/MainLayout/BackgroundVideo'
+import MainHeader from '../../components/MainLayout/MainHeader'
 
 import '../../../public/assets/css/LineIcons.2.0.css'
 import '../../../public/assets/css/animate.css'
@@ -249,7 +249,7 @@ export function List() {
                 desc: '펫시터로 활동하고 싶다면 이곳을 확인해보세요!'
               },
               {
-                to: '/community',
+                to: '/community/posts',
                 img: '/assets/images/items-grid/4.jpg',
                 title: '커뮤니티 게시판',
                 desc: '자유롭게 소통할 수 있는 반려동물 커뮤니티'

@@ -7,8 +7,18 @@ module.exports = {
   plugins: [require('daisyui')],
   daisyui: {
     themes: ['light', 'dark', 'cupcake']
+  },
+
+  extend: {
+    colors: {
+      'odeng-blue': '#32ADE6',
+      'odeng-blue-hover': '#2D9ED2',
+      'odeng-yellow': '#F1A852',
+      'odeng-yellow-hover': '#e89c40'
+    }
   }
 }
+
 /* 
 import daisyui from "daisyui"
 export default {
