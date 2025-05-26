@@ -134,8 +134,6 @@ export function PetSettings() {
         // const updatedPetData: PetDTO = await res.json();
         // alert(`${petToUpdate.petName} 정보가 성공적으로 업데이트되었습니다.`)
         toast.success(`정보가 성공적으로 업데이트되었습니다.`)
-        // 필요하다면 state를 다시 업데이트하거나 목록을 새로고침할 수 있습니다.
-        // setPets(prevPets => prevPets.map(pet => pet.petId === petId ? updatedPetData : pet));
       }
     } catch (err) {
       console.error(`펫 정보 업데이트 중 네트워크 오류: ${petToUpdate.petName} - `, err)
