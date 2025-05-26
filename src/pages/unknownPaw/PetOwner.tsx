@@ -104,6 +104,8 @@ export function PetOwner() {
   }
 
   useEffect(() => {
+    console.log('목록 images:', posts.map(p => p.images))
+
     const searchParams = new URLSearchParams(location.search)
     const urlPage = pageRequest.page + 1
     searchParams.set('page', urlPage.toString())
@@ -125,6 +127,8 @@ export function PetOwner() {
   }, [pageRequest, navigate])
 
   useEffect(() => {
+    console.log('목록 images:', posts.map(p => p.images))
+
     const fetchPosts = () => {
       setLoading(true)
       setError(null)

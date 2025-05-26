@@ -11,6 +11,7 @@ export default function ModifyPetOwnerPost() {
   const [editedData, setEditedData] = useState<PostFormData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const navigate = useNavigate()
 
   // 기존 데이터 불러오기
@@ -39,48 +40,82 @@ export default function ModifyPetOwnerPost() {
   }, [postType, postId])
 
   const handleFormDataChange = useCallback(
-    (data: PostFormData) => setEditedData(data),
+    (data: PostFormData) => {
+      const result = {...data}
+      // serviceDate가 있는 경우 형식 변환
+      if (result.serviceDate) {
+        // YYYY-MM-DD 형식이면 시간 추가
+        if (/^\d{4}-\d{2}-\d{2}$/.test(result.serviceDate)) {
+          result.serviceDate = result.serviceDate + 'T00:00:00'
+        }
+        // 이미 올바른 형식이 아니면 변환
+        else if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(result.serviceDate)) {
+          try {
+            const date = new Date(result.serviceDate)
+            result.serviceDate = date.toISOString().slice(0, 19)
+          } catch (e) {
+            console.error('잘못된 날짜 형식:', result.serviceDate)
+          }
+        }
+      }
+      setEditedData(result)
+    },
     []
   )
   const handleSubmit = async () => {
     if (!editedData) {
-      alert('수정된 내용이 없습니다.')
-      return
+      alert("수정된 내용이 없습니다.");
+      return;
+    }
+    if (!postId) {
+      alert("잘못된 접근입니다. postId가 없습니다.");
+      return;
     }
     try {
-      let response
-      if (editedData.images && editedData.images.length > 0) {
-        const formData = new FormData()
-        formData.append('post', JSON.stringify({...editedData, postId}))
-        for (const file of editedData.images) formData.append('file', file)
-        response = await fetch(
-          `/api/posts/${postType}/modifyWithImage?postId=${postId}`,
-          {
-            method: 'PUT',
-            headers: {
-              Authorization: `Bearer ${sessionStorage.getItem('token')}`
-            },
-            body: formData
-          }
-        )
-      } else {
-        response = await fetch(`/api/posts/${postType}/modify`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`
-          },
-          body: JSON.stringify({...editedData, postId})
+      const formData = new FormData();
+      
+      // post 데이터 추가
+      formData.append(
+        "post",
+        JSON.stringify({
+          ...editedData,
+          postId: Number(postId),
         })
+      );
+      
+      // postId 추가
+      formData.append("postId", postId.toString());
+      
+      // 이미지 파일 추가 (editedData에서 이미지 파일 가져오기)
+      if (editedData.images && editedData.images.length > 0) {
+        // 이미지가 File 객체인 경우에만 추가
+        const imageFile = editedData.images[0];
+        if (imageFile instanceof File) {
+          formData.append("file", imageFile);
+        }
       }
-      if (!response.ok) throw new Error('수정 실패')
-      alert('수정되었습니다!')
-      navigate(-1)
+  
+      const response = await fetch(`/api/posts/${postType}/modifyWithImage`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(errorData || "수정 실패");
+      }
+  
+      alert("수정되었습니다!");
+      navigate(-1);
     } catch (e) {
-      alert('수정 중 오류가 발생했습니다.')
+      console.error("수정 중 오류:", e);
+      alert("수정 중 오류가 발생했습니다.");
     }
-  }
-
+  };
+  
   if (loading) return <div>로딩 중...</div>
   if (error) return <div>{error}</div>
   if (!initialData) return <div>초기 데이터를 불러올 수 없습니다.</div>

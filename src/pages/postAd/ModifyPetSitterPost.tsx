@@ -41,7 +41,26 @@ export default function ModifySitterPost() {
 
   // 🟢 폼 데이터 변화 감지
   const handleFormDataChange = useCallback(
-    (data: PostFormData) => setEditedData(data),
+    (data: PostFormData) => {
+      const result = {...data}
+      // serviceDate가 있는 경우 형식 변환
+      if (result.serviceDate) {
+        // YYYY-MM-DD 형식이면 시간 추가
+        if (/^\d{4}-\d{2}-\d{2}$/.test(result.serviceDate)) {
+          result.serviceDate = result.serviceDate + 'T00:00:00'
+        }
+        // 이미 올바른 형식이 아니면 변환
+        else if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(result.serviceDate)) {
+          try {
+            const date = new Date(result.serviceDate)
+            result.serviceDate = date.toISOString().slice(0, 19)
+          } catch (e) {
+            console.error('잘못된 날짜 형식:', result.serviceDate)
+          }
+        }
+      }
+      setEditedData(result)
+    },
     []
   )
 
