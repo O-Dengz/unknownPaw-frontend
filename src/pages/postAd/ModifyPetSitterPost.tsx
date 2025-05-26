@@ -23,8 +23,13 @@ export default function ModifySitterPost() {
         })
         if (!res.ok) throw new Error('게시글을 불러오지 못했습니다.')
         const data = await res.json()
-        setInitialData({...data, petExperience: data.petExperience, license: data.license, images: undefined})
-        setInitialImageUrl(data.images?.[0]?.imagePath ?? null)
+        setInitialData({
+          ...data,
+          petExperience: data.petExperience,
+          license: data.license,
+          images: undefined
+        })
+        setInitialImageUrl(data.images?.[0]?.imagePath ? data.images[0].imagePath : null)
       } catch (e) {
         setError('게시글 정보를 불러올 수 없습니다.')
       } finally {

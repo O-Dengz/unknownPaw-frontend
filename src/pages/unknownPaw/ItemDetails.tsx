@@ -5,6 +5,7 @@ import ScrollToTopButton from '../../components/ScrollToTopButton'
 import KakaoMap from './components/KakaoMap'
 import ChatBox from '../../components/ChatBox'
 import {getImageUrl} from '@/utils/getImageUrl'
+import { ReservationModal, ReservationEditModal } from '@/components/ReservationModals'
 
 interface MemberResponseDTO {
   mid: number
@@ -17,7 +18,7 @@ interface MemberResponseDTO {
 
 interface ImageDTO {
   imageId: number
-  path: string    
+  path: string
   imagePath: string
   thumbnailPath?: string
   isMain: boolean
@@ -50,6 +51,12 @@ export function ItemDetails() {
   const [liked, setLiked] = useState(false)
   const myMemberId = Number(sessionStorage.getItem('mid'))
   const [isChatOpen, setIsChatOpen] = useState(false)
+  const [showModal, setShowModal] = useState(false)
+  const memberString = sessionStorage.getItem('member')
+  const member = memberString ? JSON.parse(memberString) : null
+  const memberId = member?.mid
+  const petId = 1
+
 
   useEffect(() => {
     const fetchPost = () => {
@@ -257,7 +264,9 @@ export function ItemDetails() {
                       marginTop: '12px',
                       alignItems: 'center'
                     }}>
-                    <button className="reserve-button">예약하기</button>
+                    <button className="reserve-button" onClick={() => setShowModal(true)}>
+                      예약하기
+                    </button>
                     <button
                       className="reserve-button"
                       onClick={() => setIsChatOpen(true)}
@@ -286,6 +295,17 @@ export function ItemDetails() {
           <button className="report-button">🚨 신고하기</button>
         </div>
       </div>
+
+      {postDTO && (
+        <ReservationModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          memberId={memberId}
+          petId={petId}
+          postId={postDTO.postId}
+          postType={postType?.toUpperCase() === 'PETOWNER' ? 'PET_OWNER' : 'PET_SITTER'}
+        />
+      )}
       {isChatOpen && <ChatBox isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />}
       <div
         className="bottom-buttons"

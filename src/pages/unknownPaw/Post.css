@@ -700,6 +700,55 @@ html {
   float: right;
 }
 
+/* 예약하기 모달 관련 css 코드 */
+.custom-modal-backdrop {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.6); display: flex;
+  align-items: center; justify-content: center;
+  padding: 24px;
+}
+.custom-modal-card {
+  max-width: 480px; width: 100%;
+  border-radius: 18px; background: #fff;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 36px 32px 28px 32px;
+  animation: fadeIn .22s;
+}
+@keyframes fadeIn { from { opacity:0; transform: scale(.97);} to { opacity:1; transform: scale(1);} }
+
+.custom-btn {
+  min-width: 100px;
+  padding: 8px 0;
+  border-radius: 12px;
+  font-size: 1.18rem;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  transition: background 0.18s, box-shadow 0.18s;
+  box-shadow: 0 2px 6px rgba(40,60,150,0.06);
+  margin-bottom: 0;
+  outline: none;
+}
+.custom-btn:active {
+  box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+}
+.custom-btn-primary {
+  background: #32ade6;
+}
+.custom-btn-primary:hover {
+  background: #1281a7;
+}
+.custom-btn-cancel {
+  background: #7d90ec;
+}
+.custom-btn-cancel:hover {
+  background: #5765c9;
+}
+
+.reservation-form-field {
+  margin-bottom: 22px; /* 원하는 만큼 조절! */
+}
+
 /* 정렬 라벨 */
 .sort-label {
   font-size: 0.9rem;

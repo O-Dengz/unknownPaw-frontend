@@ -1,4 +1,6 @@
 import {useState, useEffect} from 'react'
+import { resolvePreviewSrc } from '@/utils/resolvePreviewSrc'
+
 
 interface Pet {
   petId: number
@@ -232,7 +234,7 @@ export default function PetOwnerForm({
             <div className="mt-4">
               <p className="text-gray-700 font-medium mb-2">미리보기</p>
               <img
-                src={`http://localhost:8080/unknownPaw/${previewUrl}`}
+                src={resolvePreviewSrc(previewUrl)}
                 alt="미리보기"
                 className="w-full h-64 object-cover rounded-md border"
               />

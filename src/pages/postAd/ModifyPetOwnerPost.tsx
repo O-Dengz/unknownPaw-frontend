@@ -27,10 +27,9 @@ export default function ModifyPetOwnerPost() {
         console.log('불러온 data:', data)
         console.log('불러온 이미지 URL:', data.images?.[0]?.imagePath)
         setInitialData({...data, petId: data.petId})
-        setInitialImageUrl(data.images?.[0]?.imagePath ?? null)
-        setInitialData({...data, petId: data.petId})
-        setInitialImageUrl(data.images?.[0]?.imagePath ?? null)
-      } catch (e) {
+        setInitialImageUrl(
+          data.images?.[0]?.imagePath ? data.images[0].imagePath : null
+        )      } catch (e) {
         setError('게시글 정보를 불러올 수 없습니다.')
       } finally {
         setLoading(false)

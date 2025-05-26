@@ -109,6 +109,11 @@ export function DashboardSidebar() {
               <i className="lni lni-home"></i> 자주 묻는 질문
             </a>
           </li>
+          {/* <a className={isActive('/adminContactList) ? 'active' : ''} href="/adminContactList">
+              <i className="lni lni-home"></i> 문의내역 답변변 */}
+          <li>
+          
+          </li>
         </ul>
         <div className="button">
           <a className="btn" href="#" onClick={e => e.preventDefault()}>
