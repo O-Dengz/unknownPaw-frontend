@@ -5,6 +5,7 @@ import Header from '../../components/common/Header' // Header 컴포넌트 impor
 import Footer from '../../components/common/Footer' // Footer 컴포넌트 import
 import {DashboardSidebar} from '../../components/DashboardSidebar'
 import toast, {Toaster} from 'react-hot-toast'
+import ScrollToTopButton from '../../components/ScrollToTopButton'
 
 // npm install react-hot-toast <- ❗❗❗ 설치하세요
 
@@ -217,6 +218,7 @@ export function PetSettings() {
 
   return (
     <>
+      <ScrollToTopButton />
       <Header />
       <main>
         {/* Breadcrumbs 등 UI 요소 */}

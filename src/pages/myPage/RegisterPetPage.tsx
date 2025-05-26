@@ -108,171 +108,142 @@ const RegisterPetPage: React.FC = () => {
 
   return (
     <>
-      <div className="box-jali">dsdfsd</div>
-      <div className="container mx-auto p-4 max-w-md">
-        {' '}
-        {/* Tailwind CSS 클래스로 중앙 정렬, 패딩, 최대 너비 설정 */}
-        <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">
-          새로운 반려동물 등록
-        </h2>
-        <form
-          onSubmit={handleFormSubmit}
-          className="space-y-6 bg-white p-8 rounded-lg shadow-lg">
-          {/* 이름 */}
-          <div>
-            <label
-              htmlFor="petName"
-              className="block text-sm font-medium text-gray-700 mb-1">
-              이름
-            </label>
-            <input
-              type="text"
-              id="petName"
-              value={petForm.petName}
-              onChange={petChanged('petName')}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h3 className="modal-title">새로운 반려동물 등록</h3>
+          <form onSubmit={handleFormSubmit} className="pet-form-grid">
+            {/* 이름 */}
+            <div className="form-field ">
+              <label className="form-label">이름</label>
+              <input
+                type="text"
+                id="petName"
+                value={petForm.petName}
+                onChange={petChanged('petName')}
+                className="form-input"
+                required
+              />
+            </div>
 
-          {/* 견종 */}
-          <div>
-            <label
-              htmlFor="breed"
-              className="block text-sm font-medium text-gray-700 mb-1">
-              견종
-            </label>
-            <input
-              type="text"
-              id="breed"
-              value={petForm.breed}
-              onChange={petChanged('breed')}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
+            {/* 견종 */}
+            <div className="form-field">
+              <label className="form-label">견종</label>
+              <input
+                type="text"
+                id="breed"
+                value={petForm.breed}
+                onChange={petChanged('breed')}
+                className="form-input 
+                "
+                required
+              />
+            </div>
 
-          {/* 출생 연도 */}
-          <div>
-            <label
-              htmlFor="petBirth"
-              className="block text-sm font-medium text-gray-700 mb-1">
-              출생 연도
-            </label>
-            <input
-              type="number"
-              id="petBirth"
-              value={petForm.petBirth}
-              onChange={petChanged('petBirth')}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
+            {/* 성별 */}
+            <div className="form-field">
+              <label className="form-label">성별</label>
+              <select
+                id="petGender"
+                value={petForm.petGender ? 'true' : 'false'}
+                onChange={e =>
+                  setPetForm({...petForm, petGender: e.target.value === 'true'})
+                }
+                className="form-select">
+                <option value="true">수컷</option>
+                <option value="false">암컷</option>
+              </select>
+            </div>
 
-          {/* 성별 */}
-          <div>
-            <label
-              htmlFor="petGender"
-              className="block text-sm font-medium text-gray-700 mb-1">
-              성별
-            </label>
-            <select
-              id="petGender"
-              value={petForm.petGender ? 'true' : 'false'}
-              onChange={e =>
-                setPetForm({...petForm, petGender: e.target.value === 'true'})
-              }
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-              <option value="true">수컷</option>
-              <option value="false">암컷</option>
-            </select>
-          </div>
+            {/* 중성화 여부 */}
+            <div className="form-field">
+              <label htmlFor="neutering" className="form-label">
+                중성화 여부
+              </label>
+              <select
+                id="neutering"
+                value={petForm.neutering ? 'true' : 'false'}
+                onChange={e =>
+                  setPetForm({...petForm, neutering: e.target.value === 'true'})
+                }
+                className="form-select">
+                <option value="true">예</option>
+                <option value="false">아니오</option>
+              </select>
+            </div>
 
-          {/* 무게 (kg) */}
-          <div>
-            <label
-              htmlFor="weight"
-              className="block text-sm font-medium text-gray-700 mb-1">
-              무게 (kg)
-            </label>
-            <input
-              type="number"
-              step="0.1"
-              id="weight"
-              value={petForm.weight}
-              onChange={petChanged('weight')}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
+            {/* 출생 연도 */}
+            <div>
+              <label className="form-label">출생 연도</label>
+              <input
+                type="number"
+                id="petBirth"
+                value={petForm.petBirth}
+                onChange={petChanged('petBirth')}
+                className="form-input"
+                required
+              />
+            </div>
+            {/* 무게 (kg) */}
+            <div>
+              <label
+                htmlFor="weight"
+                className="block text-sm font-medium text-gray-700 mb-1">
+                무게 (kg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                id="weight"
+                value={petForm.weight}
+                onChange={petChanged('weight')}
+                className="form-input"
+                required
+              />
+            </div>
 
-          {/* 성격 (MBTI) */}
-          <div>
-            <label
-              htmlFor="petMbti"
-              className="block text-sm font-medium text-gray-700 mb-1">
-              성격 (MBTI)
-            </label>
-            <input
-              type="text"
-              id="petMbti"
-              value={petForm.petMbti}
-              onChange={petChanged('petMbti')}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
+            {/* 성격 (MBTI) */}
+            <div>
+              <label
+                htmlFor="petMbti"
+                className="block text-sm font-medium text-gray-700 mb-1">
+                성격 (MBTI)
+              </label>
+              <input
+                type="text"
+                id="petMbti"
+                value={petForm.petMbti}
+                onChange={petChanged('petMbti')}
+                className="form-input"
+                required
+              />
+            </div>
 
-          {/* 중성화 여부 */}
-          <div>
-            <label
-              htmlFor="neutering"
-              className="block text-sm font-medium text-gray-700 mb-1">
-              중성화 여부
-            </label>
-            <select
-              id="neutering"
-              value={petForm.neutering ? 'true' : 'false'}
-              onChange={e =>
-                setPetForm({...petForm, neutering: e.target.value === 'true'})
-              }
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-              <option value="true">예</option>
-              <option value="false">아니오</option>
-            </select>
-          </div>
+            {/* 소개 */}
+            <div>
+              <label className="form-label">소개</label>
+              <textarea
+                id="petIntroduce"
+                value={petForm.petIntroduce}
+                onChange={e => setPetForm({...petForm, petIntroduce: e.target.value})}
+                className="form-input"
+                rows={3}
+                required
+              />
+            </div>
 
-          {/* 소개 */}
-          <div>
-            <label
-              htmlFor="petIntroduce"
-              className="block text-sm font-medium text-gray-700 mb-1">
-              소개
-            </label>
-            <textarea
-              id="petIntroduce"
-              value={petForm.petIntroduce}
-              onChange={e => setPetForm({...petForm, petIntroduce: e.target.value})}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              rows={3}
-              required
-            />
-          </div>
-
-          <div className="flex justify-end space-x-4 mt-6">
-            <button
-              type="submit"
-              className="px-6 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              등록
-            </button>
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="px-6 py-2 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              취소
-            </button>
-          </div>
-        </form>
+            <div className="modal-actions full-width">
+              <button type="submit" className="button button-primary">
+                등록
+              </button>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="button button-secondary ">
+                취소
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </>
   )

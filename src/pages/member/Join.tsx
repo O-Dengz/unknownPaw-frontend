@@ -3,6 +3,7 @@ import {useState, useCallback, useRef} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {EyeIcon, EyeSlashIcon} from '@heroicons/react/24/outline'
 import './Join.css'
+import {Toast} from 'bootstrap'
 
 type JoinFormType = Record<
   | 'email'
@@ -396,7 +397,6 @@ export function Join() {
 
       const result = await response.text()
       if (result) {
-        // alert(result)
         navigate('/login')
         console.log('Sending password:', pass)
       }

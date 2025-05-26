@@ -712,6 +712,15 @@
   font-size: 0.9rem;
 }
 
+.form-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(107, 114, 128, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .modal-overlay {
   position: fixed; /* 뷰포트에 고정 */
   top: 0;
@@ -724,15 +733,16 @@
   align-items: center; /* 세로 중앙 정렬 */
   z-index: 1000; /* 다른 콘텐츠 위에 표시되도록 높은 z-index 설정 */
   animation: fadeIn 0.3s ease-out; /* 부드러운 등장 효과 */
+  backdrop-filter: blur(3px);
 }
 
 .modal-content {
-  background-color: #fff; /* 흰색 배경 */
-  padding: 30px;
+  background-color: var(--bg-white); /* 흰색 배경 */
+  padding: 2.5rem;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
   max-width: 500px; /* 최대 너비 */
-  width: 90%; /* 화면 너비에 따라 조절 */
+  width: 100%; /* 화면 너비에 따라 조절 */
   z-index: 1001; /* 오버레이보다 높게 설정 */
   position: relative; /* 내부 요소 위치 지정을 위함 */
   animation: slideIn 0.3s ease-out; /* 부드러운 등장 효과 */
