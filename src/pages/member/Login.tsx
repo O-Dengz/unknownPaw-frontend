@@ -4,6 +4,7 @@ import Header from '../../components/Layout/Header'
 import {Footer} from '../../components/Layout/Footer'
 import '../../assets/styles/login.css'
 import {useAuth} from '../../contexts/AuthContext'
+import KakaoLoginButton from '../../components/socialLogin/KakaoLoginButton'
 
 /* ------------------- 타입 & 초기 상태 ------------------- */
 type LoginFormType = {
@@ -61,7 +62,7 @@ export function Login() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          Accept: 'application/json'
         },
         credentials: 'include', // 쿠키를 포함하여 요청
         body: JSON.stringify({email, password})
@@ -198,6 +199,7 @@ export function Login() {
                   <span>Or continue with</span>
                 </p>
                 <div className="social-buttons">
+                  <KakaoLoginButton />
                   <button type="button" className="social-button facebook">
                     <i className="lni lni-facebook-filled" />
                   </button>
