@@ -1,8 +1,0 @@
-export * from './ui/Icon'
-export * from './ui/Texts'
-export * from './ui/Div'
-export * from './Avatar'
-export * from './PawRating'
-export * from './ui/Overlay'
-export * from './features/upload/UploadResult'
-
