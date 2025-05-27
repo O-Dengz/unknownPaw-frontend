@@ -1,0 +1,16 @@
+/* 카드 썸네일 크기 통일 + 가운데 정렬 */
+.thumbnail img,
+.card-thumb img,
+.single-grid .image .thumbnail img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* .single-grid .image 래퍼가 고정 높이를 주고 있다면 해제 */
+.single-grid .image {
+  height: auto !important;
+  padding: 0 !important;
+}
