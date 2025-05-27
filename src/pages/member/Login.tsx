@@ -1,8 +1,9 @@
 import {useState, useCallback, useRef, ChangeEvent, FormEvent} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
-import Header from '../../components/common/Header'
-import Footer from '../../components/common/Footer'
+import Header from '../../components/Layout/Header'
+import {Footer} from '../../components/Layout/Footer'
 import '../../assets/styles/login.css'
+import {useAuth} from '../../contexts/AuthContext'
 
 /* ------------------- 타입 & 초기 상태 ------------------- */
 type LoginFormType = {
@@ -19,6 +20,8 @@ const initialFormState: LoginFormType = {
 
 /* ======================= 컴포넌트 ======================= */
 export function Login() {
+  const {login} = useAuth() // ✅ 추가!
+
   /* react‑state */
   const [{email, password, rememberMe}, setForm] =
     useState<LoginFormType>(initialFormState)
@@ -76,6 +79,7 @@ export function Login() {
       sessionStorage.setItem('token', data.token)
       sessionStorage.setItem('email', email)
       sessionStorage.setItem('member', JSON.stringify(data.member))
+      sessionStorage.setItem('mid', String(data.member.mid))
 
       /* Remember‑Me */
       if (rememberMe) {
@@ -83,6 +87,10 @@ export function Login() {
       } else {
         localStorage.removeItem('rememberedEmail')
       }
+
+      login() // ✅ 로그인 상태 전파!
+
+      navigate('/') // 홈으로 이동
 
       /* 5) 라우팅 */
       navigate('/')

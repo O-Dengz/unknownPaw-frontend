@@ -16,17 +16,20 @@ import CommunityPost from '../../pages/community/CommunityPost'
 /* ---------- 마이페이지 ---------- */
 import Dashboard from '../../pages/myPage/Dashboard'
 import {ProfileSettings} from '../../pages/myPage/ProfileSettings'
+
 import Chatting from '../../pages/myPage/Chatting'
 import Faq from '../../pages/myPage/Faq'
 import ReservationDetails from '../../pages/myPage/ReservationDetails'
 import ReservationDetailsView from '../../pages/myPage/ReservationDetailsView'
 import MyPosts from '../../pages/myPage/MyPosts'
+import MyFavourite from '../../pages/myPage/MyFavourite'
 
 /* ---------- 멤버 ---------- */
 import MemberProfile from '../../pages/member/MemberProfile'
 
 import PostAd from '../../pages/postAd/PostAd'
-import MyFavorites from '../../pages/myPage/MyFavorites'
+import {PetSettings} from '../../pages/myPage/PetSettings'
+import RegisterPetPage from '../../pages/myPage/RegisterPetPage'
 
 export default function Layout() {
   const location = useLocation()
@@ -57,7 +60,9 @@ export default function Layout() {
         <Route path="/reservation-details" element={<ReservationDetails />} />
         <Route path="/reservation-details/:rno" element={<ReservationDetailsView />} />
         <Route path="/my-posts" element={<MyPosts />} />
-        <Route path="/myfavorites" element={<MyFavorites />} />
+        <Route path="/myfavourite" element={<MyFavourite />} />
+        <Route path="/pet-settings" element={<PetSettings />} />
+        <Route path="/register-pet" element={<RegisterPetPage />} />
 
         {/* 멤버 */}
         <Route path="/profile/simple/:mid" element={<MemberProfile />} />

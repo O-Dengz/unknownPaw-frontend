@@ -47,7 +47,7 @@ const MainHeader = () => {
           로그인
         </Link>
         <Link
-          to="/signup"
+          to="/join"
           style={{
             color: 'white',
             textDecoration: 'none',

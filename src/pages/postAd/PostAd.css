@@ -31,6 +31,9 @@
   padding: 20px;
   border-bottom: 1px solid #eee;
 }
+.dashboard.section {
+  margin-top: 64px; /* 헤더 높이 맞게 조절 */
+}
 
 .dashboard-sidebar .user-image img {
   width: 45px;

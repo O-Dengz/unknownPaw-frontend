@@ -63,7 +63,6 @@ export function Community() {
         return
       }
 
-      console.log('Fetching posts from:', '/api/community/posts')
       const response = await fetch('/api/community/posts', {
         method: 'GET',
         headers: {
@@ -75,19 +74,12 @@ export function Community() {
 
       if (!response.ok) {
         const errorText = await response.text()
-        console.error('API Error:', {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorText
-        })
         throw new Error(`게시물을 불러오는데 실패했습니다. (${response.status})`)
       }
 
       const data = await response.json()
-      console.log('API Response:', data)
 
       if (!Array.isArray(data)) {
-        console.error('API 응답이 배열이 아닙니다:', data)
         setPosts([])
         setFilteredPosts([])
         setError('데이터 형식이 올바르지 않습니다.')
@@ -97,7 +89,6 @@ export function Community() {
       }
       setLoading(false)
     } catch (error) {
-      console.error('Error fetching posts:', error)
       setError(error instanceof Error ? error.message : '게시물을 불러오는 데 실패했습니다.')
       setPosts([])
       setFilteredPosts([])
@@ -117,8 +108,10 @@ export function Community() {
         case 'title':
           return post.title.toLowerCase().includes(searchTermLower)
         case 'author':
-          return post.authorName.toLowerCase().includes(searchTermLower) || 
-                 post.authorNickname.toLowerCase().includes(searchTermLower)
+          return (
+            post.authorName.toLowerCase().includes(searchTermLower) ||
+            post.authorNickname.toLowerCase().includes(searchTermLower)
+          )
         case 'content':
           return post.content.toLowerCase().includes(searchTermLower)
         default:
@@ -132,40 +125,16 @@ export function Community() {
     const pages = []
     let startPage = Math.floor((currentPage - 1) / 10) * 10 + 1
     let endPage = Math.min(startPage + 9, totalPages)
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i)
-    }
-
+    for (let i = startPage; i <= endPage; i++) pages.push(i)
     return pages
   }
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-  }
-
-  const handleNext = () => {
-    if (currentPage + 10 <= totalPages) {
-      setCurrentPage(currentPage + 10)
-    } else {
-      setCurrentPage(totalPages)
-    }
-  }
-
-  const handlePrev = () => {
-    if (currentPage - 10 >= 1) {
-      setCurrentPage(currentPage - 10)
-    } else {
-      setCurrentPage(1)
-    }
-  }
+  const handlePageChange = (page: number) => setCurrentPage(page)
+  const handleNext = () => setCurrentPage(currentPage + 10 <= totalPages ? currentPage + 10 : totalPages)
+  const handlePrev = () => setCurrentPage(currentPage - 10 >= 1 ? currentPage - 10 : 1)
 
   if (loading) return <div>로딩중...</div>
   if (error) return <div>{error}</div>
-  if (!Array.isArray(filteredPosts)) {
-    console.error('filteredPosts is not an array:', filteredPosts)
-    return <div>데이터를 불러오는 중 오류가 발생했습니다.</div>
-  }
 
   return (
     <section className="section latest-news-area blog-list">
@@ -173,12 +142,8 @@ export function Community() {
         <div className="row">
           <div className="col-12">
             <div className="section-title">
-              <h2 className="wow fadeInUp" data-wow-delay=".4s">
-                Community
-              </h2>
-              <p className="wow fadeInUp" data-wow-delay=".6s">
-                서비스를 요청하고 제안을 받아보세요!
-              </p>
+              <h2 className="wow fadeInUp" data-wow-delay=".4s">Community</h2>
+              <p className="wow fadeInUp" data-wow-delay=".6s">서비스를 요청하고 제안을 받아보세요!</p>
             </div>
           </div>
         </div>
@@ -187,7 +152,7 @@ export function Community() {
           <div className="col-lg-8 col-md-7 col-12">
             <div className="row">
               {filteredPosts.length > 0 ? (
-                filteredPosts.map((post) => (
+                filteredPosts.map(post => (
                   <div key={post.communityId} className="col-lg-4 col-md-6 col-12 mb-4">
                     <div className="single-news wow fadeInUp" data-wow-delay=".2s">
                       <div className="image">
@@ -203,7 +168,7 @@ export function Community() {
                         <h4 className="title mb-1 text-base">
                           <a href={`/communitypost/${post.communityId}`}>{post.title}</a>
                         </h4>
-                        <p className="text-sm line-clamp-2" style={{marginBottom: '4px'}}>{post.content}</p>
+                        <p className="text-sm line-clamp-2" style={{ marginBottom: '4px' }}>{post.content}</p>
                         <div className="meta-details">
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', fontSize: '0.8em', color: '#888', fontWeight: 400 }}>
                             <span><i className="lni lni-calendar"></i> {new Date(post.regDate).getMonth() + 1}월 {new Date(post.regDate).getDate()}일</span>
@@ -217,34 +182,24 @@ export function Community() {
                   </div>
                 ))
               ) : (
-                <div className="col-12">
-                  <p>게시글이 없습니다.</p>
-                </div>
+                <div className="col-12"><p>게시글이 없습니다.</p></div>
               )}
             </div>
 
             <div className="pagination left blog-grid-page mt-4">
               <ul className="pagination-list">
                 <li>
-                  <a
-                    href="#"
-                    onClick={handlePrev}
-                    className={currentPage === 1 ? 'disabled' : ''}>
+                  <a href="#" onClick={handlePrev} className={currentPage === 1 ? 'disabled' : ''}>
                     <i className="lni lni-chevron-left"></i>
                   </a>
                 </li>
                 {generatePagination().map(page => (
                   <li key={page} className={page === currentPage ? 'active' : ''}>
-                    <a href="#" onClick={e => { e.preventDefault(); handlePageChange(page); }}>
-                      {page}
-                    </a>
+                    <a href="#" onClick={e => { e.preventDefault(); handlePageChange(page) }}>{page}</a>
                   </li>
                 ))}
                 <li>
-                  <a
-                    href="#"
-                    onClick={e => { e.preventDefault(); handleNext(); }}
-                    className={currentPage + 10 > totalPages ? 'disabled' : ''}>
+                  <a href="#" onClick={e => { e.preventDefault(); handleNext() }} className={currentPage + 10 > totalPages ? 'disabled' : ''}>
                     <i className="lni lni-chevron-right"></i>
                   </a>
                 </li>
@@ -259,9 +214,9 @@ export function Community() {
                   <span>게시글 검색</span>
                 </h5>
                 <div className="search-form">
-                  <select 
+                  <select
                     value={searchType}
-                    onChange={(e) => setSearchType(e.target.value as 'title' | 'author' | 'content')}
+                    onChange={e => setSearchType(e.target.value as 'title' | 'author' | 'content')}
                     style={{
                       width: '100%',
                       padding: '4px',
@@ -275,12 +230,12 @@ export function Community() {
                     <option value="author">작성자</option>
                     <option value="content">내용</option>
                   </select>
-                  <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
-                    <input 
-                      type="text" 
-                      placeholder="검색어를 입력하세요." 
+                  <form onSubmit={e => { e.preventDefault(); handleSearch() }}>
+                    <input
+                      type="text"
+                      placeholder="검색어를 입력하세요."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={e => setSearchTerm(e.target.value)}
                       style={{ fontSize: '0.85em', padding: '4px' }}
                     />
                     <button type="submit" style={{ padding: '4px 8px' }}>
@@ -296,18 +251,19 @@ export function Community() {
                 </h5>
                 <div className="popular-feed-loop">
                   {posts
-                    .sort((a, b) => {
-                      const scoreA = a.likes + a.commentCount
-                      const scoreB = b.likes + b.commentCount
-                      return scoreB - scoreA
-                    })
+                    .sort((a, b) => (b.likes + b.commentCount) - (a.likes + a.commentCount))
                     .slice(0, 3)
-                    .map((post) => (
+                    .map(post => (
                       <div key={post.communityId} className="single-popular-feed">
                         <div className="feed-desc">
                           <h6 className="post-title">
                             <a href={`/communitypost/${post.communityId}`}>{post.title}</a>
                           </h6>
+                          <div className="meta-info" style={{ display: 'flex', gap: '15px', fontSize: '0.9em', color: '#666' }}>
+                            <span><i className="lni lni-calendar"></i> {new Date(post.regDate).toLocaleDateString()}</span>
+                            <span><i className="lni lni-heart"></i> {post.likes}</span>
+                            <span><i className="lni lni-comments"></i> {post.commentCount}</span>
+                          </div>
                         </div>
                       </div>
                     ))}

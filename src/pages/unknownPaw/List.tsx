@@ -1,10 +1,11 @@
+// src/pages/unknownPaw/List.tsx
+
 import React, {useEffect, useState} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 
-import BackgroundVideo from '../../components/BackgroundVideo'
-import MainHeader from '../../components/MainHeader'
+import BackgroundVideo from '../../components/MainLayout/BackgroundVideo'
+import MainHeader from '../../components/MainLayout/MainHeader'
 
-// CSS & 스타일 파일들
 import '../../../public/assets/css/LineIcons.2.0.css'
 import '../../../public/assets/css/animate.css'
 import '../../../public/assets/css/bootstrap.min.css'
@@ -13,13 +14,11 @@ import '../../../public/assets/css/main.css'
 import '../../../public/assets/css/tiny-slider.css'
 import './List.css'
 
-// 게시글 이미지 타입
 interface ImageDTO {
   imageId: number
   imageUrl: string
 }
 
-// 펫오너/펫시터 게시글 타입
 interface Post {
   postId: number
   title: string
@@ -34,19 +33,16 @@ interface Post {
   modDate: string
   email: string
   image: ImageDTO[]
-  isPetSitterPost: boolean // 시터 게시글 여부
+  isPetSitterPost: boolean
 }
 
 export function List() {
   const navigate = useNavigate()
-
-  // 상태: 게시글 목록, 로딩, 에러
   const [ownerPosts, setOwnerPosts] = useState<Post[]>([])
   const [sitterPosts, setSitterPosts] = useState<Post[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // 게시글 요청 (마운트 시 실행)
   useEffect(() => {
     let isMounted = true
 
@@ -66,7 +62,6 @@ export function List() {
         Accept: 'application/json'
       }
 
-      // 캐시된 데이터가 있으면 재사용 (5분 이내)
       const cachedData = sessionStorage.getItem('cachedPosts')
       if (cachedData) {
         const {ownerPosts, sitterPosts, timestamp} = JSON.parse(cachedData)
@@ -81,13 +76,11 @@ export function List() {
       }
 
       try {
-        // 펫오너/펫시터 게시글 각각 6개씩 랜덤 조회
         const [ownerRes, sitterRes] = await Promise.all([
           fetch('/api/posts/petowner/recent/random6', {headers}),
           fetch('/api/posts/petsitter/recent/random6', {headers})
         ])
 
-        // 응답 에러 처리
         const handleErrors = (res: Response, type: string) => {
           if (res.status === 403) {
             sessionStorage.clear()
@@ -105,7 +98,6 @@ export function List() {
         const owners: Post[] = await ownerRes.json()
         const sitters: Post[] = await sitterRes.json()
 
-        // 게시글에 타입 플래그 추가
         const processedOwnerPosts = owners.map(post => ({
           ...post,
           isPetSitterPost: false
@@ -115,7 +107,6 @@ export function List() {
           isPetSitterPost: true
         }))
 
-        // 상태 저장 + 세션 스토리지 캐시
         if (isMounted) {
           setOwnerPosts(processedOwnerPosts)
           setSitterPosts(processedSitterPosts)
@@ -136,22 +127,23 @@ export function List() {
     }
 
     fetchPosts()
+
     return () => {
       isMounted = false
     }
   }, [navigate])
 
-  // 게시글 카드 렌더링 함수
   const renderPostCards = (posts: Post[]) =>
     posts.map(post => {
-      const thumbnailUrl = post.image?.[0]?.imageUrl || '/assets/images/items-grid/2.jpg'
+      const thumbnailUrl =
+        post.image && post.image.length > 0
+          ? post.image[0].imageUrl
+          : '/assets/images/items-grid/2.jpg'
 
       return (
         <div className="col-lg-4 col-md-6 col-12" key={post.postId}>
           <Link
-            to={`/posts/${post.isPetSitterPost ? 'petsitter' : 'petowner'}/read/${
-              post.postId
-            }`}
+            to={`/post/${post.isPetSitterPost ? 'PETSITTER' : 'PETOWNER'}/${post.postId}`}
             className="single-grid wow fadeInUp random-post-card"
             data-wow-delay=".2s">
             <div className="image">
@@ -204,13 +196,11 @@ export function List() {
       )
     })
 
-  // 상단 이동 버튼
   const handleScrollTop = (e: React.MouseEvent) => {
     e.preventDefault()
     window.scrollTo({top: 0, behavior: 'smooth'})
   }
 
-  // 로딩 중 UI
   if (isLoading) {
     return (
       <div className="container text-center py-5">
@@ -221,7 +211,6 @@ export function List() {
     )
   }
 
-  // 에러 시 UI
   if (error) {
     return (
       <div className="container text-center py-5">
@@ -232,12 +221,10 @@ export function List() {
 
   return (
     <>
-      {/* 스크롤 탑 버튼 */}
       <span onClick={handleScrollTop} className="scroll-top btn-hover">
         <i className="lni lni-chevron-up" />
       </span>
 
-      {/* 배경 비디오 + 헤더 영역 */}
       <section
         className="hero-area overlay"
         style={{height: '60vh', position: 'relative', overflow: 'hidden'}}>
@@ -245,7 +232,6 @@ export function List() {
         <BackgroundVideo />
       </section>
 
-      {/* 게시판 바로가기 섹션 */}
       <section className="categories-section">
         <div className="container">
           <div className="row">
@@ -263,7 +249,7 @@ export function List() {
                 desc: '펫시터로 활동하고 싶다면 이곳을 확인해보세요!'
               },
               {
-                to: '/community',
+                to: '/community/posts',
                 img: '/assets/images/items-grid/4.jpg',
                 title: '커뮤니티 게시판',
                 desc: '자유롭게 소통할 수 있는 반려동물 커뮤니티'
@@ -292,7 +278,6 @@ export function List() {
         </div>
       </section>
 
-      {/* 펫오너 게시글 */}
       <section className="posts-section">
         <div className="container">
           <h2 className="section-title mb-4">펫오너 게시글</h2>
@@ -300,7 +285,6 @@ export function List() {
         </div>
       </section>
 
-      {/* 펫시터 게시글 */}
       <section className="posts-section">
         <div className="container">
           <h2 className="section-title mb-4">펫시터 게시글</h2>

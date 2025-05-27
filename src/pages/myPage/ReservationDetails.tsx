@@ -1,9 +1,8 @@
-
 import React, {useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
 import axios from 'axios'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
-import {ReservationEditModal} from '../../components/ReservationEditModal'
+import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
+import { ReservationModal, ReservationEditModal } from '@/components/ReservationModals'
 
 type ReservationDetailsItem = {
   rno: number

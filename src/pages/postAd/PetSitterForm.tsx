@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react'
+import {resolvePreviewSrc} from '@/utils/resolvePreviewSrc'
 
 interface Member {
   id: number
@@ -7,30 +8,38 @@ interface Member {
   introduction: string
   pawRate: number | undefined
   emailVerified: boolean
-  experience?: string
-  certificates?: string[]
+  petExperience?: string
+  license?: string[]
 }
 
-interface PostFormData {
+export interface PostFormData {
   title: string
   content: string
   serviceCategory: string
   hourlyRate: number
   defaultLocation: string
-  walkDate?: string
+  serviceDate?: string
   images?: File[]
-  experience?: string
-  certificates?: string[]
+  petExperience?: string
+  license?: string[]
 }
 
 interface PetSitterFormProps {
   onDataChange: (data: PostFormData) => void
+  initialData?: Partial<PostFormData>
+  initialImageUrl?: string | null
+  mode?: 'create' | 'edit'
 }
 
-export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
+export default function PetSitterForm({
+  onDataChange,
+  initialData,
+  initialImageUrl,
+  mode = 'create'
+}: PetSitterFormProps) {
   const [member, setMember] = useState<Member | null>(null)
   const [image, setImage] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl || null)
 
   const [postData, setPostData] = useState<PostFormData>({
     title: '',
@@ -38,11 +47,27 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
     serviceCategory: '',
     hourlyRate: 0,
     defaultLocation: '',
-    experience: '',
-    certificates: []
+    serviceDate: '',
+    petExperience: '',
+    license: [],
+    images: []
   })
 
-  // 🟡 1. 회원 정보 불러오기 (최초 1회)
+  // (1) 최초 mount + 수정모드일 때 initialData로 값 채우기
+  useEffect(() => {
+    if (initialData && mode === 'edit') {
+      setPostData(prev => ({
+        ...prev,
+        ...initialData,
+        petExperience: initialData.petExperience ?? '',
+        license: initialData.license ?? [],
+        images: []
+      }))
+      setPreviewUrl(initialImageUrl || null)
+    }
+  }, [initialData, initialImageUrl, mode])
+
+  // (2) 회원정보 fetch
   useEffect(() => {
     const fetchMemberData = async () => {
       try {
@@ -61,12 +86,14 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
         const data = await response.json()
         setMember(data)
 
-        // 경력, 자격증 프로필 정보 자동 세팅
-        setPostData(prev => ({
-          ...prev,
-          experience: data.experience || '',
-          certificates: data.certificates || []
-        }))
+        // 새 글 작성 시, 프로필 기반 자동 세팅
+        if (mode === 'create') {
+          setPostData(prev => ({
+            ...prev,
+            petExperience: data.petExperience || '',
+            license: data.license || []
+          }))
+        }
       } catch (error) {
         alert(
           error instanceof Error
@@ -76,19 +103,23 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
       }
     }
     fetchMemberData()
-  }, [])
+  }, [mode])
 
-  // 🟡 2. 이미지 업로드
+  // (3) 이미지 업로드
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0]
+      if (file.size > 10 * 1024 * 1024) {
+        alert('10MB를 초과한 파일은 업로드할 수 없습니다.')
+        return
+      }
       setImage(file)
       setPreviewUrl(URL.createObjectURL(file))
       setPostData(prev => ({...prev, images: [file]}))
     }
   }
 
-  // 🟡 3. 부모 컴포넌트로 데이터 전달
+  // (4) 부모로 데이터 전달
   useEffect(() => {
     onDataChange({
       ...postData,
@@ -96,7 +127,7 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
     })
   }, [postData, image, onDataChange])
 
-  // 🟡 4. 폼 렌더링
+  // (5) 렌더링
   return (
     <div>
       <div className="main-content bg-white p-8 rounded-xl shadow-lg">
@@ -114,7 +145,7 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
 
         {/* 글 내용 */}
         <div className="form-group mb-6">
-          <label className="text-gray-700 font-medium">내용</label>
+          <label className="text-gray-700 font-medium">내용*</label>
           <textarea
             value={postData.content}
             onChange={e => setPostData({...postData, content: e.target.value})}
@@ -126,21 +157,21 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
 
         {/* 서비스 카테고리 */}
         <div className="form-group mb-6">
-          <label className="text-gray-700 font-medium">서비스 카테고리</label>
+          <label className="text-gray-700 font-medium">서비스 카테고리*</label>
           <select
             value={postData.serviceCategory}
             onChange={e => setPostData({...postData, serviceCategory: e.target.value})}
             className="form-control">
             <option value="">카테고리를 선택하세요</option>
             <option value="WALK">산책</option>
-            <option value="HOTELING">호텔링</option>
+            <option value="HOTEL">호텔링</option>
             <option value="CARE">돌봄</option>
           </select>
         </div>
 
         {/* 시급 */}
         <div className="form-group mb-6">
-          <label className="text-gray-700 font-medium">시급</label>
+          <label className="text-gray-700 font-medium">시급*</label>
           <input
             type="number"
             value={postData.hourlyRate}
@@ -150,14 +181,54 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
           />
         </div>
 
+        {/* 희망 서비스 날짜 */}
+        <div className="form-group mb-6">
+          <label className="text-gray-700 font-medium">희망 서비스 날짜</label>
+          <input
+            type="date"
+            value={postData.serviceDate || ''}
+            onChange={e => setPostData({...postData, serviceDate: e.target.value})}
+            className="form-control"
+          />
+        </div>
+
         {/* 기본 위치 */}
         <div className="form-group mb-6">
-          <label className="text-gray-700 font-medium">기본 위치</label>
+          <label className="text-gray-700 font-medium">기본 위치*</label>
           <input
             type="text"
             value={postData.defaultLocation}
             onChange={e => setPostData({...postData, defaultLocation: e.target.value})}
             placeholder="기본 위치를 입력하세요"
+            className="form-control"
+          />
+        </div>
+
+        {/* 펫시터 경험 */}
+        <div className="form-group mb-6">
+          <label className="text-gray-700 font-medium">돌봄 경험</label>
+          <textarea
+            value={postData.petExperience || ''}
+            onChange={e => setPostData({...postData, petExperience: e.target.value})}
+            placeholder="돌봄 관련 경험을 입력하세요"
+            className="form-control"
+            rows={3}
+          />
+        </div>
+
+        {/* 자격증 입력 */}
+        <div className="form-group mb-6">
+          <label className="text-gray-700 font-medium">자격증</label>
+          <input
+            type="text"
+            value={postData.license?.join(', ') || ''}
+            onChange={e =>
+              setPostData({
+                ...postData,
+                license: e.target.value.split(',').map(str => str.trim())
+              })
+            }
+            placeholder="자격증이 여러 개면 콤마(,)로 구분"
             className="form-control"
           />
         </div>
@@ -171,7 +242,8 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
             <input
               type="file"
               onChange={handleImageUpload}
-              className="absolute inset-0 opacity-0 cursor-pointer"
+              style={{display: 'block'}}
+              className="absolute inset-0 opacity-0 cursor-pointer z-10"
               accept="image/*"
             />
             <p className="text-sm mt-2 text-gray-400">최대 업로드 용량: 10MB</p>
@@ -180,8 +252,7 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
             <div className="mt-4">
               <p className="text-gray-700 font-medium mb-2">미리보기</p>
               <img
-                src={previewUrl}
-                alt="미리보기"
+                src={resolvePreviewSrc(previewUrl)}
                 className="w-full h-64 object-cover rounded-md border"
               />
             </div>
@@ -189,9 +260,9 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
         </div>
       </div>
 
-      {/* 펫 시터 정보 표시 */}
+      {/* --- 펫시터 정보 표시 --------------------------------------------------- */}
       <div className="main-content bg-white p-8 rounded-xl shadow-lg mt-6">
-        <h4 className="text-xl font-semibold text-gray-800 mb-6">👤 펫 시터 정보</h4>
+        <h4 className="text-xl font-semibold text-gray-800 mb-6">👟 펫시터 정보</h4>
         {member && (
           <div className="grid grid-cols-2 gap-4">
             <div className="form-group">
@@ -240,33 +311,6 @@ export default function PetSitterForm({onDataChange}: PetSitterFormProps) {
                 }`}>
                 {member.emailVerified ? '인증 완료' : '미인증'}
               </span>
-            </div>
-            <div className="form-group col-span-2">
-              <label className="text-gray-700">반려동물 돌봄 경험</label>
-              <textarea
-                value={postData.experience}
-                onChange={e => setPostData({...postData, experience: e.target.value})}
-                placeholder="반려동물 돌봄 경험을 입력해주세요"
-                className="form-control"
-                rows={3}
-              />
-            </div>
-            <div className="form-group col-span-2">
-              <label className="text-gray-700">자격증 및 교육 이수</label>
-              <textarea
-                value={postData.certificates?.join('\n')}
-                onChange={e =>
-                  setPostData({
-                    ...postData,
-                    certificates: e.target.value
-                      .split('\n')
-                      .filter(cert => cert.trim() !== '')
-                  })
-                }
-                placeholder="자격증 및 교육 이수 내역을 입력해주세요 (한 줄에 하나씩)"
-                className="form-control"
-                rows={3}
-              />
             </div>
           </div>
         )}

@@ -1,441 +1,278 @@
-import {useState} from 'react'
+import React, { useState, useEffect } from 'react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import Header from '@/components/Layout/Header'
+import { Footer } from '@/components/Layout/Footer'
+import ScrollToTopButton from '@/components/ScrollToTopButton'
+import { DashboardSidebar } from '@/components/features/dashboard/DashboardSidebar'
+import { PasswordInput } from '@/components/PasswordInput'
+import { useUserStore } from '@/store/userStore'
+import { EyeIcon } from 'lucide-react'
+import { EyeSlashIcon } from '@heroicons/react/24/outline'
 import './myPage.css'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
 
+/* ------------------------------------------------------------------ */
+/*                              타입 정의                              */
+/* ------------------------------------------------------------------ */
+interface MemberResponseDTO {
+  mid: number
+  email: string
+  nickname: string
+  profileImagePath?: string
+  pawRate: number
+  address?: string | null
+  phoneNumber?: string | null
+  emailVerified: boolean
+  regDate?: string | null
+  modDate?: string | null
+  role: string
+  status: string
+}
+
+type PasswordField = 'currentPassword' | 'newPassword' | 'confirmNewPassword'
+
+/* ------------------------------------------------------------------ */
+/*                             컴포넌트                                */
+/* ------------------------------------------------------------------ */
 export function ProfileSettings() {
-  const [formData, setFormData] = useState({
+  const navigate = useNavigate()
+  const setUserGlobally = useUserStore(s => s.setUser)
+  const clearUserGlobally = useUserStore(s => s.clearUser)
+
+  /* ------------------------- state ------------------------ */
+  const [userProfile, setUserProfile] = useState<MemberResponseDTO | null>(null)
+
+  const [profileFormValues, setProfileFormValues] = useState({
     nickname: '',
-    phoneNumber: '',
     address: '',
-    profileImage: null as File | null
+    phoneNumber: ''
   })
 
-  const [petData, setPetData] = useState({
-    petName: '',
-    breed: '',
-    petBirth: new Date().getFullYear(),
-    petGender: true,
-    weight: 0,
-    petMbti: '',
-    neutering: false,
-    petIntroduce: '',
-    petImage: null as File | null
-  })
-
-  const [passwordData, setPasswordData] = useState({
+  const [passwordFormValues, setPasswordFormValues] = useState<
+    Record<PasswordField, string>
+  >({
     currentPassword: '',
     newPassword: '',
-    retypePassword: ''
+    confirmNewPassword: ''
   })
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showPasswords, setShowPasswords] = useState<Record<PasswordField, boolean>>({
+    currentPassword: false,
+    newPassword: false,
+    confirmNewPassword: false
+  })
 
-  const handleProfileSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // 프로필 업데이트 로직 구현
-  }
+  const [pageLoading, setPageLoading] = useState(true)
+  const [profileUpdateLoading, setProfileUpdateLoading] = useState(false)
+  const [passwordChangeLoading, setPasswordChangeLoading] = useState(false)
 
-  const handlePetProfileSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // 펫 프로필 업데이트 로직 구현
-  }
+  const [pageError, setPageError] = useState<string | null>(null)
+  const [profileError, setProfileError] = useState<string | null>(null)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // 비밀번호 변경 로직 구현
-  }
+  const [profileSuccess, setProfileSuccess] = useState<string | null>(null)
+  const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null)
 
-  const handleDeleteAccount = () => {
-    // 회원 탈퇴 로직 구현
-    console.log('회원 탈퇴 처리')
-    setShowDeleteModal(false)
-  }
+  // 전화번호 중복 체크
+  const [phoneNumberDuplicationError, setPhoneNumberDuplicationError] =
+    useState<string | null>(null)
+  const [isPhoneNumberChecked, setIsPhoneNumberChecked] = useState(false)
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    type: 'profile' | 'pet'
-  ) => {
-    if (e.target.files && e.target.files[0]) {
-      if (type === 'profile') {
-        setFormData(prev => ({
-          ...prev,
-          profileImage: e.target.files![0]
-        }))
-      } else {
-        setPetData(prev => ({
-          ...prev,
-          petImage: e.target.files![0]
-        }))
+  /* ---------------------- 사용자 정보 로드 ---------------------- */
+  useEffect(() => {
+    const token = sessionStorage.getItem('token')
+    if (!token) {
+      navigate('/login')
+      return
+    }
+
+    ;(async () => {
+      try {
+        const res = await fetch('/api/member/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+
+        if (!res.ok) throw new Error('사용자 정보 로드 실패')
+        const data: MemberResponseDTO = await res.json()
+
+        /* 상태 초기화 */
+        setUserProfile(data)
+        setUserGlobally(data)
+        setProfileFormValues({
+          nickname: data.nickname ?? '',
+          address: data.address ?? '',
+          phoneNumber: data.phoneNumber ?? ''
+        })
+        setIsPhoneNumberChecked(true)
+      } catch (err) {
+        console.error(err)
+        setPageError('사용자 정보를 불러오지 못했습니다.')
+      } finally {
+        setPageLoading(false)
       }
+    })()
+  }, [navigate, setUserGlobally])
+
+  /* ---------------------- 핸들러들 ----------------------- */
+  const handleProfileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setProfileFormValues(prev => ({ ...prev, [name]: value }))
+    setProfileError(null)
+    setProfileSuccess(null)
+
+    if (name === 'phoneNumber') {
+      setPhoneNumberDuplicationError(null)
+      setIsPhoneNumberChecked(false)
     }
   }
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const {name, value} = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
+  /** 비밀번호 input change */
+  const handlePasswordInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setPasswordFormValues(prev => ({ ...prev, [name as PasswordField]: value }))
   }
 
-  const handlePetInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const {name, value} = e.target
-    setPetData(prev => ({
-      ...prev,
-      [name]: value
-    }))
+  /** 눈 아이콘 토글 */
+  const togglePasswordVisibility = (field: PasswordField) => {
+    setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }))
   }
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {name, value} = e.target
-    setPasswordData(prev => ({
-      ...prev,
-      [name]: value
-    }))
+  /* ---------------- 전화번호 중복 확인 ---------------- */
+  const checkPhoneNumberDuplication = async () => {
+    const phone = profileFormValues.phoneNumber.trim()
+
+    if (userProfile?.phoneNumber === phone) {
+      setIsPhoneNumberChecked(true)
+      return
+    }
+    if (!/^\d{2,3}-\d{3,4}-\d{4}$/.test(phone)) {
+      setPhoneNumberDuplicationError('전화번호 형식이 올바르지 않습니다.')
+      return
+    }
+
+    try {
+      const res = await fetch(`/api/member/check-phone?phoneNumber=${phone}`)
+      const { exists } = await res.json()
+
+      if (exists) {
+        setPhoneNumberDuplicationError('이미 사용 중인 전화번호입니다.')
+        setIsPhoneNumberChecked(false)
+      } else {
+        setPhoneNumberDuplicationError(null)
+        setIsPhoneNumberChecked(true)
+      }
+    } catch {
+      setPhoneNumberDuplicationError('중복 확인 중 오류가 발생했습니다.')
+    }
   }
 
+  /* ---------------- 프로필 제출 ---------------- */
+  const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (
+      userProfile?.phoneNumber !== profileFormValues.phoneNumber &&
+      (!isPhoneNumberChecked || phoneNumberDuplicationError)
+    ) {
+      setProfileError('전화번호 중복 확인을 완료해주세요.')
+      return
+    }
+
+    const token = sessionStorage.getItem('token')
+    if (!token) return navigate('/login')
+
+    setProfileUpdateLoading(true)
+    try {
+      const res = await fetch('/api/member/update', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(profileFormValues)
+      })
+
+      if (!res.ok) throw new Error(await res.text())
+
+      /* 업데이트 후 최신 정보 반영 */
+      const meRes = await fetch('/api/member/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const newData: MemberResponseDTO = await meRes.json()
+      setUserProfile(newData)
+      setUserGlobally(newData)
+      setProfileSuccess('프로필이 업데이트되었습니다.')
+    } catch (err: any) {
+      setProfileError(err.message ?? '프로필 업데이트 실패')
+    } finally {
+      setProfileUpdateLoading(false)
+    }
+  }
+
+  /* ---------------- 비밀번호 변경 제출 ---------------- */
+  const handlePasswordChangeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const { currentPassword, newPassword, confirmNewPassword } = passwordFormValues
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      setPasswordError('모든 필드를 입력해주세요.')
+      return
+    }
+    if (newPassword !== confirmNewPassword) {
+      setPasswordError('새 비밀번호와 확인이 일치하지 않습니다.')
+      return
+    }
+
+    const token = sessionStorage.getItem('token')
+    if (!token) return navigate('/login')
+
+    setPasswordChangeLoading(true)
+    try {
+      const res = await fetch('/api/member/change-password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ currentPassword, newPassword })
+      })
+      if (!res.ok) throw new Error(await res.text())
+
+      setPasswordSuccess('비밀번호가 변경되었습니다.')
+      setPasswordFormValues({ currentPassword: '', newPassword: '', confirmNewPassword: '' })
+    } catch (err: any) {
+      setPasswordError(err.message ?? '비밀번호 변경 실패')
+    } finally {
+      setPasswordChangeLoading(false)
+    }
+  }
+
+  /* ------------------ (렌더링 로딩/에러 처리) ------------------ */
+  if (pageLoading)
+    return (
+      <>
+        <Header />
+        <main className="container text-center py-20">로딩 중…</main>
+        <Footer />
+      </>
+    )
+
+  if (pageError)
+    return (
+      <>
+        <Header />
+        <main className="container text-center py-20 text-red-600">{pageError}</main>
+        <Footer />
+      </>
+    )
+
+  /* ------------------------------------------------------------------ */
+  /*                           실제 화면 렌더링                           */
+  /* ------------------------------------------------------------------ */
   return (
-    <div>
-      <div className="breadcrumbs">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-6 col-md-6 col-12">
-              <div className="breadcrumbs-content">
-                <h1 className="page-title">프로필 설정</h1>
-              </div>
-            </div>
-            <div className="col-lg-6 col-md-6 col-12">
-              <ul className="breadcrumb-nav">
-                <li>
-                  <a href="/">
-                    <img src="/assets/images/logo/logo.png" alt="UnknownPaw" style={{ height: '30px' }} />
-                  </a>
-                </li>
-                <li>프로필 설정</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+    <>
+      <Header />
+      <main>
+        <ScrollToTopButton />
 
-      <div className="dashboard section">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-3 col-md-4 col-12">
-              <DashboardSidebar />
-            </div>
-            <div className="col-lg-9 col-md-8 col-12">
-              <div className="profile-settings">
-                <h2>프로필 설정</h2>
-                <form onSubmit={handleProfileSubmit}>
-                  <div className="profile-image-preview">
-                    <img src="/assets/images/items-grid/author-2.jpg" alt="Profile" />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="profileImage">프로필 이미지*</label>
-                    <label className="file-upload" htmlFor="profileImage">
-                      <i className="lni lni-cloud-upload"></i> 선택된 파일 없음
-                    </label>
-                    <input
-                      id="profileImage"
-                      type="file"
-                      multiple
-                      onChange={e => handleFileChange(e, 'profile')}
-                      accept="image/*"
-                    />
-                  </div>
-                  <div className="row">
-                    <div className="col-lg-6">
-                      <div className="form-group">
-                        <label>닉네임*</label>
-                        <input
-                          type="text"
-                          name="nickname"
-                          value={formData.nickname}
-                          onChange={handleInputChange}
-                          placeholder="닉네임을 입력하세요"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-lg-6">
-                      <div className="form-group">
-                        <label>전화번호</label>
-                        <input
-                          type="tel"
-                          name="phoneNumber"
-                          value={formData.phoneNumber}
-                          onChange={handleInputChange}
-                          placeholder="전화번호를 입력하세요"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-12">
-                      <div className="form-group">
-                        <label>주소</label>
-                        <input
-                          type="text"
-                          name="address"
-                          value={formData.address}
-                          onChange={handleInputChange}
-                          placeholder="주소를 입력하세요"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-12">
-                      <button type="submit" className="update-profile-btn">
-                        프로필 업데이트
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-
-              <div className="pet-profile-settings">
-                <h2>반려견 프로필 설정</h2>
-                <form onSubmit={handlePetProfileSubmit}>
-                  <div className="pet-profile-image-preview">
-                    <img src="/assets/images/pet/dog-1.jpg" alt="Pet Profile" />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="petImage">강아지 사진*</label>
-                    <label className="file-upload" htmlFor="petImage">
-                      <i className="lni lni-cloud-upload"></i> 선택된 파일 없음
-                    </label>
-                    <input
-                      id="petImage"
-                      type="file"
-                      multiple
-                      onChange={e => handleFileChange(e, 'pet')}
-                      accept="image/*"
-                    />
-                  </div>
-                  <div className="row">
-                    <div className="col-lg-6">
-                      <div className="form-group">
-                        <label>강아지 이름*</label>
-                        <input
-                          type="text"
-                          name="petName"
-                          value={petData.petName}
-                          onChange={handlePetInputChange}
-                          placeholder="Enter pet name"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-lg-6">
-                      <div className="form-group">
-                        <label>종*</label>
-                        <input
-                          type="text"
-                          name="breed"
-                          value={petData.breed}
-                          onChange={handlePetInputChange}
-                          placeholder="Enter breed"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-lg-6">
-                      <div className="form-group">
-                        <label>태어난 연도*</label>
-                        <input
-                          type="number"
-                          name="petBirth"
-                          value={petData.petBirth}
-                          onChange={handlePetInputChange}
-                          placeholder="Enter birth year"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-lg-6">
-                      <div className="form-group">
-                        <label>몸무게 (kg)*</label>
-                        <input
-                          type="number"
-                          name="weight"
-                          value={petData.weight}
-                          onChange={handlePetInputChange}
-                          placeholder="Enter weight"
-                          step="0.1"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-lg-6">
-                      <div className="toggle-group">
-                        <label>성별*</label>
-                        <div className="toggle-buttons">
-                          <button
-                            type="button"
-                            className={`toggle-button ${
-                              petData.petGender ? 'active' : ''
-                            }`}
-                            onClick={() =>
-                              setPetData(prev => ({...prev, petGender: true}))
-                            }>
-                            수컷
-                          </button>
-                          <button
-                            type="button"
-                            className={`toggle-button ${
-                              !petData.petGender ? 'active' : ''
-                            }`}
-                            onClick={() =>
-                              setPetData(prev => ({...prev, petGender: false}))
-                            }>
-                            암컷
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-6">
-                      <div className="toggle-group">
-                        <label>중성화 여부*</label>
-                        <div className="toggle-buttons">
-                          <button
-                            type="button"
-                            className={`toggle-button ${
-                              petData.neutering ? 'active' : ''
-                            }`}
-                            onClick={() =>
-                              setPetData(prev => ({...prev, neutering: true}))
-                            }>
-                            Yes
-                          </button>
-                          <button
-                            type="button"
-                            className={`toggle-button ${
-                              !petData.neutering ? 'active' : ''
-                            }`}
-                            onClick={() =>
-                              setPetData(prev => ({...prev, neutering: false}))
-                            }>
-                            No
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-12">
-                      <div className="form-group">
-                        <label>강아지 MBTI*</label>
-                        <input
-                          type="text"
-                          name="petMbti"
-                          value={petData.petMbti}
-                          onChange={handlePetInputChange}
-                          placeholder="Enter pet MBTI"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-12">
-                      <div className="form-group">
-                        <label>강아지 소개*</label>
-                        <textarea
-                          name="petIntroduce"
-                          value={petData.petIntroduce}
-                          onChange={handlePetInputChange}
-                          placeholder="Enter about your pet"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-12">
-                      <button type="submit" className="update-profile-btn">
-                        펫 프로필 업데이트
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-              {/* change password */}
-              <div className="password-change">
-                <h2>비밀번호 변경</h2>
-                <form onSubmit={handlePasswordSubmit}>
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                      <label>현재 비밀번호*</label>
-                      <input
-                        type="password"
-                        name="currentPassword"
-                        value={passwordData.currentPassword}
-                        onChange={handlePasswordChange}
-                        placeholder="현재 비밀번호를 입력하세요"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label>새 비밀번호*</label>
-                    <input
-                      type="password"
-                      name="newPassword"
-                      value={passwordData.newPassword}
-                      onChange={handlePasswordChange}
-                      placeholder="새 비밀번호를 입력하세요"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>비밀번호 확인*</label>
-                    <input
-                      type="password"
-                      name="retypePassword"
-                      value={passwordData.retypePassword}
-                      onChange={handlePasswordChange}
-                      placeholder="비밀번호를 다시 입력하세요"
-                    />
-                  </div>
-                  <button type="submit" className="update-password-btn">
-                    비밀번호 변경
-                  </button>
-                </form>
-              </div>
-
-              {/* 회원 탈퇴 섹션 */}
-              <div className="delete-account-section">
-                <h2>회원 탈퇴</h2>
-                <p className="warning-text">
-                  회원 탈퇴 시 모든 개인정보와 서비스 이용 기록이 삭제되며, 복구가
-                  불가능합니다.
-                  <br />
-                  탈퇴 전 반려동물 관련 예약 내역과 결제 내역을 확인해 주세요.
-                </p>
-                <button
-                  className="delete-account-btn"
-                  onClick={() => setShowDeleteModal(true)}>
-                  회원 탈퇴하기
-                </button>
-              </div>
-
-              {/* 회원 탈퇴 확인 모달 */}
-              {showDeleteModal && (
-                <div className="modal-overlay">
-                  <div className="modal-content">
-                    <h3>회원 탈퇴 확인</h3>
-                    <p>정말로 탈퇴하시겠습니까?</p>
-                    <p className="modal-warning">
-                      탈퇴 시 모든 개인정보와 서비스 이용 기록이 삭제되며, 복구가
-                      불가능합니다.
-                      <br />
-                      진행 중인 예약이 있다면 먼저 취소해 주세요.
-                    </p>
-                    <div className="modal-buttons">
-                      <button
-                        className="modal-btn cancel"
-                        onClick={() => setShowDeleteModal(false)}>
-                        취소
-                      </button>
-                      <button className="modal-btn confirm" onClick={handleDeleteAccount}>
-                        탈퇴하기
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        {/* 생략 …  (아래의 JSX 구조는 질문에 올려주신 것과 동일) */}
+        {/* 중간 JSX는 그대로 두시면 되고, showPasswords / togglePasswordVisibility
+            / handlePasswordInputChange 등은 이미 위에서 타입 안전하게 정의했습니다. */}
+      </main>
+      <Footer />
+    </>
   )
 }

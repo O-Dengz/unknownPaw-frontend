@@ -1,8 +1,13 @@
 // src/components/ChatBox.tsx
 import { useState } from "react";
-import './ChatBox.css'; // CSS 분리
+import './ChatBox.css';
 
-export default function ChatBox() {
+type ChatBoxProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export default function ChatBox({ isOpen, onClose }: ChatBoxProps) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<string[]>([]);
 
@@ -12,21 +17,36 @@ export default function ChatBox() {
     setMessage("");
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className="chat-box">
-      <div className="chat-header">채팅</div>
+      <div className="chat-header">
+        채팅
+        <button
+          onClick={onClose}
+          style={{
+            float: "right",
+            background: "none",
+            border: "none",
+            fontSize: "18px",
+            cursor: "pointer"
+          }}
+        >
+          ✖
+        </button>
+      </div>
 
       <div className="chat-messages">
-  {messages.map((msg, i) => (
-    <div
-      key={i}
-      className={`chat-message ${i % 2 === 0 ? 'sent' : 'received'}`} // 보낸/받은 메시지 스타일 구분
-    >
-      {msg}
-    </div>
-  ))}
-</div>
-
+        {messages.map((msg, i) => (
+          <div
+            key={i}
+            className={`chat-message ${i % 2 === 0 ? 'sent' : 'received'}`}
+          >
+            {msg}
+          </div>
+        ))}
+      </div>
 
       <div className="chat-input-area">
         <input

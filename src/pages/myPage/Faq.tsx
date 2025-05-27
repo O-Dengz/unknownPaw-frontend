@@ -1,6 +1,6 @@
 import {useState} from 'react'
 import axios from 'axios'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
+import { DashboardSidebar } from '@/components/features/dashboard/DashboardSidebar'
 import {InquiryHistoryModal} from '../../components/InquiryHistoryModal'
 
 export default function Faq() {
