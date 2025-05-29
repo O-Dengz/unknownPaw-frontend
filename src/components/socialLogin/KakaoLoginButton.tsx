@@ -1,66 +1,54 @@
-// src/components/SocialLogin/KakaoLoginButton.tsx
-
+// src/components/KakaoLoginButton.tsx
 import React from 'react'
 
 const KakaoLoginButton: React.FC = () => {
-  // .env 파일에서 환경 변수를 불러와요!
+  // 🐻 환경 변수 사용!
+  // Vite 환경에서는 import.meta.env.* 로 환경 변수를 가져와요.
   const KAKAO_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY
   const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI
 
-  // 환경 변수가 정의되지 않았을 경우를 대비한 안전 장치
+  // 🚨 중요한 부분! 환경 변수가 제대로 설정되었는지 확인하는 습관을 들이면 좋아요!
   if (!KAKAO_REST_API_KEY || !KAKAO_REDIRECT_URI) {
     console.error(
-      '환경 변수 VITE_KAKAO_REST_API_KEY 또는 VITE_KAKAO_REDIRECT_URI가 설정되지 않았습니다. .env 파일을 확인해주세요!'
+      '카카오 로그인 환경 변수가 설정되지 않았습니다. .env 파일을 확인해주세요.'
     )
-    return (
-      <button
-        disabled
-        style={{
-          backgroundColor: '#CCCCCC',
-          color: '#666666',
-          border: 'none',
-          padding: '10px 20px',
-          borderRadius: '5px',
-          cursor: 'not-allowed',
-          fontSize: '16px',
-          fontWeight: 'bold',
-          width: '100%', // 기존 로그인 버튼 크기에 맞춰 조절
-          marginTop: '10px'
-        }}>
-        카카오 로그인 준비 중... 😥
-      </button>
-    )
+    return <div>카카오 로그인 버튼을 표시할 수 없습니다.</div> // 오류 메시지 표시
   }
 
-  // 카카오 로그인 요청 URL
+  // 🌈 카카오 인증 URL을 정확하게 만듭니다!
+  // .env 파일과 카카오 개발자 센터에 등록한 URI와 EXACTLY! 똑같아야 해요!
   const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`
 
   const handleKakaoLogin = () => {
+    // 카카오 로그인 페이지로 이동합니다! 슝~ 💨
     window.location.href = KAKAO_AUTH_URL
   }
 
   return (
+    // 귀여운 카카오 로그인 버튼이에요! 💛
     <button
-      type="button" // form 태그 안에 들어가도 submit이 되지 않도록 type="button"으로 명시
       onClick={handleKakaoLogin}
       style={{
-        backgroundColor: '#FEE500', // 카카오 노란색! 💛
-        color: '#181600',
+        backgroundColor: '#FEE500', // 카카오 노랑색!
+        color: '#3C1E1E', // 카카오 글씨색!
         border: 'none',
-        padding: '10px 20px',
         borderRadius: '5px',
-        cursor: 'pointer',
+        padding: '10px 20px',
         fontSize: '16px',
         fontWeight: 'bold',
-        width: '100%', // 기존 로그인 버튼 크기에 맞춰 조절
-        marginTop: '10px' // 버튼 간 간격
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px'
       }}>
+      {/* 귀여운 카카오 로고 이모티콘 톡! */}
       <img
-        src="\assets\kakao_login_large_narrow.png" // 카카오 아이콘 이미지가 있다면 여기에 경로를 넣어주세요!
+        src="\assets\kakao_login_medium_narrow.png"
         alt="카카오 로고"
-        style={{verticalAlign: 'middle', marginRight: '8px', height: '18px'}}
+        style={{width: '20px', height: '20px'}}
       />
-      카카오로 로그인
+      카카오 로그인
     </button>
   )
 }

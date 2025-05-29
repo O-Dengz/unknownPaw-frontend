@@ -53,7 +53,9 @@ export function List() {
     const fetchPosts = async () => {
       setIsLoading(true)
 
-      const token = sessionStorage.getItem('token')
+      const token = localStorage.getItem('accessToken')
+
+      // const token = sessionStorage.getItem('token')
       if (!token) {
         setError('로그인이 필요합니다.')
         navigate('/login', {replace: true})
