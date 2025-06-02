@@ -35,6 +35,18 @@ export default function CommunityForm({
     if (savedContent) setContent(savedContent)
   }, [])
 
+  // 카테고리 변경 시 폼 초기화
+  useEffect(() => {
+    if (communityCategory) {
+      setTitle('')
+      setContent('')
+      setImage(null)
+      setPreviewUrl(null)
+      sessionStorage.removeItem('community_title')
+      sessionStorage.removeItem('community_content')
+    }
+  }, [communityCategory])
+
   useEffect(() => {
     sessionStorage.setItem('community_title', title)
     sessionStorage.setItem('community_content', content)
@@ -165,6 +177,41 @@ export default function CommunityForm({
     }
   }, [onSubmitRequest, handleSubmit]) // handleSubmit을 의존성 배열에 추가
 
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const {name, value} = e.target
+
+    // 카테고리가 변경되면 폼 초기화
+    if (name === 'communityCategory') {
+      setTitle('')
+      setContent('')
+      setImage(null)
+      setPreviewUrl(null)
+      sessionStorage.removeItem('community_title')
+      sessionStorage.removeItem('community_content')
+      setCommunityCategory(value)
+    }
+
+    onDataChange?.({[name]: value})
+  }
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value)
+    onDataChange?.({title: e.target.value})
+  }
+
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value)
+    onDataChange?.({content: e.target.value})
+  }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      onDataChange?.({images: Array.from(e.target.files)})
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit}>
       <section className="dashboard section">
@@ -186,13 +233,13 @@ export default function CommunityForm({
                           커뮤니티 카테고리*
                         </label>
                         <select
+                          name="communityCategory"
                           value={communityCategory}
-                          onChange={e => setCommunityCategory(e.target.value)}
+                          onChange={handleChange}
                           className="form-control">
                           <option value="" disabled hidden>
                             카테고리 선택
-                          </option>{' '}
-                          {/* 이 옵션은 선택 불가능 */}
+                          </option>
                           <option value="GENERAL">일반 게시글</option>
                           <option value="EVENT">이벤트</option>
                           <option value="ANNOUNCEMENT">공지사항</option>
@@ -200,81 +247,55 @@ export default function CommunityForm({
                         </select>
                         {!communityCategory && (
                           <p className="text-red-500 text-xs mt-1">
-                            커뮤니티 카테고리를 선택해주세요.
+                            카테고리를 선택해주세요
                           </p>
                         )}
                       </div>
-
-                      <div>
-                        {/* 제목 입력 */}
-                        <div className="form-group mb-6">
-                          <label className="text-gray-700 font-medium">제목*</label>
-                          <input
-                            type="text"
-                            value={title}
-                            onChange={e => setTitle(e.target.value)}
-                            placeholder="제목을 입력하세요"
-                            className="form-control"
+                      <div className="form-group mb-6">
+                        <label className="text-gray-700 font-medium">제목*</label>
+                        <input
+                          type="text"
+                          name="title"
+                          value={title}
+                          onChange={handleTitleChange}
+                          className="form-control"
+                          placeholder="제목을 입력하세요"
+                        />
+                      </div>
+                      <div className="form-group mb-6">
+                        <label className="text-gray-700 font-medium">내용*</label>
+                        <textarea
+                          name="content"
+                          value={content}
+                          onChange={handleContentChange}
+                          className="form-control"
+                          rows={10}
+                          placeholder="내용을 입력하세요"
+                        />
+                      </div>
+                      <div className="form-group mb-6">
+                        <label className="text-gray-700 font-medium">이미지</label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="form-control"
+                        />
+                        {previewUrl && (
+                          <img
+                            src={previewUrl}
+                            alt="Preview"
+                            className="mt-2 max-w-xs rounded-lg"
                           />
-                        </div>
-
-                        {/* 내용 입력 */}
-                        <div className="form-group mb-6">
-                          <label className="text-gray-700 font-medium">내용</label>
-                          <textarea
-                            value={content}
-                            onChange={e => setContent(e.target.value)}
-                            placeholder="내용을 입력하세요"
-                            className="form-control"
-                            rows={4}
-                          />
-                        </div>
-
-                        {/* 이미지 업로드 */}
-                        <div className="form-group mb-6">
-                          <label className="text-gray-700 font-medium">
-                            이미지 업로드
-                          </label>
-                          <div className="border-2 border-dashed border-gray-300 p-6 rounded-lg text-center text-gray-500 relative">
-                            {/* 숨겨진 파일 인풋 */}
-                            <input
-                              type="file"
-                              id="image-upload-input"
-                              onChange={handleImageUpload}
-                              className="hidden"
-                              accept="image/*"
-                            />
-
-                            {/* + 버튼을 클릭 시 input 트리거 */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const fileInput = document.getElementById(
-                                  'image-upload-input'
-                                ) as HTMLInputElement
-                                fileInput?.click()
-                              }}
-                              className="text-4xl mb-2 hover:text-gray-700 transition-colors duration-200">
-                              +
-                            </button>
-
-                            <p>파일 선택</p>
-                            <p className="text-sm mt-2 text-gray-400">
-                              최대 업로드 용량: 10MB
-                            </p>
-                          </div>
-
-                          {previewUrl && (
-                            <div className="form-group mb-6 mt-4">
-                              <p className="text-gray-700 font-medium mb-2">미리보기</p>
-                              <img
-                                src={previewUrl}
-                                alt="미리보기"
-                                className="w-full h-64 object-cover rounded-md border"
-                              />
-                            </div>
-                          )}
-                        </div>
+                        )}
+                      </div>
+                      <div className="flex justify-center mt-6">
+                        <button
+                          type="submit"
+                          className="reserve-button"
+                          style={{width: '200px'}}>
+                          등록하기
+                        </button>
                       </div>
                     </div>
                   </div>

@@ -61,7 +61,7 @@ export function Login() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          Accept: 'application/json'
         },
         credentials: 'include', // 쿠키를 포함하여 요청
         body: JSON.stringify({email, password})
@@ -83,9 +83,9 @@ export function Login() {
 
       /* Remember‑Me */
       if (rememberMe) {
-        localStorage.setItem('rememberedEmail', email)
+        sessionStorage.setItem('rememberedEmail', email)
       } else {
-        localStorage.removeItem('rememberedEmail')
+        sessionStorage.removeItem('rememberedEmail')
       }
 
       login() // ✅ 로그인 상태 전파!

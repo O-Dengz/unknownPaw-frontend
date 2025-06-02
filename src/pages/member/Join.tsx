@@ -53,11 +53,14 @@ const initialPetFormState = {
 export function Join() {
   const [{email, pass, phoneNumber, name, nickname, birthday, gender, address}, setForm] =
     useState<JoinFormType>(initialFormState)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [uploadError, setUploadError] = useState<string | null>(null)
   const [petForm, setPetForm] = useState<PetFormType>(initialPetFormState)
   const [showPassword, setShowPassword] = useState(false)
   const [showPetModal, setShowPetModal] = useState(false)
   const [showPetForm, setShowPetForm] = useState(false)
-  const [hasPet, setHasPet] = useState<boolean | null>(null)
+  const [hasPet, setHasPet] = useState<boolean>(false)
 
   // 닉네임 중복 확인 관련 상태
   const [isNicknameChecked, setIsNicknameChecked] = useState(false) // 닉네임 중복 확인을 했는지 여부
@@ -100,6 +103,20 @@ export function Join() {
   const birthdayRef = useRef<HTMLInputElement>(null)
   const genderRef = useRef<HTMLSelectElement>(null)
   const addressRef = useRef<HTMLInputElement>(null)
+
+  const handleProfileImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadError('10MB 이하의 이미지만 업로드 가능합니다.')
+      setSelectedFile(null)
+      setPreviewUrl(null)
+      return
+    }
+    setUploadError(null)
+    setSelectedFile(file)
+    setPreviewUrl(URL.createObjectURL(file))
+  }
 
   // 닉네임 입력 변경 핸들러
   const handleNicknameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -343,12 +360,6 @@ export function Join() {
       return
     }
 
-    // 반려동물 보유 여부 선택 확인
-    if (hasPet === null) {
-      alert('반려동물 보유 여부를 선택해주세요.')
-      return
-    }
-
     // 모든 검증 통과 후 다음 단계 진행
     if (hasPet) {
       setShowPetModal(true)
@@ -374,37 +385,72 @@ export function Join() {
     petInfo?: PetFormType
   ) => {
     try {
+      let res: Response
+      if (selectedFile) {
+        const formData = new FormData()
+        formData.append('file', selectedFile)
+        formData.append('email', email)
+        formData.append('password', pass)
+        formData.append('phoneNumber', phoneNumber)
+        formData.append('name', name)
+        formData.append('nickname', nickname)
+        formData.append('birthday', birthday)
+        formData.append('gender', (gender === 'male').toString())
+        formData.append('address', address)
 
-      const response = await fetch('/api/member/register', {
+        if (petInfo) {
+          const convertedPetInfo = {
+            ...petInfo,
+            petBirth: parseInt(petInfo.petBirth), // 문자열을 정수로 변환
+            weight: parseFloat(petInfo.weight), // 문자열을 실수로 변환
+            petGender: petInfo.petGender, // 이미 boolean
+            neutering: petInfo.neutering // 이미 boolean
+          }
+          formData.append('petInfo', JSON.stringify(convertedPetInfo))
+        }
 
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          email,
-          password: pass,
-          phoneNumber,
-          name,
-          nickname,
-          birthday: parseInt(birthday),
-          gender: gender === 'male',
-          address,
-          petInfo
+        res = await fetch('/api/member/registerWithImage', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`
+          },
+          body: formData
         })
-      })
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        throw new Error(errorText || '회원가입에 실패했습니다.')
+      } else {
+        // JSON 요청의 경우
+        res = await fetch('/api/member/register', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            email,
+            password: pass,
+            phoneNumber,
+            name,
+            nickname,
+            birthday: parseInt(birthday), // 문자열을 정수로 변환
+            gender: gender === 'male', // 'male'/'female'을 boolean으로 변환
+            address,
+            petInfo: petInfo
+              ? {
+                  ...petInfo,
+                  petBirth: parseInt(petInfo.petBirth), // 문자열을 정수로 변환
+                  weight: parseFloat(petInfo.weight), // 문자열을 실수로 변환
+                  petGender: petInfo.petGender, // 이미 boolean
+                  neutering: petInfo.neutering // 이미 boolean
+                }
+              : undefined
+          })
+        })
       }
 
-      const result = await response.text()
-      if (result) {
-        navigate('/login')
-        console.log('Sending password:', pass)
+      if (!res.ok) {
+        const err = await res.text()
+        throw new Error(err || '회원가입 실패')
       }
-    } catch (error) {
-      console.error('Registration error:', error)
-      alert(error instanceof Error ? error.message : '회원가입 중 오류가 발생했습니다.')
+      alert('가입 완료!')
+      navigate('/login')
+    } catch (err: any) {
+      alert(err.message)
     }
   }
 
@@ -478,34 +524,6 @@ export function Join() {
               </div>
             </div>
 
-            {/* 휴대폰 번호 필드 */}
-            <div className="mt-20">
-              <label htmlFor="phoneNumber">휴대전화</label>
-              <div className="form-group">
-                <input
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  type="tel"
-                  autoComplete="tel"
-                  required
-                  ref={phoneNumberRef}
-                  className="form-input"
-                  placeholder="예: 010-1234-1234"
-                  value={phoneNumber} // Controlled component로 유지
-                  onChange={handlePhoneChange} // 새로운 핸들러 사용
-                  onBlur={() => checkPhoneDuplication(phoneNumber)} // onBlur 이벤트
-                />
-              </div>
-            </div>
-            {phoneCheckMessage && (
-              <p
-                className={`validation-message ${
-                  phoneDuplicateStatus === 'available' ? 'success' : 'error'
-                }`}>
-                {phoneCheckMessage}
-              </p>
-            )}
-
             {/* 이름 필드 */}
             <div>
               <label htmlFor="name">이름</label>
@@ -519,6 +537,7 @@ export function Join() {
                   ref={nameRef}
                   className="form-input"
                   placeholder="이름을 작성해주세요"
+                  value={name}
                   onChange={changed('name')}
                 />
               </div>
@@ -559,6 +578,70 @@ export function Join() {
               )}
             </div>
 
+            <div className="form-group">
+              <label htmlFor="profileImage" className="form-label">
+                프로필 이미지
+              </label>
+              <input
+                id="profileImage"
+                type="file"
+                accept="image/*"
+                onChange={handleProfileImageChange}
+                style={{display: 'none'}}
+              />
+              {!previewUrl && (
+                <label
+                  htmlFor="profileImage"
+                  className="button-secondary"
+                  style={{cursor: 'pointer'}}>
+                  파일 선택
+                </label>
+              )}
+              {/* 파일 선택 후에는 미리보기만 보여줍니다 */}
+              {uploadError && <p className="validation-message error">{uploadError}</p>}
+              {previewUrl && (
+                <div style={{marginTop: 8}}>
+                  <img
+                    src={previewUrl}
+                    alt="프로필 미리보기"
+                    style={{
+                      width: 80,
+                      height: 80,
+                      objectFit: 'cover',
+                      borderRadius: '50%',
+                      border: '1px solid #ccc'
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+            {/* 휴대폰 번호 필드 */}
+            <div className="mt-20">
+              <label htmlFor="phoneNumber">휴대전화</label>
+              <div className="form-group">
+                <input
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  type="tel"
+                  autoComplete="tel"
+                  required
+                  ref={phoneNumberRef}
+                  className="form-input"
+                  placeholder="예: 010-1234-1234"
+                  value={phoneNumber} // Controlled component로 유지
+                  onChange={handlePhoneChange} // 새로운 핸들러 사용
+                  onBlur={() => checkPhoneDuplication(phoneNumber)} // onBlur 이벤트
+                />
+              </div>
+            </div>
+            {phoneCheckMessage && (
+              <p
+                className={`validation-message ${
+                  phoneDuplicateStatus === 'available' ? 'success' : 'error'
+                }`}>
+                {phoneCheckMessage}
+              </p>
+            )}
             {/* 출생년도 필드 */}
             <div>
               <label htmlFor="birthday">출생년도</label>
@@ -571,6 +654,7 @@ export function Join() {
                   ref={birthdayRef}
                   className="form-input"
                   placeholder="예시: 1988"
+                  value={birthday}
                   onChange={changed('birthday')}
                 />
               </div>
@@ -588,6 +672,7 @@ export function Join() {
                   required
                   ref={genderRef}
                   className="form-select"
+                  value={gender}
                   onChange={changed('gender')}>
                   <option value="">선택해 주세요</option>
                   <option value="male">남자</option>
@@ -608,6 +693,7 @@ export function Join() {
                   ref={addressRef}
                   className="form-input"
                   placeholder="예: 서울시 강남구"
+                  value={address}
                   onChange={changed('address')}
                 />
               </div>

@@ -117,30 +117,31 @@ export default function PetOwnerForm({
   }, [])
 
   // handleImageUpload 함수 수정
-const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-  if (event.target.files && event.target.files.length > 0) {
-    const file = event.target.files[0];
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      alert('10MB를 초과한 파일은 업로드할 수 없습니다.');
+      return;
+    }
     setImage(file);
     setPreviewUrl(URL.createObjectURL(file));
     
-    // postData의 images 배열을 직접 업데이트
-    setPostData(prev => ({
-      ...prev,
-      images: [file]  // File 객체를 직접 저장
-    }));
-  }
-};
-
-// useEffect 수정 (중복된 useEffect 제거)
-useEffect(() => {
-  if (selectedPet) {
     onDataChange({
       ...postData,
-      petId: selectedPet.petId,
-      images: postData.images  // postData에서 직접 images 사용
+      images: [file],
+      petId: selectedPet?.petId,
     });
-  }
-}, [postData, selectedPet, onDataChange]);
+  };
+  
+  // 2️⃣ 폼 데이터가 바뀔 때마다 부모로 전달
+  useEffect(() => {
+    onDataChange({
+      ...postData,
+      petId: selectedPet?.petId,            
+      images: image ? [image] : undefined,
+    });
+  }, [postData, selectedPet, image, onDataChange]);
 
   return (
     <div>

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import axios from 'axios'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
+import { DashboardSidebar } from '@/components/features/dashboard/DashboardSidebar'
 import {Link} from 'react-router-dom'
 import './myPage.css'
 

@@ -5,7 +5,7 @@ import ScrollToTopButton from '../../components/ScrollToTopButton'
 import KakaoMap from './components/KakaoMap'
 import ChatBox from '../../components/ChatBox'
 import {getImageUrl} from '@/utils/getImageUrl'
-import { ReservationModal, ReservationEditModal } from '@/components/ReservationModals'
+import {ReservationModal, ReservationEditModal} from '@/components/ReservationModals'
 
 interface MemberResponseDTO {
   mid: number
@@ -56,7 +56,6 @@ export function ItemDetails() {
   const member = memberString ? JSON.parse(memberString) : null
   const memberId = member?.mid
   const petId = 1
-
 
   useEffect(() => {
     const fetchPost = () => {
@@ -129,13 +128,7 @@ export function ItemDetails() {
       </div>
 
       {/* === 깜빡임 없는 item-details 컨테이너 === */}
-      <div
-        className="item-details"
-        style={{
-          background: '#f9f9f9',
-          minHeight: '80vh',
-          transition: 'background 0.2s'
-        }}>
+      <div className="item-details page-content">
         <div className="container">
           <div
             className="item-main-row"
@@ -199,7 +192,9 @@ export function ItemDetails() {
                       />
                     </div>
                   </div>
-                  <Link to={`/profile/simple/${postDTO.member?.mid}`}>
+                  <Link
+                    to={`/member/profile/simple/${postDTO.member?.mid}`}
+                    style={{display: 'block', textDecoration: 'none', color: 'inherit'}}>
                     <div className="author-info-area">
                       {postDTO.member && (
                         <div className="profile-meta-wrap">
@@ -211,6 +206,12 @@ export function ItemDetails() {
                                   : '/assets/images/items-grid/author-2.jpg'
                               }
                               alt={postDTO.member?.nickname}
+                              style={{
+                                width: 50,
+                                height: 50,
+                                borderRadius: '50%',
+                                objectFit: 'cover'
+                              }}
                             />
                           </div>
                           <div className="author-meta">

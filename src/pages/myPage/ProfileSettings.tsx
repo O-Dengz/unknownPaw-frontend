@@ -1,18 +1,23 @@
-import React, { useState, useEffect } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import React, {useState, useEffect, ChangeEvent} from 'react'
+import {useNavigate, Link, NavLink} from 'react-router-dom'
 import Header from '@/components/Layout/Header'
-import { Footer } from '@/components/Layout/Footer'
-import ScrollToTopButton from '@/components/ScrollToTopButton'
-import { DashboardSidebar } from '@/components/features/dashboard/DashboardSidebar'
-import { PasswordInput } from '@/components/PasswordInput'
-import { useUserStore } from '@/store/userStore'
-import { EyeIcon } from 'lucide-react'
-import { EyeSlashIcon } from '@heroicons/react/24/outline'
+import {Footer} from '@/components/Layout/Footer'
+import {DashboardSidebar} from '@/components/features/dashboard/DashboardSidebar'
 import './myPage.css'
+import {useUserStore} from '../../store/userStore'
+import {PasswordInput} from '../../components/PasswordInput'
+import ScrollToTopButton from '../../components/ScrollToTopButton'
+import {EyeIcon} from 'lucide-react'
+import {EyeSlashIcon} from '@heroicons/react/24/outline'
+import {getImageUrl} from '@/utils/getImageUrl'
 
-/* ------------------------------------------------------------------ */
-/*                              타입 정의                              */
-/* ------------------------------------------------------------------ */
+interface UserProfile {
+  email?: string
+  nickname?: string
+  address?: string
+  phoneNumber?: string
+  profileImageUrl?: string
+}
 interface MemberResponseDTO {
   mid: number
   email: string
@@ -28,34 +33,27 @@ interface MemberResponseDTO {
   status: string
 }
 
-type PasswordField = 'currentPassword' | 'newPassword' | 'confirmNewPassword'
-
-/* ------------------------------------------------------------------ */
-/*                             컴포넌트                                */
-/* ------------------------------------------------------------------ */
 export function ProfileSettings() {
   const navigate = useNavigate()
-  const setUserGlobally = useUserStore(s => s.setUser)
-  const clearUserGlobally = useUserStore(s => s.clearUser)
+  const setUserGlobally = useUserStore(state => state.setUser)
+  const clearUserGlobally = useUserStore(state => state.clearUser)
+  const imgUrl = (p?: string | null) =>
+    p && p.trim() ? `/api/members/image/${p}` : '/assets/images/items-grid/author-2.jpg'
 
-  /* ------------------------- state ------------------------ */
   const [userProfile, setUserProfile] = useState<MemberResponseDTO | null>(null)
-
+  const [showPassword, setShowPassword] = useState(false)
   const [profileFormValues, setProfileFormValues] = useState({
     nickname: '',
     address: '',
     phoneNumber: ''
   })
 
-  const [passwordFormValues, setPasswordFormValues] = useState<
-    Record<PasswordField, string>
-  >({
+  const [passwordFormValues, setPasswordFormValues] = useState({
     currentPassword: '',
     newPassword: '',
     confirmNewPassword: ''
   })
-
-  const [showPasswords, setShowPasswords] = useState<Record<PasswordField, boolean>>({
+  const [showPasswords, setShowPasswords] = useState({
     currentPassword: false,
     newPassword: false,
     confirmNewPassword: false
@@ -72,207 +70,686 @@ export function ProfileSettings() {
   const [profileSuccess, setProfileSuccess] = useState<string | null>(null)
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null)
 
-  // 전화번호 중복 체크
-  const [phoneNumberDuplicationError, setPhoneNumberDuplicationError] =
-    useState<string | null>(null)
-  const [isPhoneNumberChecked, setIsPhoneNumberChecked] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [profilePreviewUrl, setProfilePreviewUrl] = useState<string | null>(null)
+  const [profileImageUploading, setProfileImageUploading] = useState(false)
+  const [profileImageError, setProfileImageError] = useState<string | null>(null)
 
-  /* ---------------------- 사용자 정보 로드 ---------------------- */
+  const [showWithdrawalModal, setShowWithdrawalModal] = useState(false)
+  const [withdrawalPassword, setWithdrawalPassword] = useState('')
+  const [withdrawalLoading, setWithdrawalLoading] = useState(false)
+  const [withdrawalError, setWithdrawalError] = useState<string | null>(null)
+  const [withdrawalSuccess, setWithdrawalSuccess] = useState<string | null>(null)
+
+  // ⭐ 전화번호 중복 확인 관련 상태 추가
+  const [phoneNumberDuplicationError, setPhoneNumberDuplicationError] = useState<
+    string | null
+  >(null)
+  const [isPhoneNumberChecked, setIsPhoneNumberChecked] = useState(false) // 전화번호 중복 확인 완료 여부
+
   useEffect(() => {
-    const token = sessionStorage.getItem('token')
-    if (!token) {
-      navigate('/login')
-      return
-    }
+    const fetchUserProfile = async () => {
+      const token = sessionStorage.getItem('token')
 
-    ;(async () => {
+      if (!token) {
+        console.log('토큰이 없습니다. 로그인 페이지로 이동합니다.')
+        navigate('/login')
+        setPageLoading(false)
+        return
+      }
+
       try {
         const res = await fetch('/api/member/me', {
-          headers: { Authorization: `Bearer ${token}` }
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         })
 
-        if (!res.ok) throw new Error('사용자 정보 로드 실패')
-        const data: MemberResponseDTO = await res.json()
+        if (!res.ok) {
+          const errorText = await res.text()
+          console.error('사용자 정보 가져오기 실패:', res.status, errorText)
+          setPageError(`사용자 정보 로딩 실패: ${errorText || res.statusText}`)
+          if (res.status === 401) {
+            sessionStorage.removeItem('token')
+            navigate('/login')
+          }
+        } else {
+          const data: MemberResponseDTO = await res.json()
 
-        /* 상태 초기화 */
-        setUserProfile(data)
-        setUserGlobally(data)
-        setProfileFormValues({
-          nickname: data.nickname ?? '',
-          address: data.address ?? '',
-          phoneNumber: data.phoneNumber ?? ''
-        })
-        setIsPhoneNumberChecked(true)
+          setUserProfile(data)
+          setUserGlobally(data)
+
+          setProfileFormValues({
+            nickname: data.nickname || '',
+            address: data.address || '',
+            phoneNumber: data.phoneNumber || ''
+          })
+          // ⭐ 초기 로딩 시 전화번호가 있으면 일단 확인 완료 상태로 설정 (원래 번호니까)
+          setIsPhoneNumberChecked(true)
+        }
       } catch (err) {
-        console.error(err)
-        setPageError('사용자 정보를 불러오지 못했습니다.')
+        console.error('사용자 정보 가져오는 중 네트워크 오류:', err)
+        setPageError('네트워크 오류가 발생했습니다.')
       } finally {
         setPageLoading(false)
       }
-    })()
+    }
+
+    fetchUserProfile()
   }, [navigate, setUserGlobally])
 
-  /* ---------------------- 핸들러들 ----------------------- */
   const handleProfileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setProfileFormValues(prev => ({ ...prev, [name]: value }))
+    const {name, value} = e.target
+    setProfileFormValues(prevValues => ({
+      ...prevValues,
+      [name]: value
+    }))
     setProfileError(null)
     setProfileSuccess(null)
 
+    // ⭐ 전화번호가 변경될 경우 중복 확인 상태 초기화
     if (name === 'phoneNumber') {
       setPhoneNumberDuplicationError(null)
       setIsPhoneNumberChecked(false)
     }
   }
 
-  /** 비밀번호 input change */
   const handlePasswordInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setPasswordFormValues(prev => ({ ...prev, [name as PasswordField]: value }))
+    const {name, value} = e.target
+    setPasswordFormValues(prev => ({...prev, [name]: value}))
   }
 
-  /** 눈 아이콘 토글 */
-  const togglePasswordVisibility = (field: PasswordField) => {
-    setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }))
+  const togglePasswordVisibility = (fieldName: keyof typeof showPasswords) => {
+    setShowPasswords(prev => ({
+      ...prev,
+      [fieldName]: !prev[fieldName]
+    }))
   }
 
-  /* ---------------- 전화번호 중복 확인 ---------------- */
+  // ⭐ 전화번호 중복 확인 함수 추가
   const checkPhoneNumberDuplication = async () => {
-    const phone = profileFormValues.phoneNumber.trim()
+    const phoneNumber = profileFormValues.phoneNumber.trim()
 
-    if (userProfile?.phoneNumber === phone) {
+    // 현재 사용자의 전화번호와 동일하면 중복 확인 불필요
+    if (userProfile && userProfile.phoneNumber === phoneNumber) {
+      setPhoneNumberDuplicationError(null)
       setIsPhoneNumberChecked(true)
       return
     }
-    if (!/^\d{2,3}-\d{3,4}-\d{4}$/.test(phone)) {
-      setPhoneNumberDuplicationError('전화번호 형식이 올바르지 않습니다.')
+
+    // 유효성 검사 (간단한 예시, 필요시 더 복잡한 정규식 추가)
+    if (!phoneNumber || !/^\d{2,3}-\d{3,4}-\d{4}$/.test(phoneNumber)) {
+      setPhoneNumberDuplicationError(
+        '유효한 전화번호 형식이 아닙니다. (예: 010-1234-5678)'
+      )
+      setIsPhoneNumberChecked(false)
       return
     }
 
-    try {
-      const res = await fetch(`/api/member/check-phone?phoneNumber=${phone}`)
-      const { exists } = await res.json()
+    setPhoneNumberDuplicationError(null)
+    setIsPhoneNumberChecked(false) // 확인 중임을 표시
 
-      if (exists) {
+    try {
+      // 백엔드 API 경로 확인: /api/member/check-phone
+      const res = await fetch(`/api/member/check-phone?phoneNumber=${phoneNumber}`)
+      const data = await res.json()
+
+      if (data.exists) {
+        // 백엔드 응답이 { exists: true/false } 형태라고 가정
         setPhoneNumberDuplicationError('이미 사용 중인 전화번호입니다.')
         setIsPhoneNumberChecked(false)
       } else {
         setPhoneNumberDuplicationError(null)
-        setIsPhoneNumberChecked(true)
+        setIsPhoneNumberChecked(true) // 중복 아님 확인 완료
       }
-    } catch {
-      setPhoneNumberDuplicationError('중복 확인 중 오류가 발생했습니다.')
+    } catch (error) {
+      console.error('전화번호 중복 확인 중 네트워크 오류:', error)
+      setPhoneNumberDuplicationError(
+        '전화번호 중복 확인 중 네트워크 오류가 발생했습니다.'
+      )
+      setIsPhoneNumberChecked(false)
     }
   }
 
-  /* ---------------- 프로필 제출 ---------------- */
   const handleProfileSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (
-      userProfile?.phoneNumber !== profileFormValues.phoneNumber &&
-      (!isPhoneNumberChecked || phoneNumberDuplicationError)
-    ) {
-      setProfileError('전화번호 중복 확인을 완료해주세요.')
+    setProfileUpdateLoading(true)
+    setProfileError(null)
+    setProfileSuccess(null)
+
+    const token = sessionStorage.getItem('token')
+    if (!token) {
+      alert('로그인이 필요합니다.')
+      navigate('/login')
+      setProfileUpdateLoading(false)
       return
     }
 
-    const token = sessionStorage.getItem('token')
-    if (!token) return navigate('/login')
+    // ⭐ 전화번호 중복 확인 여부 검사 (수정된 경우만)
+    // 현재 전화번호가 변경되었고, 중복 확인이 완료되지 않았거나 중복인 경우 업데이트를 막습니다.
+    if (
+      userProfile?.phoneNumber !== profileFormValues.phoneNumber &&
+      !isPhoneNumberChecked
+    ) {
+      setProfileError('전화번호 중복 확인을 완료해주세요.')
+      setProfileUpdateLoading(false)
+      return
+    }
+    if (
+      userProfile?.phoneNumber !== profileFormValues.phoneNumber &&
+      phoneNumberDuplicationError
+    ) {
+      setProfileError('중복된 전화번호이거나 유효하지 않은 전화번호입니다. 확인해주세요.')
+      setProfileUpdateLoading(false)
+      return
+    }
 
-    setProfileUpdateLoading(true)
     try {
       const res = await fetch('/api/member/update', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(profileFormValues)
       })
 
-      if (!res.ok) throw new Error(await res.text())
+      if (!res.ok) {
+        const errorText = await res.text()
+        console.error('프로필 정보 업데이트 실패:', res.status, errorText)
+        setProfileError(
+          errorText || res.statusText || '프로필 정보 업데이트에 실패했습니다.'
+        )
+        if (res.status === 401) {
+          sessionStorage.removeItem('token')
+          navigate('/login')
+        }
+      } else {
+        const updatedRes = await fetch('/api/member/me', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
 
-      /* 업데이트 후 최신 정보 반영 */
-      const meRes = await fetch('/api/member/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      const newData: MemberResponseDTO = await meRes.json()
-      setUserProfile(newData)
-      setUserGlobally(newData)
-      setProfileSuccess('프로필이 업데이트되었습니다.')
-    } catch (err: any) {
-      setProfileError(err.message ?? '프로필 업데이트 실패')
+        if (updatedRes.ok) {
+          const updatedData: MemberResponseDTO = await updatedRes.json()
+          console.log(
+            '프로필 정보 업데이트 성공, 최신 사용자 정보 (Zustand 업데이트):',
+            updatedData
+          )
+          updatedData.profileImagePath = imgUrl(updatedData.profileImagePath)
+          setUserProfile(updatedData)
+          setUserGlobally(updatedData)
+          setProfileSuccess('프로필 정보가 성공적으로 업데이트되었습니다.')
+          // ⭐ 업데이트 성공 시 전화번호 중복 확인 상태 다시 초기화 (새로운 번호가 현재 번호가 됨)
+          setIsPhoneNumberChecked(true)
+          setPhoneNumberDuplicationError(null) // 혹시 남아있을 에러 메시지 초기화
+        } else {
+          const errorText = await updatedRes.text()
+          console.error(
+            '업데이트 후 사용자 정보 다시 가져오기 실패:',
+            updatedRes.status,
+            errorText
+          )
+          setProfileError('프로필 업데이트는 성공했지만, 최신 정보 로딩에 실패했습니다.')
+        }
+      }
+    } catch (err) {
+      console.error('프로필 정보 업데이트 중 네트워크 오류:', err)
+      setProfileError('프로필 정보 업데이트 중 네트워크 오류가 발생했습니다.')
     } finally {
       setProfileUpdateLoading(false)
     }
   }
 
-  /* ---------------- 비밀번호 변경 제출 ---------------- */
   const handlePasswordChangeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const { currentPassword, newPassword, confirmNewPassword } = passwordFormValues
-    if (!currentPassword || !newPassword || !confirmNewPassword) {
-      setPasswordError('모든 필드를 입력해주세요.')
-      return
-    }
-    if (newPassword !== confirmNewPassword) {
-      setPasswordError('새 비밀번호와 확인이 일치하지 않습니다.')
-      return
-    }
+    setPasswordChangeLoading(true)
+    setPasswordError(null)
+    setPasswordSuccess(null)
 
     const token = sessionStorage.getItem('token')
-    if (!token) return navigate('/login')
+    if (!token) {
+      alert('로그인이 필요합니다.')
+      navigate('/login')
+      setPasswordChangeLoading(false)
+      return
+    }
 
-    setPasswordChangeLoading(true)
+    if (
+      !passwordFormValues.currentPassword ||
+      !passwordFormValues.newPassword ||
+      !passwordFormValues.confirmNewPassword
+    ) {
+      setPasswordError('모든 비밀번호 필드를 입력해주세요.')
+      setPasswordChangeLoading(false)
+      return
+    }
+
+    if (passwordFormValues.newPassword !== passwordFormValues.confirmNewPassword) {
+      setPasswordError('새 비밀번호와 확인이 일치하지 않습니다.')
+      setPasswordChangeLoading(false)
+      return
+    }
+
     try {
       const res = await fetch('/api/member/change-password', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ currentPassword, newPassword })
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          currentPassword: passwordFormValues.currentPassword,
+          newPassword: passwordFormValues.newPassword
+        })
       })
-      if (!res.ok) throw new Error(await res.text())
 
-      setPasswordSuccess('비밀번호가 변경되었습니다.')
-      setPasswordFormValues({ currentPassword: '', newPassword: '', confirmNewPassword: '' })
-    } catch (err: any) {
-      setPasswordError(err.message ?? '비밀번호 변경 실패')
+      if (!res.ok) {
+        const errorText = await res.text()
+        console.error('비밀번호 변경 실패:', res.status, errorText)
+        setPasswordError(errorText || res.statusText || '비밀번호 변경에 실패했습니다.')
+        if (res.status === 401) {
+          sessionStorage.removeItem('token')
+          navigate('/login')
+        }
+      } else {
+        const successText = await res.text()
+        console.log('비밀번호 변경 성공:', successText)
+        setPasswordSuccess(successText || '비밀번호가 성공적으로 변경되었습니다.')
+
+        setPasswordFormValues({
+          currentPassword: '',
+          newPassword: '',
+          confirmNewPassword: ''
+        })
+      }
+    } catch (err) {
+      console.error('비밀번호 변경 중 네트워크 오류:', err)
+      setPasswordError('비밀번호 변경 중 네트워크 오류가 발생했습니다.')
     } finally {
       setPasswordChangeLoading(false)
     }
   }
+  const handleWithdrawalClick = () => {
+    setShowWithdrawalModal(true)
+    setWithdrawalPassword('')
+    setWithdrawalError(null)
+    setWithdrawalSuccess(null)
+  }
 
-  /* ------------------ (렌더링 로딩/에러 처리) ------------------ */
-  if (pageLoading)
+  const handleWithdrawalModalClose = () => {
+    setShowWithdrawalModal(false)
+  }
+
+  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0]
+    if (!file) return
+
+    // (1-1) 파일 크기 제한 (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      setProfileImageError('10MB 이하의 이미지만 업로드 가능합니다.')
+      setSelectedFile(null)
+      setProfilePreviewUrl(null)
+      return
+    }
+    setSelectedFile(file)
+    setProfilePreviewUrl(URL.createObjectURL(file))
+    setProfileImageError(null)
+  }
+
+  const handleProfileImageUpload = async () => {
+    if (!selectedFile || !userProfile) return
+    setProfileImageUploading(true)
+    setProfileImageError(null)
+    try {
+      const formData = new FormData()
+      formData.append('file', selectedFile)
+      formData.append('targetId', String(userProfile.mid))
+
+      const res = await fetch('/api/members/image/upload', {
+        method: 'POST',
+        body: formData,
+        headers: {Authorization: `Bearer ${sessionStorage.getItem('token')}`}
+      })
+
+      if (!res.ok) {
+        throw new Error(await res.text())
+      }
+
+      // 업로드 성공 후 최신 프로필 정보 다시 불러오기
+      const token = sessionStorage.getItem('token')
+      const updatedRes = await fetch('/api/member/me', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (updatedRes.ok) {
+        const updatedData: MemberResponseDTO = await updatedRes.json()
+        // profileImagePath가 이미 member/filename.jpg 형태로 오는지 확인
+        console.log('Updated profile data:', updatedData) // 디버깅용
+        setUserProfile(updatedData)
+        setUserGlobally(updatedData)
+        setProfileSuccess('프로필 이미지가 업데이트되었습니다!')
+      } else {
+        setProfileSuccess('이미지는 업로드됐지만, 최신 정보 로딩에 실패했습니다.')
+      }
+
+      setProfileImageError(null)
+      setSelectedFile(null)
+      setProfilePreviewUrl(null)
+    } catch (err: any) {
+      setProfileImageError(err.message || '이미지 업로드 중 오류가 발생했습니다.')
+    } finally {
+      setProfileImageUploading(false)
+    }
+  }
+
+  const handleWithdrawalPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWithdrawalPassword(e.target.value)
+    setWithdrawalError(null)
+    setWithdrawalSuccess(null)
+  }
+
+  const handleWithdrawalConfirm = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    setWithdrawalLoading(true)
+    setWithdrawalError(null)
+    setWithdrawalSuccess(null)
+
+    const token = sessionStorage.getItem('token')
+    if (!token) {
+      alert('로그인이 필요합니다.')
+      navigate('/login')
+      setWithdrawalLoading(false)
+      return
+    }
+
+    if (!withdrawalPassword.trim()) {
+      setWithdrawalError('비밀번호를 입력해주세요.')
+      setWithdrawalLoading(false)
+      return
+    }
+
+    try {
+      const res = await fetch('/api/member/withdraw', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({password: withdrawalPassword})
+      })
+
+      if (!res.ok) {
+        const errorData = await res.text()
+        console.error('회원 탈퇴 실패:', res.status, errorData)
+        setWithdrawalError(errorData || '회원 탈퇴에 실패했습니다.')
+        if (res.status === 401) {
+          sessionStorage.removeItem('token')
+          clearUserGlobally()
+          navigate('/login')
+        }
+      } else {
+        const successMessage = await res.text()
+        setWithdrawalSuccess(successMessage || '회원 탈퇴가 성공적으로 처리되었습니다.')
+        alert('회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.')
+
+        sessionStorage.removeItem('token')
+        clearUserGlobally()
+        navigate('/')
+      }
+    } catch (err) {
+      console.error('회원 탈퇴 중 네트워크 오류:', err)
+      setWithdrawalError('네트워크 오류가 발생했습니다.')
+    } finally {
+      setWithdrawalLoading(false)
+    }
+  }
+
+  if (pageLoading) {
     return (
-      <>
-        <Header />
-        <main className="container text-center py-20">로딩 중…</main>
-        <Footer />
-      </>
+      <div className="page-wrapper">
+        <div className="container" style={{textAlign: 'center', padding: '50px'}}>
+          로딩 중...
+        </div>
+      </div>
     )
+  }
 
-  if (pageError)
+  if (pageError) {
     return (
-      <>
-        <Header />
-        <main className="container text-center py-20 text-red-600">{pageError}</main>
-        <Footer />
-      </>
+      <div className="page-wrapper">
+        <div
+          className="container"
+          style={{textAlign: 'center', padding: '50px', color: 'red'}}>
+          오류: {pageError}
+        </div>
+      </div>
     )
+  }
 
-  /* ------------------------------------------------------------------ */
-  /*                           실제 화면 렌더링                           */
-  /* ------------------------------------------------------------------ */
   return (
-    <>
-      <Header />
-      <main>
-        <ScrollToTopButton />
+    <div className="page-wrapper">
+      <ScrollToTopButton />
 
-        {/* 생략 …  (아래의 JSX 구조는 질문에 올려주신 것과 동일) */}
-        {/* 중간 JSX는 그대로 두시면 되고, showPasswords / togglePasswordVisibility
-            / handlePasswordInputChange 등은 이미 위에서 타입 안전하게 정의했습니다. */}
-      </main>
-      <Footer />
-    </>
+      {/* ===== 브레드크럼 ===== */}
+      <div className="breadcrumbs">
+        <div className="container">
+          <div className="row align-items-center">
+            <div className="col-lg-6 col-md-6 col-12">
+              <div className="breadcrumbs-content">
+                <h1 className="page-title">프로필 및 보안 설정</h1>
+              </div>
+            </div>
+            <div className="col-lg-6 col-md-6 col-12">
+              <ul className="breadcrumb-nav">
+                <li>
+                  <Link to="/">Home</Link>
+                </li>
+                <li>프로필 및 보안 설정</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ===== 대시보드 ===== */}
+      <div className="dashboard section">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-3 col-md-4 col-12">
+              <DashboardSidebar />
+            </div>
+
+            <div className="col-lg-9 col-md-8 col-12">
+              {/* ===== 회원 정보 ===== */}
+              <div className="profile-settings">
+                <div className="profile-settings-block settings-box profile-settings-box">
+                  {/* 탭 버튼들을 여기로 이동 */}
+                  <div className="settings-tabs mb-4">
+                    <NavLink
+                      to="/profile-settings"
+                      className={({isActive}) =>
+                        isActive ? 'link-button active' : 'link-button'
+                      }>
+                      프로필 설정
+                    </NavLink>
+                    <Link to="/pet-settings" className="link-button">
+                      pet 수정
+                    </Link>
+                  </div>
+
+                  <h2>회원 정보</h2>
+
+                  {/* ---------- 프로필 이미지 ---------- */}
+                  <div className="form-group">
+                    {/* 숨겨진 파일 입력 */}
+                    <input
+                      type="file"
+                      id="profileImage"
+                      accept="image/*"
+                      style={{display: 'none'}}
+                      onChange={handleProfileImageChange}
+                    />
+
+                    {/* 1행 : 썸네일 + 버튼 */}
+                    <div className="image-row">
+                      <img
+                        src={
+                          profilePreviewUrl
+                            ? profilePreviewUrl
+                            : userProfile?.profileImagePath
+                            ? getImageUrl(userProfile.profileImagePath)
+                            : '/assets/images/items-grid/author-2.jpg'
+                        }
+                        alt={userProfile?.nickname || '프로필 이미지'}
+                        style={{
+                          width: 120,
+                          height: 120,
+                          objectFit: 'cover',
+                          borderRadius: '50%'
+                        }}
+                      />
+
+                      <div className="image-actions">
+                        <label htmlFor="profileImage" className="file-upload">
+                          <i className="lni lni-cloud-upload" /> 프로필 이미지 선택
+                        </label>
+
+                        {profilePreviewUrl && (
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleProfileImageUpload}
+                            disabled={profileImageUploading}>
+                            {profileImageUploading ? '업로드 중…' : '이미지 업로드'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {profileImageError && (
+                      <p style={{color: 'red', fontSize: '0.9em', marginTop: 4}}>
+                        {profileImageError}
+                      </p>
+                    )}
+                  </div>
+                  {/* ---------- /프로필 이미지 ---------- */}
+
+                  {/* ===== 프로필 입력 폼 ===== */}
+                  <form className="profile-form" onSubmit={handleProfileSubmit}>
+                    <div className="row">
+                      <div className="col-lg-6">
+                        <div className="form-group">
+                          <label htmlFor="email">이메일:</label>
+                          <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={userProfile?.email || ''}
+                            disabled
+                            className="form-control"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="row">
+                      <div className="col-lg-6">
+                        <div className="form-group">
+                          <label htmlFor="nickname">닉네임:</label>
+                          <input
+                            type="text"
+                            id="nickname"
+                            name="nickname"
+                            value={profileFormValues.nickname}
+                            onChange={handleProfileInputChange}
+                            className="form-control"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="col-lg-6">
+                        <div className="form-group">
+                          <label htmlFor="phoneNumber">전화번호:</label>
+                          <input
+                            type="text"
+                            id="phoneNumber"
+                            name="phoneNumber"
+                            value={profileFormValues.phoneNumber}
+                            onChange={handleProfileInputChange}
+                            onBlur={checkPhoneNumberDuplication}
+                            className="form-control"
+                          />
+                          {phoneNumberDuplicationError && (
+                            <p style={{color: 'red', fontSize: '0.8em', marginTop: 5}}>
+                              {phoneNumberDuplicationError}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="col-12">
+                        <div className="form-group">
+                          <label htmlFor="address">주소:</label>
+                          <input
+                            type="text"
+                            id="address"
+                            name="address"
+                            value={profileFormValues.address}
+                            onChange={handleProfileInputChange}
+                            className="form-control"
+                          />
+                        </div>
+                      </div>
+
+                      {profileError && (
+                        <div className="alert alert-danger" style={{color: 'red'}}>
+                          {profileError}
+                        </div>
+                      )}
+                      {profileSuccess && (
+                        <div className="alert alert-success" style={{color: 'green'}}>
+                          {profileSuccess}
+                        </div>
+                      )}
+
+                      <div className="col-12">
+                        <button
+                          type="submit"
+                          className="update-profile-btn"
+                          disabled={
+                            profileUpdateLoading ||
+                            (profileFormValues.phoneNumber !== userProfile?.phoneNumber &&
+                              !isPhoneNumberChecked) ||
+                            !!phoneNumberDuplicationError
+                          }>
+                          {profileUpdateLoading ? '업데이트 중...' : '정보 업데이트'}
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                  {/* ===== /프로필 입력 폼 ===== */}
+                </div>
+              </div>
+
+              {/* ─── 아래(비밀번호 변경·회원탈퇴) 파트는 그대로 두셔도 됩니다 ─── */}
+              {/* ... */}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }

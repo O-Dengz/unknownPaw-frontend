@@ -1,13 +1,10 @@
-/// 명령어 입력해주세요 : npm install zustand   <- ❗❗❗
-// 닉네임 변경 및 기타 개인정보 수정 후 자동으로 반영됨
-// 전역 상태의 파일로 멤버 정보 변경 후에도 상태 저장됨
-
-// stores/userStore.ts
 import {create} from 'zustand'
 
-// UserProfile 인터페이스는 ProfileSettings에서 사용하는 것과 동일하게 정의합니다.
-// null 값이 올 수 있는 필드도 함께 고려합니다.
-interface UserProfile {
+// 로그인 시 sessionStorage에 저장된 member 정보를 초기 전역 상태로 사용하기 위해 바로 가져옵니다.
+const memberJson = typeof window !== 'undefined' ? sessionStorage.getItem('member') : null
+
+// UserProfile 인터페이스: ProfileSettings에서 사용하던 것과 동일합니다.
+export interface UserProfile {
   mid?: number
   email: string
   nickname: string
@@ -22,13 +19,19 @@ interface UserProfile {
 }
 
 interface UserStore {
+  /** 전역에 보관할 현재 로그인 유저 정보 */
   user: UserProfile | null
+  /** 프로필 업데이트 시 전역 상태 갱신 */
   setUser: (user: UserProfile | null) => void
+  /** 로그아웃 시 전역 상태 초기화 */
   clearUser: () => void
 }
 
+// sessionStorage에 있으면 파싱해서 초기값으로 사용, 없으면 null
+const initialUser: UserProfile | null = memberJson ? JSON.parse(memberJson) : null
+
 export const useUserStore = create<UserStore>(set => ({
-  user: null,
+  user: initialUser,
   setUser: user => set({user}),
   clearUser: () => set({user: null})
 }))

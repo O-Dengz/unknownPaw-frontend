@@ -886,14 +886,17 @@ ol {
   }
 }
 
-/* Bread Crumbs */
+/* Common page padding */
+.page-content {
+  padding-top: 100px; /* Increased padding after navigation */
+  min-height: calc(100vh - 100px); /* Adjust min-height accordingly */
+}
+
+/* Breadcrumbs */
 .breadcrumbs {
-  position: relative;
-  padding-bottom: 45px;
-  padding-top: 140px;
-  background: #081828;
-  z-index: 2;
-  text-align: left;
+  padding: 20px 0;
+  background-color: #f9f9f9;
+  margin-bottom: 30px;
 }
 
 .breadcrumbs .breadcrumbs-content {
@@ -963,9 +966,12 @@ ol {
 }
 
 .section {
-  padding-top: 100px;
-  padding-bottom: 100px;
-  position: relative;
+  padding: 60px 0;
+}
+
+.dashboard.section {
+  padding-top: 100px; /* Use consistent padding */
+  padding-bottom: 60px;
 }
 
 /* Section Title */
@@ -4851,7 +4857,8 @@ blockquote .shape {
   }
 
   .latest-news-area.blog-list {
-    padding-top: 30px !important;
+    padding-top: 150px !important; /* Apply consistent padding here as well */
+    padding-bottom: 60px; /* Keep bottom padding from section */
   }
 
   .blog-grid-page {
@@ -5371,7 +5378,8 @@ blockquote .shape {
   }
 
   .latest-news-area.blog-list {
-    padding-top: 20px;
+    padding-top: 150px !important; /* Apply consistent padding here as well */
+    padding-bottom: 60px; /* Keep bottom padding from section */
   }
 
   .blog-list .single-news {
@@ -6455,4 +6463,9 @@ blockquote .shape {
   color: #fff;
   background: #5830e0;
   border-color: transparent;
+}
+
+/* Ensure Community page title is pushed down */
+.latest-news-area.blog-list .section-title {
+  margin-top: 200px !important; /* Increase top margin significantly */
 }

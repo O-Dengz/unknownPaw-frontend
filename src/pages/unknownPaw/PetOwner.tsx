@@ -5,7 +5,7 @@ import {formatTimeAgo} from '../../utils/timeAgo'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
 import PawRating from '../../components/PawRating'
 import {getImageUrl} from '@/utils/getImageUrl'
-import { UniversalSkeleton } from '../../../src/components/Skeletons/UniversalSkeleton'
+import {UniversalSkeleton} from '../../../src/components/Skeletons/UniversalSkeleton'
 
 interface MemberResponseDTO {
   mid: number
@@ -104,7 +104,10 @@ export function PetOwner() {
   }
 
   useEffect(() => {
-    console.log('목록 images:', posts.map(p => p.images))
+    console.log(
+      '목록 images:',
+      posts.map(p => p.images)
+    )
 
     const searchParams = new URLSearchParams(location.search)
     const urlPage = pageRequest.page + 1
@@ -127,7 +130,10 @@ export function PetOwner() {
   }, [pageRequest, navigate])
 
   useEffect(() => {
-    console.log('목록 images:', posts.map(p => p.images))
+    console.log(
+      '목록 images:',
+      posts.map(p => p.images)
+    )
 
     const fetchPosts = () => {
       setLoading(true)
@@ -206,7 +212,7 @@ export function PetOwner() {
     return (
       <div className="pet-owner-page">
         <ScrollToTopButton />
-        <section className="items-grid section custom-padding">
+        <section className="items-grid section custom-padding page-content">
           <div className="container">
             <div className="row">
               <div className="col-12">
@@ -229,7 +235,7 @@ export function PetOwner() {
   return (
     <div className="pet-owner-page">
       <ScrollToTopButton />
-      <section className="items-grid section custom-padding">
+      <section className="items-grid section custom-padding page-content">
         <div className="container">
           <div className="row">
             <div className="col-12">
@@ -382,7 +388,7 @@ export function PetOwner() {
                         </Link>
                         <div className="author">
                           <div className="author-image">
-                            <Link to={`/profile/simple/${post.member?.mid}`}>
+                            <Link to={`/member/profile/simple/${post.member?.mid}`}>
                               <img
                                 src={
                                   post.member?.profileImagePath
@@ -394,7 +400,6 @@ export function PetOwner() {
                               <span>{post.member?.nickname || 'Unknown'}</span>
                             </Link>
                           </div>
-                          <p className="sale">예약하기</p>
                         </div>
                       </div>
                       <div className="content">

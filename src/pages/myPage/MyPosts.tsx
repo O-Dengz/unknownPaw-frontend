@@ -58,7 +58,9 @@ export default function MyPosts() {
   // 날짜 포맷 함수 (YYYY.MM.DD)
   const formatDate = (dateString: string) => {
     const d = new Date(dateString)
-    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
+    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(
+      d.getDate()
+    ).padStart(2, '0')}`
   }
 
   // 데이터 가져오기
@@ -79,7 +81,7 @@ export default function MyPosts() {
       }
 
       const res = await axios.get(urlMap[type], {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {Authorization: `Bearer ${token}`}
       })
 
       // postId 만 있고 id 필드가 없는 경우 보완
@@ -94,7 +96,9 @@ export default function MyPosts() {
     } catch (err) {
       const apiErr = err as ApiError
       if (apiErr.response)
-        setError(`불러오기 실패 (${apiErr.response.status}: ${apiErr.response.statusText})`)
+        setError(
+          `불러오기 실패 (${apiErr.response.status}: ${apiErr.response.statusText})`
+        )
       else if (apiErr.request) setError('서버에 연결할 수 없습니다.')
       else setError(err instanceof Error ? err.message : '알 수 없는 오류 발생')
     } finally {
@@ -102,7 +106,9 @@ export default function MyPosts() {
     }
   }
 
-  useEffect(() => { fetchPosts(activeTab) }, [activeTab])
+  useEffect(() => {
+    fetchPosts(activeTab)
+  }, [activeTab])
 
   return (
     <div className="page-wrapper">
@@ -115,7 +121,9 @@ export default function MyPosts() {
             </div>
             <div className="col-lg-6">
               <ul className="breadcrumb-nav">
-                <li><a href="/">홈</a></li>
+                <li>
+                  <a href="/">홈</a>
+                </li>
                 <li>내가 쓴 글</li>
               </ul>
             </div>
@@ -127,7 +135,9 @@ export default function MyPosts() {
       <section className="dashboard section">
         <div className="container">
           <div className="row">
-            <div className="col-lg-3"><DashboardSidebar /></div>
+            <div className="col-lg-3">
+              <DashboardSidebar />
+            </div>
 
             <div className="col-lg-9">
               <div className="main-content">
@@ -135,13 +145,18 @@ export default function MyPosts() {
 
                 {/* 탭 버튼 */}
                 <div className="tab-buttons mb-3 d-flex gap-2">
-                  {(['PET_OWNER','PET_SITTER','COMMUNITY'] as TabType[]).map(tab => (
+                  {(['PET_OWNER', 'PET_SITTER', 'COMMUNITY'] as TabType[]).map(tab => (
                     <button
                       key={tab}
-                      className={`btn ${activeTab===tab?'btn-primary':'btn-outline-primary'}`}
-                      onClick={() => setActiveTab(tab)}
-                    >
-                      {tab==='PET_OWNER'?'펫오너':tab==='PET_SITTER'?'펫시터':'커뮤니티'}
+                      className={`btn ${
+                        activeTab === tab ? 'btn-primary' : 'btn-outline-primary'
+                      }`}
+                      onClick={() => setActiveTab(tab)}>
+                      {tab === 'PET_OWNER'
+                        ? '펫오너'
+                        : tab === 'PET_SITTER'
+                        ? '펫시터'
+                        : '커뮤니티'}
                     </button>
                   ))}
                 </div>
@@ -160,23 +175,31 @@ export default function MyPosts() {
                       <div
                         key={post.id}
                         className="post-card p-3 border rounded mb-3 shadow-sm d-flex gap-3 align-items-center"
-                        style={{ cursor: 'pointer', transition: 'background 0.2s' }}
-                        onClick={() => navigate(`/posts/${getPostType(post)}/read/${post.id}`)}
+                        style={{cursor: 'pointer', transition: 'background 0.2s'}}
+                        onClick={() =>
+                          navigate(`/posts/${getPostType(post)}/read/${post.id}`)
+                        }
                         tabIndex={0}
                         onKeyPress={e => {
                           if (e.key === 'Enter') {
                             navigate(`/posts/${getPostType(post)}/read/${post.id}`)
                           }
-                        }}
-                      >
+                        }}>
                         <img
                           src={thumb}
                           alt={post.title}
-                          style={{ width:120, height:80, objectFit:'cover', flexShrink:0 }}
+                          style={{
+                            width: 120,
+                            height: 80,
+                            objectFit: 'cover',
+                            flexShrink: 0
+                          }}
                         />
 
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <h5 className="mb-1" style={{ fontWeight: 600 }}>{post.title}</h5>
+                        <div style={{flex: 1, minWidth: 0}}>
+                          <h5 className="mb-1" style={{fontWeight: 600}}>
+                            {post.title}
+                          </h5>
                           {/* 글 내용 한 줄 요약, ...처리 */}
                           <div
                             className="text-muted"
@@ -187,15 +210,17 @@ export default function MyPosts() {
                               fontSize: '0.98rem',
                               marginBottom: '5px',
                               maxWidth: '100%'
-                            }}
-                          >
+                            }}>
                             {post.content}
                           </div>
-                          <div style={{ fontSize: '0.92rem', color: '#888', marginBottom: 2 }}>
+                          <div
+                            style={{fontSize: '0.92rem', color: '#888', marginBottom: 2}}>
                             {formatDate(post.regDate)}
-                            <span style={{ marginLeft: 16 }}>좋아요 ❤️: {post.likes}</span>
+                            <span style={{marginLeft: 16}}>좋아요 ❤️: {post.likes}</span>
                             {post.category && (
-                              <span style={{ marginLeft: 16 }}>카테고리: {post.category}</span>
+                              <span style={{marginLeft: 16}}>
+                                카테고리: {post.category}
+                              </span>
                             )}
                           </div>
                         </div>

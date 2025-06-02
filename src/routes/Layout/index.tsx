@@ -1,7 +1,6 @@
 import {useLocation, Routes, Route, ScrollRestoration} from 'react-router-dom'
 
-import Navigation from './Navigation'
-import Footer from './Footer'
+import {Footer} from '../../components/Layout/Footer'
 import MainHeader from '../../components/MainHeader'
 
 /* ---------- 공통 페이지 ---------- */
@@ -65,7 +64,7 @@ export default function Layout() {
         <Route path="/register-pet" element={<RegisterPetPage />} />
 
         {/* 멤버 */}
-        <Route path="/profile/simple/:mid" element={<MemberProfile />} />
+        <Route path="/member/profile/simple/:mid" element={<MemberProfile />} />
         <Route path="/posts/:postType/read/postId" element={<ItemDetails />} />
 
         {/* 추후 기능

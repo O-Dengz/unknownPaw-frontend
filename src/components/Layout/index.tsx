@@ -35,14 +35,14 @@ import {Footer} from './Footer'
 export default function Layout() {
   const location = useLocation()
   const isListPage = location.pathname === '/' || location.pathname === '/list'
-  
+
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       {isListPage ? <MainHeader /> : <Header />}
-      <main>
+      <main className="flex-grow">
         <Outlet />
       </main>
       <Footer />
-    </>
+    </div>
   )
 }

@@ -2,6 +2,8 @@
 
 import React, {useEffect, useState} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
+import {getImageUrl} from '@/utils/getImageUrl'
+import {formatTimeAgo} from '../../utils/timeAgo'
 
 import BackgroundVideo from '../../components/MainLayout/BackgroundVideo'
 import MainHeader from '../../components/MainLayout/MainHeader'
@@ -16,7 +18,9 @@ import './List.css'
 
 interface ImageDTO {
   imageId: number
-  imageUrl: string
+  imagePath: string
+  thumbnailPath?: string
+  isMain: boolean
 }
 
 interface Post {
@@ -32,8 +36,15 @@ interface Post {
   regDate: string
   modDate: string
   email: string
-  image: ImageDTO[]
+  images?: ImageDTO[]
   isPetSitterPost: boolean
+  member?: {
+    mid: number
+    email: string
+    nickname: string
+    profileImagePath?: string
+    pawRate?: number
+  }
 }
 
 export function List() {
@@ -98,6 +109,9 @@ export function List() {
         const owners: Post[] = await ownerRes.json()
         const sitters: Post[] = await sitterRes.json()
 
+        console.log('펫오너 게시글:', owners)
+        console.log('펫시터 게시글:', sitters)
+
         const processedOwnerPosts = owners.map(post => ({
           ...post,
           isPetSitterPost: false
@@ -133,17 +147,40 @@ export function List() {
     }
   }, [navigate])
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffTime = Math.abs(now.getTime() - date.getTime())
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+
+    if (diffDays < 7) {
+      return formatTimeAgo(dateString)
+    } else {
+      return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`
+    }
+  }
+
   const renderPostCards = (posts: Post[]) =>
     posts.map(post => {
-      const thumbnailUrl =
-        post.image && post.image.length > 0
-          ? post.image[0].imageUrl
-          : '/assets/images/items-grid/2.jpg'
+      console.log('게시글 데이터:', post)
+
+      const thumbnailUrl = post.images?.[0]
+        ? getImageUrl(post.images[0].thumbnailPath ?? post.images[0].imagePath)
+        : '/assets/images/pet/dog-2.jpg'
+
+      const authorImage = post.member?.profileImagePath
+        ? getImageUrl(post.member.profileImagePath)
+        : '/assets/images/items-grid/author-1.jpg'
+
+      console.log('썸네일 URL:', thumbnailUrl)
+      console.log('작성자 이미지 URL:', authorImage)
 
       return (
         <div className="col-lg-4 col-md-6 col-12" key={post.postId}>
           <Link
-            to={`/post/${post.isPetSitterPost ? 'PETSITTER' : 'PETOWNER'}/${post.postId}`}
+            to={`/posts/${post.isPetSitterPost ? 'petsitter' : 'petowner'}/read/${
+              post.postId
+            }`}
             className="single-grid wow fadeInUp random-post-card"
             data-wow-delay=".2s">
             <div className="image">
@@ -152,12 +189,16 @@ export function List() {
                   src={thumbnailUrl}
                   alt="썸네일"
                   style={{width: '100%', height: '200px', objectFit: 'cover'}}
+                  onError={e => {
+                    const target = e.target as HTMLImageElement
+                    target.src = '/assets/images/pet/dog-2.jpg'
+                  }}
                 />
               </div>
               <div className="author">
                 <div className="author-image">
                   <img
-                    src={thumbnailUrl}
+                    src={authorImage}
                     alt="작성자"
                     style={{
                       width: '40px',
@@ -165,8 +206,12 @@ export function List() {
                       objectFit: 'cover',
                       borderRadius: '50%'
                     }}
+                    onError={e => {
+                      const target = e.target as HTMLImageElement
+                      target.src = '/assets/images/items-grid/author-1.jpg'
+                    }}
                   />
-                  <span>{post.email}</span>
+                  <span>{post.member?.nickname || post.email}</span>
                 </div>
                 <p className="sale">{post.isPetSitterPost ? '펫시터' : '펫오너'}</p>
               </div>
@@ -175,19 +220,22 @@ export function List() {
             <div className="content">
               <div className="top-content">
                 <span className="tag">{post.serviceCategory}</span>
-                <h3 className="title">{post.title}</h3>
-                <p className="update-time">
-                  업데이트: {new Date(post.modDate).toLocaleDateString()}
+                <h3 className="title">{post.title || '제목 없음'}</h3>
+                <p className="update-time">등록일: {formatDate(post.regDate)}</p>
+                <p className="location">
+                  위치: {post.defaultLocation || '위치 정보 없음'}
                 </p>
-                <p className="location">위치: {post.defaultLocation}</p>
-                <p className="rate">희망 시급: {post.hourlyRate.toLocaleString()}원</p>
+                <p className="rate">
+                  시급:{' '}
+                  {post.hourlyRate ? `${post.hourlyRate.toLocaleString()}원` : '협의가능'}
+                </p>
               </div>
               <div className="bottom-content">
                 <span className="like">
-                  <i className="lni lni-heart" /> {post.likes}
+                  <i className="lni lni-heart" /> {post.likes || 0}
                 </span>
                 <span className="chat">
-                  <i className="lni lni-comments" /> {post.chatCount}
+                  <i className="lni lni-comments" /> {post.chatCount || 0}
                 </span>
               </div>
             </div>
@@ -239,13 +287,13 @@ export function List() {
               {
                 to: '/petowner/list',
                 img: '/assets/images/items-grid/1.jpg',
-                title: '펫오너 게시판',
+                title: '돌봐주세요 🐶',
                 desc: '반려동물을 돌봐줄 사람을 찾고 있다면 여기로!'
               },
               {
                 to: '/petsitter/list',
                 img: '/assets/images/items-grid/3.jpg',
-                title: '펫시터 게시판',
+                title: '돌보고싶어요 🙋🏻‍♂️',
                 desc: '펫시터로 활동하고 싶다면 이곳을 확인해보세요!'
               },
               {

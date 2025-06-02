@@ -40,29 +40,26 @@ export default function ModifySitterPost() {
   }, [postType, postId])
 
   // 🟢 폼 데이터 변화 감지
-  const handleFormDataChange = useCallback(
-    (data: PostFormData) => {
-      const result = {...data}
-      // serviceDate가 있는 경우 형식 변환
-      if (result.serviceDate) {
-        // YYYY-MM-DD 형식이면 시간 추가
-        if (/^\d{4}-\d{2}-\d{2}$/.test(result.serviceDate)) {
-          result.serviceDate = result.serviceDate + 'T00:00:00'
-        }
-        // 이미 올바른 형식이 아니면 변환
-        else if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(result.serviceDate)) {
-          try {
-            const date = new Date(result.serviceDate)
-            result.serviceDate = date.toISOString().slice(0, 19)
-          } catch (e) {
-            console.error('잘못된 날짜 형식:', result.serviceDate)
-          }
+  const handleFormDataChange = useCallback((data: PostFormData) => {
+    const result = {...data}
+    // serviceDate가 있는 경우 형식 변환
+    if (result.serviceDate) {
+      // YYYY-MM-DD 형식이면 시간 추가
+      if (/^\d{4}-\d{2}-\d{2}$/.test(result.serviceDate)) {
+        result.serviceDate = result.serviceDate + 'T00:00:00'
+      }
+      // 이미 올바른 형식이 아니면 변환
+      else if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(result.serviceDate)) {
+        try {
+          const date = new Date(result.serviceDate)
+          result.serviceDate = date.toISOString().slice(0, 19)
+        } catch (e) {
+          console.error('잘못된 날짜 형식:', result.serviceDate)
         }
       }
-      setEditedData(result)
-    },
-    []
-  )
+    }
+    setEditedData(result)
+  }, [])
 
   // 🟢 수정 제출
   const handleSubmit = async () => {
@@ -109,34 +106,55 @@ export default function ModifySitterPost() {
   if (!initialData) return <div>초기 데이터를 불러올 수 없습니다.</div>
 
   return (
-    <section className="dashboard section" style={{paddingTop: '100px'}}>
-      <div className="container">
-        <div className="row">
-          {/* 왼쪽: 대시보드/사이드 메뉴 */}
-          <div className="col-lg-3 col-md-4 col-12">
-            <DashboardSidebar />
-          </div>
-          {/* 오른쪽: 게시글 수정 폼 */}
-          <div className="col-lg-9 col-md-8 col-12">
-            <div className="main-content bg-white p-8 rounded-xl shadow-lg">
-              <h2 className="text-xl font-bold mb-6">시터 게시글 수정</h2>
-              <PetSitterForm
-                onDataChange={handleFormDataChange}
-                initialData={initialData}
-                initialImageUrl={initialImageUrl}
-                mode="edit"
-              />
-              <div className="flex justify-center mt-6">
-                <button
-                  onClick={handleSubmit}
-                  className="px-8 py-3 bg-yellow-400 hover:bg-yellow-500 rounded-lg font-bold text-gray-900">
-                  수정하기
-                </button>
-              </div>
+    <div className="page-wrapper">
+      {/* --- Breadcrumb --------------------------------------------------- */}
+      <div className="breadcrumbs">
+        <div className="container">
+          <div className="row align-items-center">
+            <div className="col-lg-6">
+              <h1 className="page-title">게시글 수정</h1>
+            </div>
+            <div className="col-lg-6">
+              <ul className="breadcrumb-nav">
+                <li>
+                  <a href="/">홈</a>
+                </li>
+                <li>게시글 수정</li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
-    </section>
+
+      {/* --- 본문 --------------------------------------------------------- */}
+      <section className="dashboard section">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-3 col-md-4 col-12">
+              <DashboardSidebar />
+            </div>
+            <div className="col-lg-9 col-md-8 col-12">
+              <div className="main-content bg-white p-8 rounded-xl shadow-lg">
+                <h2 className="text-xl font-bold mb-6">시터 게시글 수정</h2>
+                <PetSitterForm
+                  onDataChange={handleFormDataChange}
+                  initialData={initialData}
+                  initialImageUrl={initialImageUrl}
+                  mode="edit"
+                />
+                <div className="flex justify-center mt-6">
+                  <button
+                    onClick={handleSubmit}
+                    className="reserve-button"
+                    style={{width: '200px'}}>
+                    수정하기
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   )
 }

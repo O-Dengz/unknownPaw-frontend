@@ -5,7 +5,7 @@ import {formatTimeAgo} from '../../utils/timeAgo'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
 import PawRating from '../../components/PawRating'
 import {getImageUrl} from '@/utils/getImageUrl'
-import { UniversalSkeleton } from '../../../src/components/Skeletons/UniversalSkeleton'
+import {UniversalSkeleton} from '../../../src/components/Skeletons/UniversalSkeleton'
 
 interface MemberResponseDTO {
   mid: number
@@ -219,9 +219,8 @@ export function PetSitter() {
   return (
     <div className="pet-owner-page">
       <ScrollToTopButton />
-      <section className="items-grid section custom-padding">
+      <section className="items-grid section custom-padding page-content">
         <div className="container">
-
           <div className="row">
             <div className="col-12">
               <div className="section-title">

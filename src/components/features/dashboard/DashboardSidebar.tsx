@@ -1,40 +1,13 @@
-import { useEffect } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useUserStore } from '@/store/userStore'
+import {useLocation, useNavigate} from 'react-router-dom'
+import {useUserStore} from '@/store/userStore'
 import toast from 'react-hot-toast'
-
-interface UserProfile {
-  mid: number
-  email: string
-  nickname: string
-  profileImagePath: string | null
-  pawRate: number
-  address: string | null
-  phoneNumber: string | null
-  emailVerified: boolean
-  regDate: string | null
-  role: string
-  status: string
-}
+import {getImageUrl} from '@/utils/getImageUrl'
+import {Link} from 'react-router-dom'
 
 export function DashboardSidebar() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { user, setUser } = useUserStore()
-
-  useEffect(() => {
-    if (!user) {
-      const memberData = sessionStorage.getItem('member')
-      if (memberData) {
-        try {
-          const parsed: UserProfile = JSON.parse(memberData)
-          setUser(parsed)
-        } catch (err) {
-          console.error('[DashboardSidebar] sessionStorage member 파싱 오류:', err)
-        }
-      }
-    }
-  }, [user, setUser])
+  const {user} = useUserStore()
 
   const isActive = (path: string) => location.pathname === path
 
@@ -51,10 +24,21 @@ export function DashboardSidebar() {
   return (
     <div className="dashboard-sidebar">
       <div className="user-image">
-        <img
-          src={user?.profileImagePath || '/assets/images/items-grid/author-2.jpg'}
-          alt="user"
-        />
+        {user ? (
+          <img
+            src={
+              user.profileImagePath
+                ? getImageUrl(user.profileImagePath)
+                : '/assets/images/items-grid/author-2.jpg'
+            }
+            alt={user.nickname || '프로필 이미지'}
+          />
+        ) : (
+          <div
+            className="loading-placeholder"
+            style={{width: '100%', height: '100%', backgroundColor: '#f0f0f0'}}
+          />
+        )}
         <div className="user-info">
           <h3>{user?.nickname || '홍길동'}</h3>
           <Link to={`/member/profile/simple/${user?.mid}`} className="username">
@@ -70,7 +54,9 @@ export function DashboardSidebar() {
             </Link>
           </li>
           <li>
-            <Link className={isActive('/profile-settings') ? 'active' : ''} to="/profile-settings">
+            <Link
+              className={isActive('/profile-settings') ? 'active' : ''}
+              to="/profile-settings">
               <i className="lni lni-pencil-alt"></i> 프로필 수정
             </Link>
           </li>
@@ -95,7 +81,9 @@ export function DashboardSidebar() {
             </Link>
           </li>
           <li>
-            <Link className={isActive('/reservation-details') ? 'active' : ''} to="/reservation-details">
+            <Link
+              className={isActive('/reservation-details') ? 'active' : ''}
+              to="/reservation-details">
               <i className="lni lni-printer"></i> 예약 내역
             </Link>
           </li>

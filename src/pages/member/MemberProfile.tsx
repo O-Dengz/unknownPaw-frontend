@@ -49,8 +49,6 @@ interface PostDTO {
   member?: MemberResponseDTO
 }
 
-
-
 export default function MemberProfile() {
   const {mid} = useParams() // URL 파라미터에서 mid를 가져옴
 
@@ -92,38 +90,36 @@ export default function MemberProfile() {
     }
 
     const fetchBasicInfo = async () => {
-      setLoadingBasic(true) // 로딩 시작
-      setErrorBasic(null) // 이전 에러 초기화
+      setLoadingBasic(true)
+      setErrorBasic(null)
 
       try {
-        const response = await fetch(
-          `/api/member/profile/simple/${mid}`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-              Accept: 'application/json'
-            }
+        const response = await fetch(`/api/member/profile/simple/${mid}`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
           }
-        )
+        })
 
         if (!response.ok) {
           const errorBody = await response
             .json()
-            .catch(() => ({message: 'Failed to parse error body'})) // 403 또는 401 에러 시 사용자에게 로그인 필요 메시지 표시
+            .catch(() => ({message: 'Failed to parse error body'}))
           if (response.status === 403 || response.status === 401) {
             throw new Error('로그인이 필요하거나 세션이 만료되었습니다.')
           }
           throw new Error(errorBody.message || `HTTP error! status: ${response.status}`)
         }
-        const data: MemberResponseDTO = await response.json() // 타입 지정
+        const data: MemberResponseDTO = await response.json()
+        console.log('Profile Image Path:', data.profileImagePath) // 여기에 로그 추가
         setMemberDTO(data)
       } catch (e: any) {
         console.error('Fetching basic info failed:', e)
         setErrorBasic(`회원 기본 정보를 불러오는데 실패했습니다: ${e.message}`)
       } finally {
-        setLoadingBasic(false) // 로딩 종료
+        setLoadingBasic(false)
       }
     }
 
@@ -133,15 +129,12 @@ export default function MemberProfile() {
       setErrorPets(null)
       try {
         // ✨✨✨ 새로운 펫 목록 API 엔드포인트 호출
-        const response = await fetch(
-          `/api/member/${mid}/pets`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            }
+        const response = await fetch(`/api/member/${mid}/pets`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
           }
-        )
+        })
 
         if (!response.ok) {
           const errorBody = await response
@@ -169,16 +162,13 @@ export default function MemberProfile() {
       setLoadingPosts(true)
       setErrorPosts(null)
       try {
-        const response = await fetch(
-          `/api/member/${mid}/posts`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-              Accept: 'application/json'
-            }
+        const response = await fetch(`/api/member/${mid}/posts`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
           }
-        )
+        })
 
         if (!response.ok) {
           const errorBody = await response
@@ -248,7 +238,6 @@ export default function MemberProfile() {
     return <div className="profile-loading">프로필 정보 로딩 중...</div>
   }
 
-
   // 에라가 하나라도 있다면 에러 메시지 표시
   if (errorBasic || errorPets || errorPosts) {
     return (
@@ -271,7 +260,7 @@ export default function MemberProfile() {
       <Header />
       <main>
         <ScrollToTopButton />
-  
+
         {/* 페이지 상단 브레드크럼 + 제목 */}
         <div className="breadcrumbs">
           <div className="container">
@@ -283,14 +272,16 @@ export default function MemberProfile() {
               </div>
               <div className="col-lg-6 col-md-6 col-12">
                 <ul className="breadcrumb-nav">
-                  <li><a href="/">홈</a></li>
+                  <li>
+                    <a href="/">홈</a>
+                  </li>
                   <li>멤버 프로필</li>
                 </ul>
               </div>
             </div>
           </div>
         </div>
-  
+
         {/* 프로필 본문 */}
         <div className="dashboard section">
           <div className="container">
@@ -302,12 +293,10 @@ export default function MemberProfile() {
                     <div className="profile-image">
                       <img
                         src={
-                          memberDTO.profileImagePath?.trim()
-                            ? memberDTO.profileImagePath
+                          memberDTO.profileImagePath
+                            ? `/api/members/image/${memberDTO.profileImagePath}`
                             : '/assets/images/items-grid/author-3.jpg'
                         }
-                        alt={`${memberDTO.nickname} 프로필 이미지`}
-                        className="profile-image"
                       />
                     </div>
                     <div className="profile-info">
@@ -323,11 +312,13 @@ export default function MemberProfile() {
                     </div>
                     <div className="verification-badges">
                       <span className="badge">
-                        {memberDTO.emailVerified ? '이메일 인증 완료' : '이메일 인증 안됨'}
+                        {memberDTO.emailVerified
+                          ? '이메일 인증 완료'
+                          : '이메일 인증 안됨'}
                       </span>
                     </div>
                   </div>
-  
+
                   {/* --- 반려동물 정보 섹션 --- */}
                   <section className="profile-section">
                     <h3 className="section-title">반려동물 정보</h3>
@@ -353,7 +344,12 @@ export default function MemberProfile() {
                               <p>품종: {pet.breed || '정보 없음'}</p>
                               <p>MBTI: {pet.petMbti || '정보 없음'}</p>
                               <p>생년월일: {pet.petBirth || '정보 없음'}</p>
-                              <p>몸무게: {pet.weight !== undefined ? `${pet.weight}kg` : '정보 없음'}</p>
+                              <p>
+                                몸무게:{' '}
+                                {pet.weight !== undefined
+                                  ? `${pet.weight}kg`
+                                  : '정보 없음'}
+                              </p>
                               <p>소개: {pet.petIntroduce || '정보 없음'}</p>
                             </div>
                           </div>
@@ -363,7 +359,7 @@ export default function MemberProfile() {
                       <p>등록된 반려동물이 없습니다.</p>
                     )}
                   </section>
-  
+
                   {/* --- 작성한 게시글 섹션 --- */}
                   <section className="profile-section">
                     <h3 className="section-title">작성한 게시글</h3>
@@ -371,7 +367,8 @@ export default function MemberProfile() {
                       <div className="posts-list">
                         {posts.map((post, index) => (
                           <div key={`${post.postId}-${index}`} className="post-card">
-                            <Link to={`/posts/${post.postTypeUrlSegment}/read/${post.postId}`}>
+                            <Link
+                              to={`/posts/${post.postTypeUrlSegment}/read/${post.postId}`}>
                               {post?.image && (
                                 <img
                                   src={
@@ -384,9 +381,10 @@ export default function MemberProfile() {
                               )}
                               <h4 className="post-title">{post.title || '제목 없음'}</h4>
                               <p>카테고리: {post.serviceCategory || '정보 없음'}</p>
-                              {post.serviceCategory === 'petsitter' && post.hourlyRate !== undefined && (
-                                <p>시급: {post.hourlyRate}원</p>
-                              )}
+                              {post.serviceCategory === 'petsitter' &&
+                                post.hourlyRate !== undefined && (
+                                  <p>시급: {post.hourlyRate}원</p>
+                                )}
                               <p>지역: {post.defaultLocation || '정보 없음'}</p>
                               <p>
                                 작성일:{' '}
@@ -396,10 +394,12 @@ export default function MemberProfile() {
                               </p>
                               <div className="post-stats">
                                 <span>
-                                  <i className="lni lni-heart"></i> {post.likes ?? '정보 없음'}
+                                  <i className="lni lni-heart"></i>{' '}
+                                  {post.likes ?? '정보 없음'}
                                 </span>
                                 <span>
-                                  <i className="lni lni-comments"></i> {post.chatCount ?? '정보 없음'}
+                                  <i className="lni lni-comments"></i>{' '}
+                                  {post.chatCount ?? '정보 없음'}
                                 </span>
                               </div>
                             </Link>
@@ -419,4 +419,4 @@ export default function MemberProfile() {
       <Footer />
     </>
   )
-}  
+}

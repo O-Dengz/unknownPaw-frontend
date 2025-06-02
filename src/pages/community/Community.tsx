@@ -32,6 +32,7 @@ interface CommunityPost {
   communityCategory: string
   regDate: string
   communityImages: string[]
+  isLiked?: boolean
 }
 
 export function Community() {
@@ -42,9 +43,15 @@ export function Community() {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchType, setSearchType] = useState<'title' | 'author' | 'content'>('title')
   const [currentPage, setCurrentPage] = useState(1)
+  const [memberId, setMemberId] = useState<number | null>(null)
   const totalPages = 20
 
   useEffect(() => {
+    const memberData = sessionStorage.getItem('member')
+    if (memberData) {
+      const parsed = JSON.parse(memberData)
+      setMemberId(parsed.mid)
+    }
     fetchPosts()
   }, [])
 
@@ -66,9 +73,9 @@ export function Community() {
       const response = await fetch('/api/community/posts', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          Accept: 'application/json'
         }
       })
 
@@ -84,15 +91,84 @@ export function Community() {
         setFilteredPosts([])
         setError('데이터 형식이 올바르지 않습니다.')
       } else {
-        setPosts(data)
-        setFilteredPosts(data)
+        // 각 게시물의 좋아요 상태 확인
+        const postsWithLikeStatus = await Promise.all(
+          data.map(async post => {
+            if (memberId) {
+              const likeResponse = await fetch(
+                `/api/community/posts/${post.communityId}/liked?memberId=${memberId}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                  }
+                }
+              )
+              if (likeResponse.ok) {
+                const likeData = await likeResponse.json()
+                return {...post, isLiked: likeData.liked}
+              }
+            }
+            return {...post, isLiked: false}
+          })
+        )
+        setPosts(postsWithLikeStatus)
+        setFilteredPosts(postsWithLikeStatus)
       }
       setLoading(false)
     } catch (error) {
-      setError(error instanceof Error ? error.message : '게시물을 불러오는 데 실패했습니다.')
+      setError(
+        error instanceof Error ? error.message : '게시물을 불러오는 데 실패했습니다.'
+      )
       setPosts([])
       setFilteredPosts([])
       setLoading(false)
+    }
+  }
+
+  const handleLike = async (postId: number) => {
+    if (!memberId) {
+      alert('로그인이 필요합니다.')
+      return
+    }
+
+    try {
+      const token = sessionStorage.getItem('token')
+      const post = posts.find(p => p.communityId === postId)
+      if (!post) return
+
+      const endpoint = post.isLiked ? 'unlike' : 'like'
+      const method = post.isLiked ? 'DELETE' : 'POST'
+
+      const response = await fetch(
+        `/api/community/posts/${postId}/${endpoint}?memberId=${memberId}`,
+        {
+          method,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      if (response.ok) {
+        // 좋아요 상태 업데이트
+        const updatedPosts = posts.map(p => {
+          if (p.communityId === postId) {
+            return {
+              ...p,
+              isLiked: !p.isLiked,
+              likes: p.isLiked ? p.likes - 1 : p.likes + 1
+            }
+          }
+          return p
+        })
+        setPosts(updatedPosts)
+        setFilteredPosts(updatedPosts)
+      }
+    } catch (error) {
+      console.error('좋아요 처리 중 오류 발생:', error)
+      alert('좋아요 처리 중 오류가 발생했습니다.')
     }
   }
 
@@ -130,20 +206,25 @@ export function Community() {
   }
 
   const handlePageChange = (page: number) => setCurrentPage(page)
-  const handleNext = () => setCurrentPage(currentPage + 10 <= totalPages ? currentPage + 10 : totalPages)
+  const handleNext = () =>
+    setCurrentPage(currentPage + 10 <= totalPages ? currentPage + 10 : totalPages)
   const handlePrev = () => setCurrentPage(currentPage - 10 >= 1 ? currentPage - 10 : 1)
 
   if (loading) return <div>로딩중...</div>
   if (error) return <div>{error}</div>
 
   return (
-    <section className="section latest-news-area blog-list">
+    <section className="section latest-news-area blog-list" style={{paddingTop: '48px'}}>
       <div className="container">
         <div className="row">
           <div className="col-12">
             <div className="section-title">
-              <h2 className="wow fadeInUp" data-wow-delay=".4s">Community</h2>
-              <p className="wow fadeInUp" data-wow-delay=".6s">서비스를 요청하고 제안을 받아보세요!</p>
+              <h2 className="wow fadeInUp" data-wow-delay=".4s">
+                Community
+              </h2>
+              <p className="wow fadeInUp" data-wow-delay=".6s">
+                서비스를 요청하고 제안을 받아보세요!
+              </p>
             </div>
           </div>
         </div>
@@ -168,13 +249,39 @@ export function Community() {
                         <h4 className="title mb-1 text-base">
                           <a href={`/communitypost/${post.communityId}`}>{post.title}</a>
                         </h4>
-                        <p className="text-sm line-clamp-2" style={{ marginBottom: '4px' }}>{post.content}</p>
+                        <p className="text-sm line-clamp-2" style={{marginBottom: '4px'}}>
+                          {post.content}
+                        </p>
                         <div className="meta-details">
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', fontSize: '0.8em', color: '#888', fontWeight: 400 }}>
-                            <span><i className="lni lni-calendar"></i> {new Date(post.regDate).getMonth() + 1}월 {new Date(post.regDate).getDate()}일</span>
-                            <span><i className="lni lni-tag"></i> {post.communityCategory}</span>
-                            <span><i className="lni lni-heart"></i> {post.likes}</span>
-                            <span><i className="lni lni-comments"></i> {post.commentCount}</span>
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexWrap: 'wrap',
+                              gap: '8px',
+                              fontSize: '0.8em',
+                              color: '#888',
+                              fontWeight: 400
+                            }}>
+                            <span>
+                              <i className="lni lni-calendar"></i>{' '}
+                              {new Date(post.regDate).getMonth() + 1}월{' '}
+                              {new Date(post.regDate).getDate()}일
+                            </span>
+                            <span>
+                              <i className="lni lni-tag"></i> {post.communityCategory}
+                            </span>
+                            <span
+                              onClick={() => handleLike(post.communityId)}
+                              style={{cursor: 'pointer'}}>
+                              <i
+                                className={`lni lni-heart ${
+                                  post.isLiked ? 'text-red-500' : ''
+                                }`}></i>{' '}
+                              {post.likes}
+                            </span>
+                            <span>
+                              <i className="lni lni-comments"></i> {post.commentCount}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -182,24 +289,42 @@ export function Community() {
                   </div>
                 ))
               ) : (
-                <div className="col-12"><p>게시글이 없습니다.</p></div>
+                <div className="col-12">
+                  <p>게시글이 없습니다.</p>
+                </div>
               )}
             </div>
 
             <div className="pagination left blog-grid-page mt-4">
               <ul className="pagination-list">
                 <li>
-                  <a href="#" onClick={handlePrev} className={currentPage === 1 ? 'disabled' : ''}>
+                  <a
+                    href="#"
+                    onClick={handlePrev}
+                    className={currentPage === 1 ? 'disabled' : ''}>
                     <i className="lni lni-chevron-left"></i>
                   </a>
                 </li>
                 {generatePagination().map(page => (
                   <li key={page} className={page === currentPage ? 'active' : ''}>
-                    <a href="#" onClick={e => { e.preventDefault(); handlePageChange(page) }}>{page}</a>
+                    <a
+                      href="#"
+                      onClick={e => {
+                        e.preventDefault()
+                        handlePageChange(page)
+                      }}>
+                      {page}
+                    </a>
                   </li>
                 ))}
                 <li>
-                  <a href="#" onClick={e => { e.preventDefault(); handleNext() }} className={currentPage + 10 > totalPages ? 'disabled' : ''}>
+                  <a
+                    href="#"
+                    onClick={e => {
+                      e.preventDefault()
+                      handleNext()
+                    }}
+                    className={currentPage + 10 > totalPages ? 'disabled' : ''}>
                     <i className="lni lni-chevron-right"></i>
                   </a>
                 </li>
@@ -208,15 +333,27 @@ export function Community() {
           </div>
 
           <aside className="col-lg-3 col-md-5 col-12">
-            <div className="sidebar blog-grid-page" style={{ position: 'sticky', top: '20px' }}>
-              <div className="widget search-widget" style={{ padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                <h5 className="widget-title" style={{ fontSize: '1em', marginBottom: '8px' }}>
+            <div
+              className="sidebar blog-grid-page"
+              style={{position: 'sticky', top: '20px'}}>
+              <div
+                className="widget search-widget"
+                style={{
+                  padding: '12px',
+                  backgroundColor: '#f8f9fa',
+                  borderRadius: '6px'
+                }}>
+                <h5
+                  className="widget-title"
+                  style={{fontSize: '1em', marginBottom: '8px'}}>
                   <span>게시글 검색</span>
                 </h5>
                 <div className="search-form">
                   <select
                     value={searchType}
-                    onChange={e => setSearchType(e.target.value as 'title' | 'author' | 'content')}
+                    onChange={e =>
+                      setSearchType(e.target.value as 'title' | 'author' | 'content')
+                    }
                     style={{
                       width: '100%',
                       padding: '4px',
@@ -224,21 +361,24 @@ export function Community() {
                       border: '1px solid #ddd',
                       marginBottom: '6px',
                       fontSize: '0.85em'
-                    }}
-                  >
+                    }}>
                     <option value="title">제목</option>
                     <option value="author">작성자</option>
                     <option value="content">내용</option>
                   </select>
-                  <form onSubmit={e => { e.preventDefault(); handleSearch() }}>
+                  <form
+                    onSubmit={e => {
+                      e.preventDefault()
+                      handleSearch()
+                    }}>
                     <input
                       type="text"
                       placeholder="검색어를 입력하세요."
                       value={searchTerm}
                       onChange={e => setSearchTerm(e.target.value)}
-                      style={{ fontSize: '0.85em', padding: '4px' }}
+                      style={{fontSize: '0.85em', padding: '4px'}}
                     />
-                    <button type="submit" style={{ padding: '4px 8px' }}>
+                    <button type="submit" style={{padding: '4px 8px'}}>
                       <i className="lni lni-search-alt"></i>
                     </button>
                   </form>
@@ -246,23 +386,41 @@ export function Community() {
               </div>
 
               <div className="widget popular-feeds mt-3">
-                <h5 className="widget-title" style={{ fontSize: '1em', marginBottom: '8px' }}>
+                <h5
+                  className="widget-title"
+                  style={{fontSize: '1em', marginBottom: '8px'}}>
                   <span>인기 게시물</span>
                 </h5>
                 <div className="popular-feed-loop">
                   {posts
-                    .sort((a, b) => (b.likes + b.commentCount) - (a.likes + a.commentCount))
+                    .sort((a, b) => b.likes + b.commentCount - (a.likes + a.commentCount))
                     .slice(0, 3)
                     .map(post => (
                       <div key={post.communityId} className="single-popular-feed">
                         <div className="feed-desc">
                           <h6 className="post-title">
-                            <a href={`/communitypost/${post.communityId}`}>{post.title}</a>
+                            <a href={`/communitypost/${post.communityId}`}>
+                              {post.title}
+                            </a>
                           </h6>
-                          <div className="meta-info" style={{ display: 'flex', gap: '15px', fontSize: '0.9em', color: '#666' }}>
-                            <span><i className="lni lni-calendar"></i> {new Date(post.regDate).toLocaleDateString()}</span>
-                            <span><i className="lni lni-heart"></i> {post.likes}</span>
-                            <span><i className="lni lni-comments"></i> {post.commentCount}</span>
+                          <div
+                            className="meta-info"
+                            style={{
+                              display: 'flex',
+                              gap: '15px',
+                              fontSize: '0.9em',
+                              color: '#666'
+                            }}>
+                            <span>
+                              <i className="lni lni-calendar"></i>{' '}
+                              {new Date(post.regDate).toLocaleDateString()}
+                            </span>
+                            <span>
+                              <i className="lni lni-heart"></i> {post.likes}
+                            </span>
+                            <span>
+                              <i className="lni lni-comments"></i> {post.commentCount}
+                            </span>
                           </div>
                         </div>
                       </div>

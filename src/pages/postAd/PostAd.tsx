@@ -14,29 +14,17 @@ const toPostTypeEnum = (category: string): string => {
 }
 
 const toEndpointPath = (category: string): string => {
-  switch (category.trim().toLowerCase()) {
-    case 'petowner':
-      return 'pet_owner'
-    case 'petsitter':
-      return 'pet_sitter'
-    case 'community':
-      return 'community'
-    default:
-      throw new Error('유효하지 않은 카테고리입니다.')
-  }
+  const normalized = category.trim().toLowerCase()
+  if (normalized === 'petowner') return 'petowner'
+  if (normalized === 'petsitter') return 'petsitter'
+  if (normalized === 'community') return 'community'
+  throw new Error('유효하지 않은 카테고리입니다.')
 }
 
-const toServiceCategory = (kor: string): string => {
-  switch (kor) {
-    case '산책':
-      return 'WALK'
-    case '호텔링':
-      return 'HOTEL'
-    case '돌봄':
-      return 'CARE'
-    default:
-      return 'WALK'
-  }
+const toServiceCategory = (category: string): string => {
+  const normalized = category.trim().toUpperCase()
+  if (['WALK', 'HOTEL', 'CARE'].includes(normalized)) return normalized
+  throw new Error('유효하지 않은 서비스 카테고리입니다.')
 }
 
 interface PostData {
@@ -113,11 +101,48 @@ export default function PostAd() {
       const memberId = await ensureMemberId(token)
       const endpointType = toEndpointPath(category)
 
-      // 1️⃣ postDTO 데이터 구성
+      // 커뮤니티 게시글인 경우 다른 엔드포인트 사용
+      if (category === 'Community') {
+        const formData = new FormData()
+        const communityDTO = {
+          title: postData.title,
+          content: postData.content,
+          communityCategory: postData.serviceCategory || 'GENERAL' // 선택된 카테고리 사용, 없으면 GENERAL
+        }
+        formData.append(
+          'community',
+          new Blob([JSON.stringify(communityDTO)], {
+            type: 'application/json'
+          })
+        )
+
+        if (postData.images && postData.images.length > 0) {
+          postData.images.forEach(file => formData.append('images', file))
+        }
+
+        const response = await fetch(`/api/community/posts?memberId=${memberId}`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          body: formData
+        })
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          throw new Error(errorText || '게시글 등록에 실패했습니다')
+        }
+
+        alert('게시글이 성공적으로 등록되었습니다! 😄')
+        navigate('/community/posts')
+        return
+      }
+
+      // 기존 펫시터/펫오너 게시글 로직
       const postDTO = {
         title: postData.title,
         content: postData.content,
-        serviceCategory: postData.serviceCategory,
+        serviceCategory: toServiceCategory(postData.serviceCategory),
         hourlyRate: String(postData.hourlyRate),
         defaultLocation: postData.defaultLocation,
         serviceDate: postData.serviceDate,
@@ -126,22 +151,17 @@ export default function PostAd() {
         license: postData.license
       }
 
-      console.log('전송하는 serviceCategory:', postData.serviceCategory)
-
-      // 2️⃣ 이미지 유무에 따라 분기
       let endpoint
       let body: string | FormData
       let headers: Record<string, string>
 
       if (postData.images && postData.images.length > 0) {
-        // 이미지가 있다면 ➡️ registerWithImage + FormData
         endpoint = `/api/posts/${endpointType}/registerWithImage?memberId=${memberId}`
         body = new FormData()
-        body.append('post', JSON.stringify(postDTO)) // ⭐️ 백엔드에서 postJson으로 받음
+        body.append('post', JSON.stringify(postDTO))
         postData.images.forEach(file => (body as FormData).append('file', file))
-        headers = {Authorization: `Bearer ${token}`} // Content-Type 지정 X!
+        headers = {Authorization: `Bearer ${token}`}
       } else {
-        // 이미지가 없다면 ➡️ register + JSON
         endpoint = `/api/posts/${endpointType}/register?memberId=${memberId}`
         body = JSON.stringify(postDTO)
         headers = {
@@ -150,7 +170,6 @@ export default function PostAd() {
         }
       }
 
-      // 3️⃣ fetch 실행
       const postRes = await fetch(endpoint, {
         method: 'POST',
         headers,
@@ -170,111 +189,131 @@ export default function PostAd() {
     }
   }
   return (
-    <section className="dashboard section" style={{paddingTop: '100px'}}>
-      <div className="container">
-        <div className="row">
-          <div className="col-lg-3 col-md-4 col-12">
-            <DashboardSidebar />
+    <div className="page-wrapper">
+      {/* --- Breadcrumb --------------------------------------------------- */}
+      <div className="breadcrumbs">
+        <div className="container">
+          <div className="row align-items-center">
+            <div className="col-lg-6">
+              <h1 className="page-title">게시글 작성</h1>
+            </div>
+            <div className="col-lg-6">
+              <ul className="breadcrumb-nav">
+                <li>
+                  <a href="/">홈</a>
+                </li>
+                <li>게시글 작성</li>
+              </ul>
+            </div>
           </div>
-          <div className="col-lg-9 col-md-8 col-14">
-            <div className="main-content">
-              <div className="dashboard-stats">
-                <div className="row">
-                  <div className="col-lg-12">
-                    <div className="main-content bg-white p-8 rounded-xl shadow-lg">
-                      <h2 className="text-2xl font-bold mb-8">게시글 작성</h2>
-                      <div className="flex justify-between mb-10">
-                        {['카테고리 설정', '상세 내용', '이용약관'].map((label, idx) => {
-                          const n = idx + 1
-                          return (
-                            <div key={n} className="text-center flex-1">
-                              <div
-                                className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center font-bold ${
-                                  step === n
-                                    ? 'bg-[var(--primary)] text-white'
-                                    : 'bg-gray-200 text-gray-500'
-                                }`}>
-                                {n}
-                              </div>
-                              <div
-                                className={`mt-2 text-sm ${
-                                  step === n ? 'text-[var(--primary)]' : 'text-gray-500'
-                                }`}>
-                                {label}
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
+        </div>
+      </div>
 
-                      {step === 1 && (
-                        <div className="form-group">
-                          <label className="text-gray-700 font-medium">카테고리*</label>
-                          <select
-                            className="form-control"
-                            value={category}
-                            onChange={e => setCategory(e.target.value)}>
-                            <option value="">카테고리 선택</option>
-                            <option value="PetOwner">펫 오너</option>
-                            <option value="PetSitter">펫 시터</option>
-                            <option value="Community">커뮤니티</option>
-                          </select>
+      {/* --- 본문 --------------------------------------------------------- */}
+      <section className="dashboard section">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-3 col-md-4 col-12">
+              <DashboardSidebar />
+            </div>
+            <div className="col-lg-9 col-md-8 col-14">
+              <div className="main-content">
+                <div className="dashboard-stats">
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <div className="main-content bg-white p-8 rounded-xl shadow-lg">
+                        <div className="settings-tabs mb-4">
+                          <button
+                            className={`tab-button ${step === 1 ? 'active' : ''}`}
+                            onClick={() => setStep(1)}>
+                            카테고리 설정
+                          </button>
+                          <button
+                            className={`tab-button ${step === 2 ? 'active' : ''}`}
+                            onClick={() => setStep(2)}>
+                            상세 내용
+                          </button>
+                          <button
+                            className={`tab-button ${step === 3 ? 'active' : ''}`}
+                            onClick={() => setStep(3)}>
+                            이용약관
+                          </button>
                         </div>
-                      )}
 
-                      {step === 2 && (
-                        <>
-                          {category === 'PetOwner' && (
-                            <PetOwnerForm onDataChange={handleFormDataChange} />
-                          )}
-                          {category === 'PetSitter' && (
-                            <PetSitterForm onDataChange={handleFormDataChange} />
-                          )}
-                          {category === 'Community' && (
-                            <CommunityForm onDataChange={handleFormDataChange} />
-                          )}
-                        </>
-                      )}
+                        <h2 className="text-2xl font-bold mb-8">게시글 작성</h2>
 
-                      {step === 3 && (
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-4">
-                          {/* 약관 내용 */}
-                          <div className="flex items-center mt-4">
-                            <input
-                              type="checkbox"
-                              id="agree"
-                              checked={agree}
-                              onChange={e => setAgree(e.target.checked)}
-                              className="mr-2"
-                            />
-                            <label htmlFor="agree" className="text-sm">
-                              위 이용약관에 동의합니다
-                            </label>
+                        {step === 1 && (
+                          <div className="form-group">
+                            <label className="text-gray-700 font-medium">카테고리*</label>
+                            <select
+                              className="form-control"
+                              value={category}
+                              onChange={e => setCategory(e.target.value)}>
+                              <option value="">카테고리 선택</option>
+                              <option value="PetOwner">펫 오너</option>
+                              <option value="PetSitter">펫 시터</option>
+                              <option value="Community">커뮤니티</option>
+                            </select>
                           </div>
-                        </div>
-                      )}
+                        )}
 
-                      <div className="flex justify-between mt-6">
-                        {step > 1 && (
-                          <button
-                            onClick={prevStep}
-                            className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
-                            이전
-                          </button>
+                        {step === 2 && (
+                          <>
+                            {category === 'PetOwner' && (
+                              <PetOwnerForm onDataChange={handleFormDataChange} />
+                            )}
+                            {category === 'PetSitter' && (
+                              <PetSitterForm onDataChange={handleFormDataChange} />
+                            )}
+                            {category === 'Community' && (
+                              <CommunityForm onDataChange={handleFormDataChange} />
+                            )}
+                          </>
                         )}
-                        {step < 3 ? (
-                          <button
-                            onClick={nextStep}
-                            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 ml-auto">
-                            다음
-                          </button>
-                        ) : (
-                          <button
-                            onClick={handleSubmit}
-                            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 ml-auto">
-                            등록하기
-                          </button>
+
+                        {step === 3 && (
+                          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-4">
+                            {/* 약관 내용 */}
+                            <div className="flex items-center mt-4">
+                              <input
+                                type="checkbox"
+                                id="agree"
+                                checked={agree}
+                                onChange={e => setAgree(e.target.checked)}
+                                className="mr-2"
+                              />
+                              <label htmlFor="agree" className="text-sm">
+                                위 이용약관에 동의합니다
+                              </label>
+                            </div>
+                          </div>
                         )}
+
+                        <div className="flex justify-between mt-6">
+                          {step > 1 && (
+                            <button
+                              onClick={prevStep}
+                              className="reserve-button"
+                              style={{width: '120px'}}>
+                              이전
+                            </button>
+                          )}
+                          {step < 3 ? (
+                            <button
+                              onClick={nextStep}
+                              className="reserve-button"
+                              style={{width: '120px'}}>
+                              다음
+                            </button>
+                          ) : (
+                            <button
+                              onClick={handleSubmit}
+                              className="reserve-button"
+                              style={{width: '120px'}}>
+                              등록하기
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -283,7 +322,7 @@ export default function PostAd() {
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   )
 }
