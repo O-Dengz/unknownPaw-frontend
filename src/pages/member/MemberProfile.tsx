@@ -5,6 +5,7 @@ import Header from '../../components/Layout/Header'
 import {Footer} from '../../components/Layout/Footer'
 import PawRating from '../../components/PawRating'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
+import {getImageUrl} from '@/utils/getImageUrl' // Import getImageUrl
 
 interface MemberResponseDTO {
   mid: number
@@ -294,7 +295,7 @@ export default function MemberProfile() {
                       <img
                         src={
                           memberDTO.profileImagePath
-                            ? `/api/members/image/${memberDTO.profileImagePath}`
+                            ? getImageUrl(memberDTO.profileImagePath) // Use getImageUrl
                             : '/assets/images/items-grid/author-3.jpg'
                         }
                       />

@@ -235,7 +235,7 @@ export function PetOwner() {
   return (
     <div className="pet-owner-page">
       <ScrollToTopButton />
-      <section className="items-grid section custom-padding page-content">
+      <section className="items-grid section">
         <div className="container">
           <div className="row">
             <div className="col-12">

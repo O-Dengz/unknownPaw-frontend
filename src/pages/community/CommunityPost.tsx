@@ -1,5 +1,5 @@
-import { useParams } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import {useParams, useNavigate} from 'react-router-dom'
+import {useState, useEffect} from 'react'
 import '../../../public/assets/css/LineIcons.2.0.css'
 import '../../../public/assets/css/animate.css'
 import '../../../public/assets/css/bootstrap.min.css'
@@ -7,6 +7,7 @@ import '../../../public/assets/css/glightbox.min.css'
 import '../../../public/assets/css/main.css'
 import '../../../public/assets/css/tiny-slider.css'
 import './CommunityPost.css'
+import {getImageUrl} from '../../utils/getImageUrl'
 
 // 랜덤 이미지 목록
 const randomImages = [
@@ -35,16 +36,18 @@ interface CommunityPost {
   regDate: string
   communityImages: string[]
   viewCount: number
+  authorId: number
 }
 
 export default function CommunityPost() {
-  const { postId } = useParams()
+  const {postId} = useParams()
   const [post, setPost] = useState<CommunityPost | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [posts, setPosts] = useState<CommunityPost[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [searchType, setSearchType] = useState<'title' | 'author' | 'content'>('title')
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchPost()
@@ -64,9 +67,9 @@ export default function CommunityPost() {
       const response = await fetch(`/api/community/posts/${postId}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          Accept: 'application/json'
         }
       })
 
@@ -86,7 +89,9 @@ export default function CommunityPost() {
       setLoading(false)
     } catch (error) {
       console.error('Error fetching post:', error)
-      setError(error instanceof Error ? error.message : '게시글을 불러오는데 실패했습니다.')
+      setError(
+        error instanceof Error ? error.message : '게시글을 불러오는데 실패했습니다.'
+      )
       setLoading(false)
     }
   }
@@ -104,9 +109,9 @@ export default function CommunityPost() {
       const response = await fetch('/api/community/posts', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          Accept: 'application/json'
         }
       })
 
@@ -145,8 +150,10 @@ export default function CommunityPost() {
         case 'title':
           return post.title.toLowerCase().includes(searchTermLower)
         case 'author':
-          return post.authorName.toLowerCase().includes(searchTermLower) || 
-                 post.authorNickname.toLowerCase().includes(searchTermLower)
+          return (
+            post.authorName.toLowerCase().includes(searchTermLower) ||
+            post.authorNickname.toLowerCase().includes(searchTermLower)
+          )
         case 'content':
           return post.content.toLowerCase().includes(searchTermLower)
         default:
@@ -178,7 +185,11 @@ export default function CommunityPost() {
               <ul className="breadcrumb-nav">
                 <li>
                   <a href="/">
-                    <img src="/assets/images/logo/logo.png" alt="UnknownPaw" style={{ height: '30px' }} />
+                    <img
+                      src="/assets/images/logo/logo.png"
+                      alt="UnknownPaw"
+                      style={{height: '30px'}}
+                    />
                   </a>
                 </li>
                 <li>
@@ -192,148 +203,129 @@ export default function CommunityPost() {
       </div>
 
       {/* Blog Single Area */}
-      <section className="section blog-single">
-        <div className="container">
+      <section className="section blog-single" style={{padding: '20px 0 !important'}}>
+        <div className="container" style={{marginTop: '-80px'}}>
           <div className="row">
-            <div className="col-lg-8 col-md-12 col-12">
-              <div className="single-inner">
-                <div className="post-thumbnils">
-                  <img 
-                    src={post.communityImages[0] || getRandomImage()} 
-                    alt={post.title} 
-                    style={{
-                      width: '100%',
-                      height: '400px',
-                      objectFit: 'cover',
-                      borderRadius: '8px'
-                    }}
-                  />
-                </div>
-                <div className="post-details">
-                  <div className="detail-inner">
-                    <h2 className="post-title">{post.title}</h2>
-                    <div className="post-meta">
-                      <div className="author-info" style={{ marginBottom: '15px' }}>
-                        <img 
-                          src={post.authorProfileImage || '/src/assets/no-img.gif'} 
-                          alt={post.authorNickname}
-                          style={{
-                            width: '40px',
-                            height: '40px',
-                            borderRadius: '50%',
-                            marginRight: '10px'
-                          }}
-                        />
-                        <span>{post.authorNickname}</span>
-                      </div>
-                      <ul className="custom-flex post-meta">
-                        <li>
-                          <i className="lni lni-calendar"></i>
-                          {new Date(post.regDate).toLocaleDateString()}
-                        </li>
-                        <li>
-                          <i className="lni lni-comments"></i>
-                          댓글 {post.commentCount}개
-                        </li>
-                        <li>
-                          <i className="lni lni-eye"></i>
-                          조회수 {post.viewCount}
-                        </li>
-                        <li>
-                          <i className="lni lni-heart"></i>
-                          좋아요 {post.likes}
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="post-content" style={{ 
-                      marginTop: '20px',
-                      lineHeight: '1.8',
-                      fontSize: '1.1em'
-                    }}>
-                      {post.content}
-                    </div>
+            <div className="col-12">
+              <div
+                className="single-inner"
+                style={{
+                  background: '#fff',
+                  borderRadius: '10px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                  padding: '32px 28px',
+                  marginBottom: '32px'
+                }}>
+                {/* 제목 */}
+                <h1
+                  className="post-title"
+                  style={{
+                    fontSize: '2rem',
+                    fontWeight: 700,
+                    marginBottom: '12px',
+                    lineHeight: 1.3
+                  }}>
+                  {post.title}
+                </h1>
+                {/* 메타 정보 */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '18px',
+                    marginBottom: '18px',
+                    flexWrap: 'wrap'
+                  }}>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    <img
+                      src={getImageUrl(post.authorProfileImage) || '/assets/no-img.gif'}
+                      alt={post.authorNickname}
+                      style={{
+                        width: '38px',
+                        height: '38px',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        border: '1px solid #eee'
+                      }}
+                    />
+                    <span style={{fontWeight: 500, fontSize: '1.05em'}}>
+                      {post.authorNickname}
+                    </span>
                   </div>
+                  <span style={{color: '#888', fontSize: '0.98em'}}>
+                    <i className="lni lni-calendar"></i>{' '}
+                    {new Date(post.regDate).toLocaleDateString()}
+                  </span>
+                  <span style={{color: '#888', fontSize: '0.98em'}}>
+                    <i className="lni lni-eye"></i> {post.viewCount}
+                  </span>
+                  <span style={{color: '#888', fontSize: '0.98em'}}>
+                    <i className="lni lni-heart"></i> {post.likes}
+                  </span>
+                  <span style={{color: '#888', fontSize: '0.98em'}}>
+                    <i className="lni lni-comments"></i> {post.commentCount}
+                  </span>
+                </div>
+                {/* 이미지 */}
+                {post.communityImages[0] && (
+                  <div style={{marginBottom: '24px'}}>
+                    <img
+                      src={post.communityImages[0] || getRandomImage()}
+                      alt={post.title}
+                      style={{
+                        width: '100%',
+                        maxHeight: '420px',
+                        objectFit: 'cover',
+                        borderRadius: '8px',
+                        background: '#f8f8f8'
+                      }}
+                    />
+                  </div>
+                )}
+                {/* 본문 */}
+                <div
+                  className="post-content"
+                  style={{
+                    marginTop: '10px',
+                    lineHeight: '1.85',
+                    fontSize: '1.13em',
+                    color: '#222',
+                    minHeight: '120px'
+                  }}>
+                  {post.content}
                 </div>
               </div>
             </div>
-
-            {/* 사이드바 영역 */}
-            <aside className="col-lg-4 col-md-5 col-12">
-              <div className="sidebar blog-grid-page">
-                {/* 검색 위젯 */}
-                <div className="widget search-widget">
-                  <h5 className="widget-title">
-                    <span>게시글 검색</span>
-                  </h5>
-                  <div className="search-form">
-                    <select 
-                      value={searchType}
-                      onChange={(e) => setSearchType(e.target.value as 'title' | 'author' | 'content')}
-                      style={{
-                        width: '100%',
-                        padding: '8px',
-                        borderRadius: '4px',
-                        border: '1px solid #ddd',
-                        marginBottom: '10px'
-                      }}
-                    >
-                      <option value="title">제목</option>
-                      <option value="author">작성자</option>
-                      <option value="content">내용</option>
-                    </select>
-                    <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
-                      <input 
-                        type="text" 
-                        placeholder="검색어를 입력하세요." 
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                      <button type="submit">
-                        <i className="lni lni-search-alt"></i>
-                      </button>
-                    </form>
-                  </div>
-                </div>
-
-                {/* 인기글 위젯 */}
-                <div className="widget popular-feeds mt-5">
-                  <h5 className="widget-title">
-                    <span>인기 게시물</span>
-                  </h5>
-                  <div className="popular-feed-loop">
-                    {posts
-                      .sort((a, b) => {
-                        const scoreA = a.likes + a.commentCount
-                        const scoreB = b.likes + b.commentCount
-                        return scoreB - scoreA
-                      })
-                      .slice(0, 3)
-                      .map((post) => (
-                        <div key={post.communityId} className="single-popular-feed" style={styles.popularFeedItem}>
-                          <div className="feed-desc">
-                            <h6 className="post-title">
-                              <a href={`/communitypost/${post.communityId}`}>{post.title}</a>
-                            </h6>
-                            <div className="meta-info" style={styles.popularFeedMeta}>
-                              <span className="time">
-                                <i className="lni lni-calendar"></i>{' '}
-                                {new Date(post.regDate).toLocaleDateString()}
-                              </span>
-                              <span className="likes">
-                                <i className="lni lni-heart"></i> {post.likes}
-                              </span>
-                              <span className="comments">
-                                <i className="lni lni-comments"></i> {post.commentCount}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              </div>
-            </aside>
           </div>
+        </div>
+        {/* 버튼 컨테이너 */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '12px' /* 버튼 사이 간격 */,
+            marginTop: '20px' /* 상단 여백 */
+          }}>
+          <button
+            onClick={() => navigate(-1)}
+            className="reserve-button"
+            style={{
+              background: '#eee',
+              color: '#333'
+            }}>
+            목록으로
+          </button>
+          {post.authorId === Number(sessionStorage.getItem('mid')) && (
+            <button
+              onClick={() => navigate(`/community/edit/${post.communityId}`)}
+              className="reserve-button"
+              style={{
+                background: '#f4c150',
+                color: '#fff'
+              }}>
+              수정하기
+            </button>
+          )}
         </div>
       </section>
     </>

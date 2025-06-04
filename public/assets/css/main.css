@@ -1440,10 +1440,10 @@ ol {
   top: 0;
   left: 0;
   width: 100%;
+  height: 100px !important; /* 헤더 높이 고정 */
   z-index: 99;
-  -webkit-transition: all 0.3s ease-out 0s;
-  transition: all 0.3s ease-out 0s;
-  padding: 0;
+  -webkit-transition: all 0.4s ease-out 0s;
+  transition: all 0.4s ease-out 0s;
 }
 
 .navbar-area.sticky {
@@ -1465,8 +1465,10 @@ ol {
 .navbar {
   padding: 0;
   position: relative;
-  -webkit-transition: all 0.3s ease-out 0s;
-  transition: all 0.3s ease-out 0s;
+  height: 100px !important; /* 네비게이션바 높이 고정 */
+  padding: 0;
+  -webkit-transition: all 0.4s ease-out 0s;
+  transition: all 0.4s ease-out 0s;
 }
 
 .navbar-brand {
@@ -1474,7 +1476,8 @@ ol {
 }
 
 .navbar-brand img {
-  width: 190px;
+  width: auto !important; /* Changed from 190px */
+  height: 84px !important; /* Set a fixed height to control overall size */
 }
 
 .mobile-menu-btn {
@@ -6460,3 +6463,49 @@ blockquote .shape {
   background: #32ade6;
   border-color: transparent;
 }
+
+.navbar-brand,
+.navbar-brand img {
+  width: 190px !important; /* Fixed width */
+  height: 84px !important; /* Fixed height */
+  flex: 0 0 190px !important; /* Prevent flexbox shrinking */
+  object-fit: contain; /* Maintain aspect ratio */
+  max-width: none !important; /* Override any max-width constraints */
+  max-height: none !important; /* Override any max-height constraints */
+}
+
+/* Override for main page */
+.home .navbar-brand,
+.home .navbar-brand img {
+  width: auto !important;
+  height: auto !important;
+  flex: none !important;
+}
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+  .navbar-area {
+    height: 100px !important;
+  }
+  .navbar {
+    height: 100px !important;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .navbar-area {
+    height: 100px !important;
+  }
+  .navbar {
+    height: 100px !important;
+  }
+}
+
+/* Remove Community page specific styles */
+.latest-news-area.blog-list {
+  padding-bottom: 60px;
+}
+
+/* Remove the following styles */
+/* .latest-news-area.blog-list .section-title {
+  margin-top: 300px !important;
+} */

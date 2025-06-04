@@ -48,7 +48,7 @@ export function ItemDetails() {
   const [postDTO, setPostDTO] = useState<PostDTO | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [liked, setLiked] = useState(false)
+  const [isFavorited, setIsFavorited] = useState(false)
   const myMemberId = Number(sessionStorage.getItem('mid'))
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [showModal, setShowModal] = useState(false)
@@ -87,12 +87,82 @@ export function ItemDetails() {
             throw new Error('Expected JSON response but received non-JSON.')
           }
         })
-        .then(data => setPostDTO(data))
+        .then(data => {
+          setPostDTO(data)
+        })
         .catch(() => setError('게시글을 불러오는데 실패했습니다.'))
         .finally(() => setLoading(false))
     }
     if (postId && postType) fetchPost()
   }, [postId, postType])
+
+  // 찜 상태 확인을 위한 별도의 useEffect
+  useEffect(() => {
+    if (postId && !loading) {
+      checkIfFavorited()
+    }
+  }, [postId, loading])
+
+  const checkIfFavorited = async () => {
+    const token = sessionStorage.getItem('token')
+    if (!token || !postId) return
+
+    try {
+      const response = await fetch(
+        `/api/posts/${postType?.toLowerCase()}/${postId}/favourite/check`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+      if (response.ok) {
+        const data = await response.json()
+        setIsFavorited(data)
+      }
+    } catch (error) {
+      console.error('찜 여부 확인 실패:', error)
+    }
+  }
+
+  const handleFavorite = async () => {
+    const token = sessionStorage.getItem('token')
+    if (!token || !postId) {
+      alert('로그인이 필요합니다.')
+      return
+    }
+
+    try {
+      const method = isFavorited ? 'DELETE' : 'POST'
+      const response = await fetch(
+        `/api/posts/${postType?.toLowerCase()}/${postId}/favourite`,
+        {
+          method,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      if (response.ok) {
+        setIsFavorited(!isFavorited)
+        // 게시글 정보 업데이트
+        if (postDTO) {
+          setPostDTO({
+            ...postDTO,
+            likes: isFavorited ? postDTO.likes - 1 : postDTO.likes + 1
+          })
+        }
+      } else {
+        throw new Error('찜하기 처리에 실패했습니다.')
+      }
+    } catch (error) {
+      console.error('찜하기 처리 실패:', error)
+      alert('찜하기 처리 중 오류가 발생했습니다.')
+    }
+  }
 
   // 🟡 항상 동일한 레이아웃, 본문만 내용 교체!
   return (
@@ -185,16 +255,26 @@ export function ItemDetails() {
                       <img
                         src={
                           postDTO.images && postDTO.images[0]
-                            ? getImageUrl(postDTO.images[0].path) // ← 반드시 .path를 써야 해요!
+                            ? getImageUrl(postDTO.images[0].path)
                             : '/assets/images/pet/dog-2.jpg'
                         }
                         alt={postDTO.title}
+                        onLoad={e => {
+                          const img = e.target as HTMLImageElement
+                          const aspectRatio = img.naturalWidth / img.naturalHeight
+                          img.style.aspectRatio = aspectRatio > 1 ? 'auto' : '3/4'
+                        }}
                       />
                     </div>
                   </div>
                   <Link
                     to={`/member/profile/simple/${postDTO.member?.mid}`}
-                    style={{display: 'block', textDecoration: 'none', color: 'inherit'}}>
+                    style={{
+                      display: 'block',
+                      textDecoration: 'none',
+                      color: 'inherit',
+                      width: '100%'
+                    }}>
                     <div className="author-info-area">
                       {postDTO.member && (
                         <div className="profile-meta-wrap">
@@ -274,9 +354,12 @@ export function ItemDetails() {
                       style={{backgroundColor: '#6c5ce7'}}>
                       채팅 열기
                     </button>
-                    <button className="likes" onClick={() => setLiked(!liked)}>
+                    <button className="likes" onClick={handleFavorite}>
                       <i
-                        className={`lni ${liked ? 'lni-heart-filled' : 'lni-heart'}`}></i>
+                        className={`lni ${
+                          isFavorited ? 'lni-heart-filled' : 'lni-heart'
+                        }`}
+                        style={{color: isFavorited ? '#e74c3c' : 'inherit'}}></i>
                     </button>
                   </div>
                 </div>
@@ -318,30 +401,22 @@ export function ItemDetails() {
         }}>
         <button
           onClick={() => navigate(-1)}
+          className="reserve-button"
           style={{
             background: '#eee',
-            color: '#333',
-            border: 'none',
-            padding: '8px 18px',
-            borderRadius: '8px',
-            fontWeight: 500,
-            cursor: 'pointer'
+            color: '#333'
           }}>
-          목록으로 돌아가기
+          목록으로
         </button>
         {myMemberId === postDTO?.member?.mid && (
           <button
             onClick={() => navigate(`/posts/${postType}/edit/${postId}`)}
+            className="reserve-button"
             style={{
               background: '#f4c150',
-              color: '#222',
-              border: 'none',
-              padding: '8px 18px',
-              borderRadius: '8px',
-              fontWeight: 500,
-              cursor: 'pointer'
+              color: '#fff'
             }}>
-            ✏️ 수정하기
+            수정하기
           </button>
         )}
       </div>

@@ -32,14 +32,21 @@ const MainHeader = () => {
       <Link
         to="/"
         style={{
-          fontSize: '3rem',
-          fontWeight: 'bold',
-          color: '#f1a852',
+          display: 'flex',
+          alignItems: 'center',
           textDecoration: 'none',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
-          fontFamily: 'HakgyoansimDunggeumso, sans-serif'
+          paddingTop: '60px'
         }}>
-        모르는 개 산책
+        <img
+          src="/assets/images/logo/모개로고.png"
+          alt="모르는 개 산책"
+          style={{
+            height: '120px',
+            width: 'auto',
+            objectFit: 'contain',
+            transform: 'rotate(-12deg)'
+          }}
+        />
       </Link>
 
       {/* 버튼 영역 */}

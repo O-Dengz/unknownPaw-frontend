@@ -304,7 +304,7 @@ export function PetSettings() {
         </div>
       </div>
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="dashbard selection">
+      <div className="dashboard section">
         <div className="container">
           <div className="row">
             <div className="col-lg-3 col-md-4 col-12">
@@ -312,286 +312,309 @@ export function PetSettings() {
             </div>
             <div className="col-lg-9 col-md-8 col-12">
               <div className="profile-settings">
-                <div className="settings-tabs mb-4">
-                  <Link to="/profile-settings" className="link-button">
-                    프로필 설정
-                  </Link>
-                  <NavLink
-                    to="/pet-settings"
-                    className={({isActive}) =>
-                      isActive ? 'link-button active' : 'link-button'
-                    }>
-                    pet 수정
-                  </NavLink>
-                </div>
-                {pets.length > 0 ? (
-                  pets.map(pet => (
-                    <div key={pet.petId} className="pet-info">
-                      <div className="form-group">
-                        <input
-                          id={`petImage-${pet.petId}`}
-                          type="file"
-                          accept="image/*"
-                          style={{display: 'none'}}
-                          onChange={e => handlePetImageChange(pet.petId, e)}
-                        />
-                        <h2>펫 정보</h2>
-                        <div className="image-row">
-                          {!petPreviews[pet.petId] && pet.imagePath && (
-                            <img
-                              src={`/api/pets/image/${pet.petId}/${
-                                pet.thumbnailPath
-                                  ? pet.thumbnailPath.split('/').pop()
-                                  : pet.imagePath.split('/').pop()
-                              }`}
-                              alt={pet.petName}
-                              style={{
-                                width: 120,
-                                height: 120,
-                                objectFit: 'cover',
-                                borderRadius: '50%'
-                              }}
-                            />
-                          )}
-                          <div className="image-actions">
-                            <label
-                              htmlFor={`petImage-${pet.petId}`}
-                              className="file-upload">
-                              <i className="lni lni-cloud-upload" /> 펫 이미지 선택
-                            </label>
-                            {petPreviews[pet.petId] && (
-                              <button
-                                type="button"
-                                onClick={() => handlePetImageUpload(pet.petId)}
-                                disabled={uploadingPetImage[pet.petId]}
-                                className="btn btn-primary">
-                                {uploadingPetImage[pet.petId]
-                                  ? '업로드 중…'
-                                  : '이미지 업로드'}
-                              </button>
+                <div className="profile-settings-block settings-box">
+                  <div className="settings-tabs mb-4">
+                    <Link to="/profile-settings" className="link-button">
+                      프로필 설정
+                    </Link>
+                    <NavLink
+                      to="/pet-settings"
+                      className={({isActive}) =>
+                        isActive ? 'link-button active' : 'link-button'
+                      }>
+                      pet 수정
+                    </NavLink>
+                  </div>
+                  {pets.length > 0 ? (
+                    pets.map(pet => (
+                      <div key={pet.petId} className="pet-info">
+                        <div className="form-group">
+                          <input
+                            id={`petImage-${pet.petId}`}
+                            type="file"
+                            accept="image/*"
+                            style={{display: 'none'}}
+                            onChange={e => handlePetImageChange(pet.petId, e)}
+                          />
+                          <h2>펫 정보</h2>
+                          <div className="image-row">
+                            {!petPreviews[pet.petId] && pet.imagePath && (
+                              <img
+                                src={`/api/pets/image/${pet.petId}/${
+                                  pet.thumbnailPath
+                                    ? pet.thumbnailPath.split('/').pop()
+                                    : pet.imagePath.split('/').pop()
+                                }`}
+                                alt={pet.petName}
+                                style={{
+                                  width: 120,
+                                  height: 120,
+                                  objectFit: 'cover',
+                                  borderRadius: '50%'
+                                }}
+                              />
+                            )}
+                            <div className="image-actions">
+                              <label
+                                htmlFor={`petImage-${pet.petId}`}
+                                className="file-upload">
+                                <i className="lni lni-cloud-upload" /> 펫 이미지 선택
+                              </label>
+                              {petPreviews[pet.petId] && (
+                                <button
+                                  type="button"
+                                  onClick={() => handlePetImageUpload(pet.petId)}
+                                  disabled={uploadingPetImage[pet.petId]}
+                                  className="btn btn-primary">
+                                  {uploadingPetImage[pet.petId]
+                                    ? '업로드 중…'
+                                    : '이미지 업로드'}
+                                </button>
+                              )}
+                            </div>
+                            {petImageErrors[pet.petId] && (
+                              <p style={{color: 'red', fontSize: '0.8em', marginTop: 4}}>
+                                {petImageErrors[pet.petId]}
+                              </p>
                             )}
                           </div>
-                          {petImageErrors[pet.petId] && (
-                            <p style={{color: 'red', fontSize: '0.8em', marginTop: 4}}>
-                              {petImageErrors[pet.petId]}
-                            </p>
-                          )}
                         </div>
+                        <form
+                          className="pet-form profile-form"
+                          onSubmit={e => {
+                            e.preventDefault()
+                            handleUpdatePet(pet.petId)
+                          }}>
+                          <div className="row">
+                            <div className="col-lg-6">
+                              <div className="form-group">
+                                <label htmlFor={`petName-${pet.petId}`}>
+                                  강아지 이름:
+                                </label>
+                                <input
+                                  type="text"
+                                  id={`petName-${pet.petId}`}
+                                  name="petName"
+                                  value={pet.petName}
+                                  onChange={e =>
+                                    handlePetInputChange(
+                                      pet.petId,
+                                      'petName',
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                />
+                                {validationErrors[pet.petId]?.petName && (
+                                  <small className="text-danger">
+                                    {validationErrors[pet.petId].petName}
+                                  </small>
+                                )}
+                              </div>
+                            </div>
+                            <div className="col-lg-6">
+                              <div className="form-group">
+                                <label htmlFor={`breed-${pet.petId}`}>견종:</label>
+                                <input
+                                  type="text"
+                                  id={`breed-${pet.petId}`}
+                                  name="breed"
+                                  value={pet.breed}
+                                  onChange={e =>
+                                    handlePetInputChange(
+                                      pet.petId,
+                                      'breed',
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                />
+                                {validationErrors[pet.petId]?.breed && (
+                                  <small className="text-danger">
+                                    {validationErrors[pet.petId].breed}
+                                  </small>
+                                )}
+                              </div>
+                            </div>
+                            <div className="col-lg-6">
+                              <div className="form-group">
+                                <label htmlFor={`petBirth-${pet.petId}`}>
+                                  태어난 연도:
+                                </label>
+                                <input
+                                  type="number"
+                                  id={`petBirth-${pet.petId}`}
+                                  name="petBirth"
+                                  value={pet.petBirth}
+                                  onChange={e =>
+                                    handlePetInputChange(
+                                      pet.petId,
+                                      'petBirth',
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                />
+                                {validationErrors[pet.petId]?.petBirth && (
+                                  <small className="text-danger">
+                                    {validationErrors[pet.petId].petBirth}
+                                  </small>
+                                )}
+                              </div>
+                            </div>
+                            <div className="col-lg-6">
+                              <div className="form-group">
+                                <label htmlFor={`weight-${pet.petId}`}>무게 (kg):</label>
+                                <input
+                                  type="number"
+                                  step="0.1"
+                                  id={`weight-${pet.petId}`}
+                                  name="weight"
+                                  value={pet.weight}
+                                  onChange={e =>
+                                    handlePetInputChange(
+                                      pet.petId,
+                                      'weight',
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                />
+                                {validationErrors[pet.petId]?.weight && (
+                                  <small className="text-danger">
+                                    {validationErrors[pet.petId].weight}
+                                  </small>
+                                )}
+                              </div>
+                            </div>
+                            <div className="col-lg-6">
+                              <div className="form-group">
+                                <label htmlFor={`petGender-${pet.petId}`}>성별:</label>
+                                <div className="toggle-buttons">
+                                  <button
+                                    type="button"
+                                    className={`toggle-button ${
+                                      pet.petGender === true ? 'active' : ''
+                                    }`}
+                                    onClick={() =>
+                                      handlePetInputChange(pet.petId, 'petGender', true)
+                                    }>
+                                    수컷
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={`toggle-button ${
+                                      pet.petGender === false ? 'active' : ''
+                                    }`}
+                                    onClick={() =>
+                                      handlePetInputChange(pet.petId, 'petGender', false)
+                                    }>
+                                    암컷
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-6">
+                              <div className="form-group">
+                                <label htmlFor={`neutering-${pet.petId}`}>
+                                  중성화 여부:
+                                </label>
+                                <div className="toggle-buttons">
+                                  <button
+                                    type="button"
+                                    className={`toggle-button ${
+                                      pet.neutering === true ? 'active' : ''
+                                    }`}
+                                    onClick={() =>
+                                      handlePetInputChange(pet.petId, 'neutering', true)
+                                    }>
+                                    했음
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={`toggle-button ${
+                                      pet.neutering === false ? 'active' : ''
+                                    }`}
+                                    onClick={() =>
+                                      handlePetInputChange(pet.petId, 'neutering', false)
+                                    }>
+                                    안 했음
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-lg-6">
+                            <div className="form-group">
+                              <label htmlFor={`petMbti-${pet.petId}`}>
+                                펫 성격 (MBTI):
+                              </label>
+                              <input
+                                type="text"
+                                id={`petMbti-${pet.petId}`}
+                                name="petMbti"
+                                value={pet.petMbti}
+                                onChange={e =>
+                                  handlePetInputChange(
+                                    pet.petId,
+                                    'petMbti',
+                                    e.target.value
+                                  )
+                                }
+                                className="form-control"
+                              />
+                            </div>
+                            <div className="form-group">
+                              <label htmlFor={`petIntroduce-${pet.petId}`}>
+                                펫 소개:
+                              </label>
+                              <textarea
+                                id={`petIntroduce-${pet.petId}`}
+                                name="petIntroduce"
+                                value={pet.petIntroduce}
+                                onChange={e =>
+                                  handlePetInputChange(
+                                    pet.petId,
+                                    'petIntroduce',
+                                    e.target.value
+                                  )
+                                }
+                                className="form-control"
+                                rows={4}
+                              />
+                            </div>
+                          </div>
+                          <div
+                            style={{display: 'flex', gap: '10px', marginBottom: '20px'}}>
+                            <button type="submit" className="update-profile-btn">
+                              펫 정보 업데이트
+                            </button>
+                            <button
+                              type="button"
+                              className="delete-button btn-danger"
+                              onClick={() => handleDeletePet(pet.petId, pet.petName)}>
+                              삭제
+                            </button>
+                          </div>
+                        </form>
                       </div>
-                      <form
-                        className="pet-form profile-form"
-                        onSubmit={e => {
-                          e.preventDefault()
-                          handleUpdatePet(pet.petId)
-                        }}>
-                        <div className="row">
-                          <div className="col-lg-6">
-                            <div className="form-group">
-                              <label htmlFor={`petName-${pet.petId}`}>강아지 이름:</label>
-                              <input
-                                type="text"
-                                id={`petName-${pet.petId}`}
-                                name="petName"
-                                value={pet.petName}
-                                onChange={e =>
-                                  handlePetInputChange(
-                                    pet.petId,
-                                    'petName',
-                                    e.target.value
-                                  )
-                                }
-                                className="form-control"
-                              />
-                              {validationErrors[pet.petId]?.petName && (
-                                <small className="text-danger">
-                                  {validationErrors[pet.petId].petName}
-                                </small>
-                              )}
-                            </div>
-                          </div>
-                          <div className="col-lg-6">
-                            <div className="form-group">
-                              <label htmlFor={`breed-${pet.petId}`}>견종:</label>
-                              <input
-                                type="text"
-                                id={`breed-${pet.petId}`}
-                                name="breed"
-                                value={pet.breed}
-                                onChange={e =>
-                                  handlePetInputChange(pet.petId, 'breed', e.target.value)
-                                }
-                                className="form-control"
-                              />
-                              {validationErrors[pet.petId]?.breed && (
-                                <small className="text-danger">
-                                  {validationErrors[pet.petId].breed}
-                                </small>
-                              )}
-                            </div>
-                          </div>
-                          <div className="col-lg-6">
-                            <div className="form-group">
-                              <label htmlFor={`petBirth-${pet.petId}`}>
-                                태어난 연도:
-                              </label>
-                              <input
-                                type="number"
-                                id={`petBirth-${pet.petId}`}
-                                name="petBirth"
-                                value={pet.petBirth}
-                                onChange={e =>
-                                  handlePetInputChange(
-                                    pet.petId,
-                                    'petBirth',
-                                    e.target.value
-                                  )
-                                }
-                                className="form-control"
-                              />
-                              {validationErrors[pet.petId]?.petBirth && (
-                                <small className="text-danger">
-                                  {validationErrors[pet.petId].petBirth}
-                                </small>
-                              )}
-                            </div>
-                          </div>
-                          <div className="col-lg-6">
-                            <div className="form-group">
-                              <label htmlFor={`weight-${pet.petId}`}>무게 (kg):</label>
-                              <input
-                                type="number"
-                                step="0.1"
-                                id={`weight-${pet.petId}`}
-                                name="weight"
-                                value={pet.weight}
-                                onChange={e =>
-                                  handlePetInputChange(
-                                    pet.petId,
-                                    'weight',
-                                    e.target.value
-                                  )
-                                }
-                                className="form-control"
-                              />
-                              {validationErrors[pet.petId]?.weight && (
-                                <small className="text-danger">
-                                  {validationErrors[pet.petId].weight}
-                                </small>
-                              )}
-                            </div>
-                          </div>
-                          <div className="col-lg-6">
-                            <div className="form-group">
-                              <label htmlFor={`petGender-${pet.petId}`}>성별:</label>
-                              <div className="toggle-buttons">
-                                <button
-                                  type="button"
-                                  className={`toggle-button ${
-                                    pet.petGender === true ? 'active' : ''
-                                  }`}
-                                  onClick={() =>
-                                    handlePetInputChange(pet.petId, 'petGender', true)
-                                  }>
-                                  수컷
-                                </button>
-                                <button
-                                  type="button"
-                                  className={`toggle-button ${
-                                    pet.petGender === false ? 'active' : ''
-                                  }`}
-                                  onClick={() =>
-                                    handlePetInputChange(pet.petId, 'petGender', false)
-                                  }>
-                                  암컷
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="col-lg-6">
-                            <div className="form-group">
-                              <label htmlFor={`neutering-${pet.petId}`}>
-                                중성화 여부:
-                              </label>
-                              <div className="toggle-buttons">
-                                <button
-                                  type="button"
-                                  className={`toggle-button ${
-                                    pet.neutering === true ? 'active' : ''
-                                  }`}
-                                  onClick={() =>
-                                    handlePetInputChange(pet.petId, 'neutering', true)
-                                  }>
-                                  했음
-                                </button>
-                                <button
-                                  type="button"
-                                  className={`toggle-button ${
-                                    pet.neutering === false ? 'active' : ''
-                                  }`}
-                                  onClick={() =>
-                                    handlePetInputChange(pet.petId, 'neutering', false)
-                                  }>
-                                  안 했음
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-lg-6">
-                          <div className="form-group">
-                            <label htmlFor={`petMbti-${pet.petId}`}>
-                              펫 성격 (MBTI):
-                            </label>
-                            <input
-                              type="text"
-                              id={`petMbti-${pet.petId}`}
-                              name="petMbti"
-                              value={pet.petMbti}
-                              onChange={e =>
-                                handlePetInputChange(pet.petId, 'petMbti', e.target.value)
-                              }
-                              className="form-control"
-                            />
-                          </div>
-                          <div className="form-group">
-                            <label htmlFor={`petIntroduce-${pet.petId}`}>펫 소개:</label>
-                            <textarea
-                              id={`petIntroduce-${pet.petId}`}
-                              name="petIntroduce"
-                              value={pet.petIntroduce}
-                              onChange={e =>
-                                handlePetInputChange(
-                                  pet.petId,
-                                  'petIntroduce',
-                                  e.target.value
-                                )
-                              }
-                              className="form-control"
-                              rows={4}
-                            />
-                          </div>
-                        </div>
-                        <button type="submit" className="update-profile-btn">
-                          펫 정보 업데이트
-                        </button>
-                        <button
-                          type="button"
-                          className="delete-button btn-danger"
-                          onClick={() => handleDeletePet(pet.petId, pet.petName)}>
-                          삭제
-                        </button>
-                      </form>
+                    ))
+                  ) : (
+                    <div
+                      className="container"
+                      style={{textAlign: 'center', padding: '20px'}}>
+                      <p>등록된 펫 정보가 없습니다.</p>
                     </div>
-                  ))
-                ) : (
-                  <div
-                    className="container"
-                    style={{textAlign: 'center', padding: '20px'}}>
-                    <p>등록된 펫 정보가 없습니다.</p>
+                  )}
+                  <div style={{display: 'flex', gap: '10px', marginTop: '20px'}}>
+                    <button className="update-profile-btn">
+                      <Link
+                        to="/register-pet"
+                        style={{color: 'white', textDecoration: 'none'}}>
+                        새로운 반려동물 등록하기
+                      </Link>
+                    </button>
                   </div>
-                )}
-                <div className="link-button">
-                  <Link to="/register-pet"> 새로운 반려동물 등록하기</Link>
                 </div>
               </div>
             </div>

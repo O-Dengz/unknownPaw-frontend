@@ -16,140 +16,22 @@
 }
 
 /* ======================================================
-   DASHBOARD SIDEBAR
+   DASHBOARD LAYOUT
 ====================================================== */
-.dashboard-sidebar {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  border: 1px solid #eee;
-}
-
-.dashboard-sidebar .user-image {
-  display: flex;
-  align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid #eee;
-}
-.dashboard.section {
-  margin-top: 64px; /* 헤더 높이 맞게 조절 */
-}
-
-.dashboard-sidebar .user-image img {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  margin-right: 15px;
-}
-
-.dashboard-sidebar .user-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.dashboard-sidebar .user-info h3 {
-  font-size: 16px;
-  margin: 0;
-  color: #333;
-  font-weight: 500;
-}
-
-.dashboard-sidebar .user-info .username {
-  font-size: 14px;
-  color: #666;
-  text-decoration: none;
-  margin-top: 2px;
-}
-
-.dashboard-sidebar .user-info .username:hover {
-  color: #007bff;
-}
-
-.dashboard-sidebar .user-image .username a,
-.dashboard-sidebar .user-image span a {
-  color: #666;
-  font-size: 14px;
-  text-decoration: none;
-}
-
-.dashboard-sidebar .user-image span a:hover,
-.dashboard-sidebar .user-image .username a:hover {
-  color: #007bff;
-}
+/* 페이지 래퍼와 대시보드 섹션 스타일은 myPage.css로 이동 */
 
 /* ======================================================
-   DASHBOARD MENU
+   DASHBOARD SIDEBAR
 ====================================================== */
-.dashboard-menu ul {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.dashboard-menu ul li {
-  margin-bottom: 5px;
-}
-
-.dashboard-menu ul li a {
-  font-size: 14px;
-  color: #666;
-  display: flex;
-  align-items: center;
-  padding: 12px 15px;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.dashboard-menu ul li a i {
-  margin-right: 10px;
-  font-size: 18px;
-  width: 20px;
-  color: #666;
-}
-
-.dashboard-menu ul li a:hover {
-  background: #f8f9fa;
-  color: var(--primary);
-}
-
-.dashboard-menu ul li a:hover i {
-  color: var(--primary);
-}
-
-.dashboard-menu ul li a.active {
-  background: var(--primary);
-  color: #fff;
-}
-
-.dashboard-menu ul li a.active i {
-  color: #fff;
-}
-
-.dashboard-menu .button {
-  margin-top: 20px;
-  padding: 0 15px;
-}
-
-.dashboard-menu .button .btn {
-  width: 100%;
-  padding: 12px;
-  background: #fff0f0;
-  color: #ff0000;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.dashboard-menu .button .btn:hover {
-  background: #ffe0e0;
-}
+/* 대시보드 사이드바 스타일은 myPage.css로 이동 */
 
 /* ======================================================
-   PROFILE SETTINGS FORM
+   DASHBOARD MENU
+====================================================== */
+/* 대시보드 메뉴 스타일은 myPage.css로 이동 */
+
+/* ======================================================
+   PROFILE SETTINGS FORM
 ====================================================== */
 .profile-settings,
 .pet-profile-settings,
@@ -248,7 +130,7 @@
 }
 
 /* ======================================================
-   MAIN CONTENT (공통 카드·리스트 등)
+   MAIN CONTENT (공통 카드·리스트 등)
 ====================================================== */
 .main-content {
   background: #fff;
@@ -294,7 +176,7 @@
 }
 
 /* ======================================================
-   CHAT / MESSAGES
+   CHAT / MESSAGES
 ====================================================== */
 .messages-container {
   background: #fff;
@@ -346,7 +228,7 @@
   color: #fff;
 }
 
-/* Chat Message Balloons */
+/* Chat Message Balloons */
 .message.sent .message-content {
   background: var(--primary);
 }
@@ -365,7 +247,7 @@
 }
 
 /* ======================================================
-   DASHBOARD STAT CARD
+   DASHBOARD STAT CARD
 ====================================================== */
 .stat-card {
   background: #fff;
@@ -396,7 +278,7 @@
 }
 
 /* ======================================================
-   MY ITEMS  (팀원 전용 섹션)
+   MY ITEMS (팀원 전용 섹션)
 ====================================================== */
 .service-list {
   background: #fff;
@@ -544,6 +426,13 @@
   }
   .service-item .row > [class*='col-'] {
     margin-bottom: 8px;
+  }
+  .page-wrapper {
+    padding-top: 150px !important;
+  }
+
+  .dashboard.section {
+    padding-top: 0 !important;
   }
 }
 

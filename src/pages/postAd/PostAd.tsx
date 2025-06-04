@@ -240,7 +240,9 @@ export default function PostAd() {
                           </button>
                         </div>
 
-                        <h2 className="text-2xl font-bold mb-8">게시글 작성</h2>
+                        {step === 1 && (
+                          <h2 className="text-2xl font-bold mb-8">게시글 작성</h2>
+                        )}
 
                         {step === 1 && (
                           <div className="form-group">

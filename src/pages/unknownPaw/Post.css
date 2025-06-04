@@ -2,7 +2,7 @@
   margin-top: 0;
   margin-bottom: 40px;
   background: #f3f3f3;
-  padding-top: 100px; /* 네비게이션바 높이에 맞게 통일 */
+  padding-top: 200px; /* 네비게이션바 높이에 맞게 통일 */
 }
 
 .main-image-section {
@@ -13,7 +13,7 @@
 }
 body,
 html {
-  background: ##f3f3f3 !important;
+  background: #f3f3f3 !important;
 }
 
 .image-container {
@@ -160,6 +160,7 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 600px; /* Add max-width to match image width */
 }
 .item-right-area {
   flex: 1;
@@ -198,17 +199,13 @@ html {
 
 .author-info-area {
   width: 100%;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
+  margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: #fff;
   border-radius: 8px;
   padding: 10px 16px;
-  margin-bottom: 0px;
-  margin-top: 0;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
   gap: 5px;
 }
@@ -224,15 +221,21 @@ html {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-width: 0;
 }
 .author-name {
-  font-weight: bold;
-  font-size: 1.2rem;
-  margin-bottom: 1px;
+  font-weight: 600;
+  font-size: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .author-location {
   color: #888;
-  font-size: 0.93rem;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .author-temp-box {
   display: flex;
@@ -354,10 +357,13 @@ html {
     flex-direction: column;
     gap: 40px;
   }
-  .item-image-area,
-  .item-info-area {
+  .item-left-area {
     width: 100%;
-    flex: unset;
+    max-width: 100%;
+  }
+  .item-right-area {
+    width: 100%;
+    margin-left: 0;
   }
   .main-image {
     max-width: 100%;
@@ -414,21 +420,21 @@ html {
 .profile-meta-wrap {
   display: flex;
   align-items: center;
-  /* max-width: 900px;
   width: 100%;
-  height: auto; */
 }
 
 .profile-meta-wrap > *:nth-child(1) {
-  margin-right: 30px;
+  margin-right: 16px;
 }
 
 .profile-meta-wrap > *:nth-child(2) {
-  margin-right: 100px;
+  margin-right: 16px;
+  flex: 1;
 }
 
 .profile-meta-wrap > *:nth-child(3) {
-  margin-right: 0; /* 마지막 요소는 간격 없음 */
+  margin-right: 0;
+  white-space: nowrap;
 }
 
 .likes {
@@ -912,4 +918,25 @@ html {
 
 .dashboard.section {
   padding-bottom: 100px; /* Add space for floating button and footer */
+}
+
+/* Common padding for all pages */
+.section {
+  padding-top: 160px !important;
+  padding-bottom: 60px !important;
+}
+
+/* Override breadcrumbs padding */
+.breadcrumbs {
+  padding: 20px 0 !important;
+  margin-bottom: 30px !important;
+}
+
+/* Remove any existing padding styles */
+.page-content {
+  /* padding-top: 0 !important; */ /* 이 규칙을 제거합니다. */
+}
+
+.custom-padding {
+  padding: 0 !important;
 }

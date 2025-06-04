@@ -6,6 +6,7 @@ import '../../../public/assets/css/glightbox.min.css'
 import '../../../public/assets/css/main.css'
 import '../../../public/assets/css/tiny-slider.css'
 import {UniversalSkeleton} from '@/components/\bSkeletons/UniversalSkeleton'
+import {getImageUrl} from '@/utils/getImageUrl'
 
 // 기본 이미지 배열
 const defaultImages = [
@@ -18,6 +19,15 @@ const defaultImages = [
 const getRandomDefaultImage = () => {
   const randomIndex = Math.floor(Math.random() * defaultImages.length)
   return defaultImages[randomIndex]
+}
+
+// 이미지 URL 생성 함수 추가
+const getCommunityImageUrl = (imageName: string) => {
+  if (!imageName) return getRandomDefaultImage()
+  // CommunityPost.tsx와 동일한 이미지 URL 형식 사용
+  return `http://localhost:8080/unknownPaw/api/community/images/${encodeURIComponent(
+    imageName
+  )}`
 }
 
 // 커스텀 스타일 추가
@@ -105,10 +115,13 @@ export function Community() {
     try {
       const response = await fetch('http://localhost:8080/unknownPaw/api/community')
       const data = await response.json()
+      console.log('커뮤니티 게시글 데이터:', data)
+      console.log('첫 번째 게시글의 이미지:', data[0]?.communityImages)
       setPosts(data)
       setFilteredPosts(data)
       setLoading(false)
     } catch (error) {
+      console.error('게시물을 불러오는 데 실패했습니다:', error)
       setError('게시물을 불러오는 데 실패했습니다.')
       setLoading(false)
     }
@@ -225,8 +238,13 @@ export function Community() {
                         <img
                           className="thumb"
                           style={styles.thumbnailImage}
-                          src={post.communityImages[0] || getRandomDefaultImage()}
+                          src={getCommunityImageUrl(post.communityImages[0])}
                           alt={post.title}
+                          onError={e => {
+                            const target = e.target as HTMLImageElement
+                            console.error('이미지 로드 실패:', target.src)
+                            target.src = getRandomDefaultImage()
+                          }}
                         />
                       </a>
                     </div>

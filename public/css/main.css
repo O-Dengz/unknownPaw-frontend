@@ -888,8 +888,8 @@ ol {
 
 /* Common page padding */
 .page-content {
-  padding-top: 100px; /* Increased padding after navigation */
-  min-height: calc(100vh - 100px); /* Adjust min-height accordingly */
+  padding-top: 100px;
+  min-height: calc(100vh - 100px);
 }
 
 /* Breadcrumbs */
@@ -6467,5 +6467,37 @@ blockquote .shape {
 
 /* Ensure Community page title is pushed down */
 .latest-news-area.blog-list .section-title {
-  margin-top: 200px !important; /* Increase top margin significantly */
+  margin-top: 300px !important; /* Increase top margin significantly */
+}
+
+/* MyPage 버튼 스타일 */
+.navbar-nav .nav-item a.mypage-link {
+  color: #081828;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 38px 0;
+  position: relative;
+  transition: all 0.3s ease-out 0s;
+}
+
+.navbar-nav .nav-item a.mypage-link:hover,
+.navbar-nav .nav-item a.mypage-link.active {
+  color: #5830e0;
+}
+
+.navbar-nav .nav-item a.mypage-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 0%;
+  background: #5830e0;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+
+.navbar-nav .nav-item a.mypage-link:hover::before,
+.navbar-nav .nav-item a.mypage-link.active::before {
+  width: 100%;
 }

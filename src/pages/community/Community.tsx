@@ -45,6 +45,9 @@ export function Community() {
   const [currentPage, setCurrentPage] = useState(1)
   const [memberId, setMemberId] = useState<number | null>(null)
   const totalPages = 20
+  const [viewMode, setViewMode] = useState<'card' | 'list'>('card')
+  const [sortBy, setSortBy] = useState<'regDate' | 'likes'>('regDate')
+  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC')
 
   useEffect(() => {
     const memberData = sessionStorage.getItem('member')
@@ -210,11 +213,29 @@ export function Community() {
     setCurrentPage(currentPage + 10 <= totalPages ? currentPage + 10 : totalPages)
   const handlePrev = () => setCurrentPage(currentPage - 10 >= 1 ? currentPage - 10 : 1)
 
+  const handleSortChange = (
+    newSortBy: 'regDate' | 'likes',
+    newSortOrder: 'ASC' | 'DESC'
+  ) => {
+    setSortBy(newSortBy)
+    setSortOrder(newSortOrder)
+  }
+
+  const sortedPosts = [...filteredPosts].sort((a, b) => {
+    if (sortBy === 'regDate') {
+      return sortOrder === 'DESC'
+        ? new Date(b.regDate).getTime() - new Date(a.regDate).getTime()
+        : new Date(a.regDate).getTime() - new Date(b.regDate).getTime()
+    } else {
+      return sortOrder === 'DESC' ? b.likes - a.likes : a.likes - b.likes
+    }
+  })
+
   if (loading) return <div>로딩중...</div>
   if (error) return <div>{error}</div>
 
   return (
-    <section className="section latest-news-area blog-list" style={{paddingTop: '48px'}}>
+    <section className="section latest-news-area blog-list" style={{paddingTop: 100}}>
       <div className="container">
         <div className="row">
           <div className="col-12">
@@ -229,65 +250,234 @@ export function Community() {
           </div>
         </div>
 
+        <div className="row mb-3 align-items-center">
+          <div className="col-md-6 col-12">
+            <div className="view-options">
+              <button
+                className={`view-button ${viewMode === 'card' ? 'active' : ''}`}
+                onClick={() => setViewMode('card')}
+                style={{
+                  padding: '8px 16px',
+                  marginRight: '10px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  background: viewMode === 'card' ? '#32ade6' : 'white',
+                  color: viewMode === 'card' ? 'white' : '#333',
+                  cursor: 'pointer'
+                }}>
+                <i className="lni lni-grid-alt"></i> 카드형
+              </button>
+              <button
+                className={`view-button ${viewMode === 'list' ? 'active' : ''}`}
+                onClick={() => setViewMode('list')}
+                style={{
+                  padding: '8px 16px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  background: viewMode === 'list' ? '#32ade6' : 'white',
+                  color: viewMode === 'list' ? 'white' : '#333',
+                  cursor: 'pointer'
+                }}>
+                <i className="lni lni-list"></i> 목록형
+              </button>
+            </div>
+          </div>
+          <div className="col-md-6 col-12 text-md-end text-start">
+            <div className="sort-options">
+              <button
+                className={`sort-button ${
+                  sortBy === 'regDate' && sortOrder === 'DESC' ? 'active' : ''
+                }`}
+                onClick={() => handleSortChange('regDate', 'DESC')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0 5px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  color:
+                    sortBy === 'regDate' && sortOrder === 'DESC' ? '#f1a852' : '#555',
+                  fontWeight:
+                    sortBy === 'regDate' && sortOrder === 'DESC' ? 'bold' : 'normal'
+                }}>
+                최신순
+              </button>
+              <span className="separator" style={{margin: '0 5px', color: '#ccc'}}>
+                |
+              </span>
+              <button
+                className={`sort-button ${
+                  sortBy === 'likes' && sortOrder === 'DESC' ? 'active' : ''
+                }`}
+                onClick={() => handleSortChange('likes', 'DESC')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0 5px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  color: sortBy === 'likes' && sortOrder === 'DESC' ? '#f1a852' : '#555',
+                  fontWeight:
+                    sortBy === 'likes' && sortOrder === 'DESC' ? 'bold' : 'normal'
+                }}>
+                좋아요순
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div className="row">
           <div className="col-lg-8 col-md-7 col-12">
             <div className="row">
-              {filteredPosts.length > 0 ? (
-                filteredPosts.map(post => (
-                  <div key={post.communityId} className="col-lg-4 col-md-6 col-12 mb-4">
-                    <div className="single-news wow fadeInUp" data-wow-delay=".2s">
-                      <div className="image">
-                        <a href={`/communitypost/${post.communityId}`}>
-                          <img
-                            className="thumb object-cover h-40 w-full"
-                            src={post.communityImages[0] || getRandomImage()}
-                            alt={post.title}
-                          />
-                        </a>
-                      </div>
-                      <div className="content-body p-3">
-                        <h4 className="title mb-1 text-base">
-                          <a href={`/communitypost/${post.communityId}`}>{post.title}</a>
-                        </h4>
-                        <p className="text-sm line-clamp-2" style={{marginBottom: '4px'}}>
-                          {post.content}
-                        </p>
-                        <div className="meta-details">
-                          <div
-                            style={{
-                              display: 'flex',
-                              flexWrap: 'wrap',
-                              gap: '8px',
-                              fontSize: '0.8em',
-                              color: '#888',
-                              fontWeight: 400
-                            }}>
-                            <span>
-                              <i className="lni lni-calendar"></i>{' '}
-                              {new Date(post.regDate).getMonth() + 1}월{' '}
-                              {new Date(post.regDate).getDate()}일
-                            </span>
-                            <span>
-                              <i className="lni lni-tag"></i> {post.communityCategory}
-                            </span>
-                            <span
-                              onClick={() => handleLike(post.communityId)}
-                              style={{cursor: 'pointer'}}>
-                              <i
-                                className={`lni lni-heart ${
-                                  post.isLiked ? 'text-red-500' : ''
-                                }`}></i>{' '}
-                              {post.likes}
-                            </span>
-                            <span>
-                              <i className="lni lni-comments"></i> {post.commentCount}
-                            </span>
+              {sortedPosts.length > 0 ? (
+                sortedPosts.map(post =>
+                  viewMode === 'card' ? (
+                    <div key={post.communityId} className="col-lg-4 col-md-6 col-12 mb-4">
+                      <div className="single-news wow fadeInUp" data-wow-delay=".2s">
+                        <div className="image">
+                          <a href={`/communitypost/${post.communityId}`}>
+                            <img
+                              className="thumb object-cover h-40 w-full"
+                              src={post.communityImages[0] || getRandomImage()}
+                              alt={post.title}
+                            />
+                          </a>
+                        </div>
+                        <div className="content-body p-3">
+                          <h4 className="title mb-1 text-base">
+                            <a href={`/communitypost/${post.communityId}`}>
+                              {post.title}
+                            </a>
+                          </h4>
+                          <p
+                            className="text-sm line-clamp-2"
+                            style={{marginBottom: '4px'}}>
+                            {post.content}
+                          </p>
+                          <div className="meta-details">
+                            <div
+                              style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: '8px',
+                                fontSize: '0.8em',
+                                color: '#888',
+                                fontWeight: 400
+                              }}>
+                              <span>
+                                <i className="lni lni-calendar"></i>{' '}
+                                {new Date(post.regDate).getMonth() + 1}월{' '}
+                                {new Date(post.regDate).getDate()}일
+                              </span>
+                              <span>
+                                <i className="lni lni-tag"></i> {post.communityCategory}
+                              </span>
+                              <span
+                                onClick={() => handleLike(post.communityId)}
+                                style={{cursor: 'pointer'}}>
+                                <i
+                                  className={`lni lni-heart ${
+                                    post.isLiked ? 'text-red-500' : ''
+                                  }`}></i>{' '}
+                                {post.likes}
+                              </span>
+                              <span>
+                                <i className="lni lni-comments"></i> {post.commentCount}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  ) : (
+                    <div key={post.communityId} className="col-12 mb-2">
+                      <div
+                        className="single-news wow fadeInUp"
+                        data-wow-delay=".2s"
+                        style={{
+                          padding: '12px 15px',
+                          border: '1px solid #eee',
+                          borderRadius: '6px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '15px',
+                          transition: 'all 0.2s ease',
+                          height: '100%',
+                          minHeight: '60px'
+                        }}>
+                        <div
+                          style={{
+                            flex: '1',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: '10px'
+                          }}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '20px',
+                              flex: '1'
+                            }}>
+                            <h4
+                              className="title mb-0"
+                              style={{
+                                fontSize: '1rem',
+                                fontWeight: '500',
+                                margin: 0,
+                                flex: '1',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                              }}>
+                              <a
+                                href={`/communitypost/${post.communityId}`}
+                                style={{
+                                  color: '#333',
+                                  textDecoration: 'none'
+                                }}>
+                                {post.title}
+                              </a>
+                            </h4>
+                            <div
+                              style={{
+                                display: 'flex',
+                                gap: '12px',
+                                fontSize: '0.85em',
+                                color: '#666',
+                                alignItems: 'center',
+                                whiteSpace: 'nowrap'
+                              }}>
+                              <span>
+                                <i className="lni lni-user"></i> {post.authorNickname}
+                              </span>
+                              <span>
+                                <i className="lni lni-calendar"></i>{' '}
+                                {new Date(post.regDate).toLocaleDateString()}
+                              </span>
+                              <span>
+                                <i className="lni lni-tag"></i> {post.communityCategory}
+                              </span>
+                              <span
+                                onClick={() => handleLike(post.communityId)}
+                                style={{cursor: 'pointer'}}>
+                                <i
+                                  className={`lni lni-heart ${
+                                    post.isLiked ? 'text-red-500' : ''
+                                  }`}></i>{' '}
+                                {post.likes}
+                              </span>
+                              <span>
+                                <i className="lni lni-comments"></i> {post.commentCount}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                )
               ) : (
                 <div className="col-12">
                   <p>게시글이 없습니다.</p>
@@ -336,56 +526,7 @@ export function Community() {
             <div
               className="sidebar blog-grid-page"
               style={{position: 'sticky', top: '20px'}}>
-              <div
-                className="widget search-widget"
-                style={{
-                  padding: '12px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '6px'
-                }}>
-                <h5
-                  className="widget-title"
-                  style={{fontSize: '1em', marginBottom: '8px'}}>
-                  <span>게시글 검색</span>
-                </h5>
-                <div className="search-form">
-                  <select
-                    value={searchType}
-                    onChange={e =>
-                      setSearchType(e.target.value as 'title' | 'author' | 'content')
-                    }
-                    style={{
-                      width: '100%',
-                      padding: '4px',
-                      borderRadius: '4px',
-                      border: '1px solid #ddd',
-                      marginBottom: '6px',
-                      fontSize: '0.85em'
-                    }}>
-                    <option value="title">제목</option>
-                    <option value="author">작성자</option>
-                    <option value="content">내용</option>
-                  </select>
-                  <form
-                    onSubmit={e => {
-                      e.preventDefault()
-                      handleSearch()
-                    }}>
-                    <input
-                      type="text"
-                      placeholder="검색어를 입력하세요."
-                      value={searchTerm}
-                      onChange={e => setSearchTerm(e.target.value)}
-                      style={{fontSize: '0.85em', padding: '4px'}}
-                    />
-                    <button type="submit" style={{padding: '4px 8px'}}>
-                      <i className="lni lni-search-alt"></i>
-                    </button>
-                  </form>
-                </div>
-              </div>
-
-              <div className="widget popular-feeds mt-3">
+              <div className="widget popular-feeds">
                 <h5
                   className="widget-title"
                   style={{fontSize: '1em', marginBottom: '8px'}}>
@@ -425,6 +566,81 @@ export function Community() {
                         </div>
                       </div>
                     ))}
+                </div>
+              </div>
+
+              <div
+                className="widget search-widget mt-3"
+                style={{
+                  padding: '12px',
+                  backgroundColor: '#f8f9fa',
+                  borderRadius: '6px'
+                }}>
+                <h5
+                  className="widget-title"
+                  style={{fontSize: '1em', marginBottom: '8px'}}>
+                  <span>게시글 검색</span>
+                </h5>
+                <div className="search-form">
+                  <select
+                    value={searchType}
+                    onChange={e =>
+                      setSearchType(e.target.value as 'title' | 'author' | 'content')
+                    }
+                    style={{
+                      width: '100%',
+                      padding: '4px',
+                      borderRadius: '4px',
+                      border: '1px solid #ddd',
+                      marginBottom: '6px',
+                      fontSize: '0.85em'
+                    }}>
+                    <option value="title">제목</option>
+                    <option value="author">작성자</option>
+                    <option value="content">내용</option>
+                  </select>
+                  <form
+                    onSubmit={e => {
+                      e.preventDefault()
+                      handleSearch()
+                    }}
+                    style={{
+                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px'
+                    }}>
+                    <input
+                      type="text"
+                      placeholder="검색어를 입력하세요."
+                      value={searchTerm}
+                      onChange={e => setSearchTerm(e.target.value)}
+                      style={{
+                        flex: 1,
+                        fontSize: '0.85em',
+                        padding: '8px 12px',
+                        borderRadius: '4px',
+                        border: '1px solid #ddd'
+                      }}
+                    />
+                    <button
+                      type="submit"
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: '#32ade6',
+                        border: 'none',
+                        borderRadius: '4px',
+                        color: 'white',
+                        cursor: 'pointer',
+                        transition: 'background 0.2s'
+                      }}>
+                      <i className="lni lni-search-alt"></i>
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>

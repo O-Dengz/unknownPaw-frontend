@@ -140,94 +140,98 @@ export default function MyPosts() {
             </div>
 
             <div className="col-lg-9">
-              <div className="main-content">
-                <h2 className="mb-4">내가 쓴 글</h2>
+              <div className="profile-settings">
+                <div className="profile-settings-block settings-box">
+                  {/* 탭 버튼 */}
+                  <div className="settings-tabs mb-4">
+                    {(['PET_OWNER', 'PET_SITTER', 'COMMUNITY'] as TabType[]).map(tab => (
+                      <button
+                        key={tab}
+                        className={`link-button ${activeTab === tab ? 'active' : ''}`}
+                        onClick={() => setActiveTab(tab)}>
+                        {tab === 'PET_OWNER'
+                          ? '펫오너'
+                          : tab === 'PET_SITTER'
+                          ? '펫시터'
+                          : '커뮤니티'}
+                      </button>
+                    ))}
+                  </div>
 
-                {/* 탭 버튼 */}
-                <div className="tab-buttons mb-3 d-flex gap-2">
-                  {(['PET_OWNER', 'PET_SITTER', 'COMMUNITY'] as TabType[]).map(tab => (
-                    <button
-                      key={tab}
-                      className={`btn ${
-                        activeTab === tab ? 'btn-primary' : 'btn-outline-primary'
-                      }`}
-                      onClick={() => setActiveTab(tab)}>
-                      {tab === 'PET_OWNER'
-                        ? '펫오너'
-                        : tab === 'PET_SITTER'
-                        ? '펫시터'
-                        : '커뮤니티'}
-                    </button>
-                  ))}
-                </div>
-
-                {/* 목록 */}
-                {loading ? (
-                  <p>불러오는 중...</p>
-                ) : error ? (
-                  <p className="text-danger">{error}</p>
-                ) : posts.length === 0 ? (
-                  <p>작성한 글이 없습니다.</p>
-                ) : (
-                  posts.map(post => {
-                    const thumb = getThumbnail(post)
-                    return (
-                      <div
-                        key={post.id}
-                        className="post-card p-3 border rounded mb-3 shadow-sm d-flex gap-3 align-items-center"
-                        style={{cursor: 'pointer', transition: 'background 0.2s'}}
-                        onClick={() =>
-                          navigate(`/posts/${getPostType(post)}/read/${post.id}`)
-                        }
-                        tabIndex={0}
-                        onKeyPress={e => {
-                          if (e.key === 'Enter') {
+                  {/* 목록 */}
+                  {loading ? (
+                    <p>불러오는 중...</p>
+                  ) : error ? (
+                    <p className="text-danger">{error}</p>
+                  ) : posts.length === 0 ? (
+                    <p>작성한 글이 없습니다.</p>
+                  ) : (
+                    posts.map(post => {
+                      const thumb = getThumbnail(post)
+                      return (
+                        <div
+                          key={post.id}
+                          className="post-card p-3 border rounded mb-3 shadow-sm d-flex gap-3 align-items-center"
+                          style={{cursor: 'pointer', transition: 'background 0.2s'}}
+                          onClick={() =>
                             navigate(`/posts/${getPostType(post)}/read/${post.id}`)
                           }
-                        }}>
-                        <img
-                          src={thumb}
-                          alt={post.title}
-                          style={{
-                            width: 120,
-                            height: 80,
-                            objectFit: 'cover',
-                            flexShrink: 0
-                          }}
-                        />
-
-                        <div style={{flex: 1, minWidth: 0}}>
-                          <h5 className="mb-1" style={{fontWeight: 600}}>
-                            {post.title}
-                          </h5>
-                          {/* 글 내용 한 줄 요약, ...처리 */}
-                          <div
-                            className="text-muted"
+                          tabIndex={0}
+                          onKeyPress={e => {
+                            if (e.key === 'Enter') {
+                              navigate(`/posts/${getPostType(post)}/read/${post.id}`)
+                            }
+                          }}>
+                          <img
+                            src={thumb}
+                            alt={post.title}
                             style={{
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              fontSize: '0.98rem',
-                              marginBottom: '5px',
-                              maxWidth: '100%'
-                            }}>
-                            {post.content}
-                          </div>
-                          <div
-                            style={{fontSize: '0.92rem', color: '#888', marginBottom: 2}}>
-                            {formatDate(post.regDate)}
-                            <span style={{marginLeft: 16}}>좋아요 ❤️: {post.likes}</span>
-                            {post.category && (
+                              width: 120,
+                              height: 80,
+                              objectFit: 'cover',
+                              flexShrink: 0
+                            }}
+                          />
+
+                          <div style={{flex: 1, minWidth: 0}}>
+                            <h5 className="mb-1" style={{fontWeight: 600}}>
+                              {post.title}
+                            </h5>
+                            {/* 글 내용 한 줄 요약, ...처리 */}
+                            <div
+                              className="text-muted"
+                              style={{
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                fontSize: '0.98rem',
+                                marginBottom: '5px',
+                                maxWidth: '100%'
+                              }}>
+                              {post.content}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: '0.92rem',
+                                color: '#888',
+                                marginBottom: 2
+                              }}>
+                              {formatDate(post.regDate)}
                               <span style={{marginLeft: 16}}>
-                                카테고리: {post.category}
+                                좋아요 ❤️: {post.likes}
                               </span>
-                            )}
+                              {post.category && (
+                                <span style={{marginLeft: 16}}>
+                                  카테고리: {post.category}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )
-                  })
-                )}
+                      )
+                    })
+                  )}
+                </div>
               </div>
             </div>
           </div>
