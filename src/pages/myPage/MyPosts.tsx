@@ -52,7 +52,15 @@ export default function MyPosts() {
     if ((post as any).postType) return (post as any).postType
     if (activeTab === 'PET_OWNER') return 'petowner'
     if (activeTab === 'PET_SITTER') return 'petsitter'
-    return 'community'
+    return 'communitypost'
+  }
+
+  // 게시글 상세 페이지 URL 생성
+  const getPostUrl = (post: PostItem) => {
+    if (activeTab === 'COMMUNITY') {
+      return `/communitypost/${post.id}`
+    }
+    return `/posts/${getPostType(post)}/read/${post.id}`
   }
 
   // 날짜 포맷 함수 (YYYY.MM.DD)
@@ -77,7 +85,7 @@ export default function MyPosts() {
       const urlMap: Record<TabType, string> = {
         PET_OWNER: `/api/posts/petowner/${mid}`,
         PET_SITTER: `/api/posts/petsitter/${mid}`,
-        COMMUNITY: `/api/community/${mid}`
+        COMMUNITY: `/api/community/posts`
       }
 
       const res = await axios.get(urlMap[type], {
@@ -89,9 +97,16 @@ export default function MyPosts() {
         (res.data as any[])
           .map(p => ({
             ...p,
-            id: p.id ?? p.postId
+            id: p.id ?? p.postId ?? p.communityId
           }))
-          .sort((a, b) => new Date(b.regDate).getTime() - new Date(a.regDate).getTime()) // ⭐️ 최신순 정렬 추가!
+          .filter(post => {
+            // 커뮤니티 게시글인 경우 authorId로 필터링
+            if (type === 'COMMUNITY') {
+              return post.authorId === mid
+            }
+            return true
+          })
+          .sort((a, b) => new Date(b.regDate).getTime() - new Date(a.regDate).getTime())
       )
     } catch (err) {
       const apiErr = err as ApiError
@@ -173,13 +188,11 @@ export default function MyPosts() {
                           key={post.id}
                           className="post-card p-3 border rounded mb-3 shadow-sm d-flex gap-3 align-items-center"
                           style={{cursor: 'pointer', transition: 'background 0.2s'}}
-                          onClick={() =>
-                            navigate(`/posts/${getPostType(post)}/read/${post.id}`)
-                          }
+                          onClick={() => navigate(getPostUrl(post))}
                           tabIndex={0}
                           onKeyPress={e => {
                             if (e.key === 'Enter') {
-                              navigate(`/posts/${getPostType(post)}/read/${post.id}`)
+                              navigate(getPostUrl(post))
                             }
                           }}>
                           <img
@@ -190,6 +203,10 @@ export default function MyPosts() {
                               height: 80,
                               objectFit: 'cover',
                               flexShrink: 0
+                            }}
+                            onError={e => {
+                              const target = e.target as HTMLImageElement
+                              target.src = '/assets/images/pet/dog-2.jpg'
                             }}
                           />
 

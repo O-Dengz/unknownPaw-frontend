@@ -21,7 +21,7 @@ import Faq from '../../pages/myPage/Faq'
 import ReservationDetails from '../../pages/myPage/ReservationDetails'
 import ReservationDetailsView from '../../pages/myPage/ReservationDetailsView'
 import MyPosts from '../../pages/myPage/MyPosts'
-import MyFavourite from '../../pages/myPage/MyFavourite'
+import MyLikes from '../../pages/myPage/MyLikes'
 
 /* ---------- 멤버 ---------- */
 import MemberProfile from '../../pages/member/MemberProfile'
@@ -59,7 +59,7 @@ export default function Layout() {
         <Route path="/reservation-details" element={<ReservationDetails />} />
         <Route path="/reservation-details/:rno" element={<ReservationDetailsView />} />
         <Route path="/my-posts" element={<MyPosts />} />
-        <Route path="/myfavourite" element={<MyFavourite />} />
+        <Route path="/mylikes" element={<MyLikes />} />
         <Route path="/pet-settings" element={<PetSettings />} />
         <Route path="/register-pet" element={<RegisterPetPage />} />
 

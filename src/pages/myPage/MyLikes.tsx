@@ -6,7 +6,7 @@ import {useState, useEffect} from 'react'
 import {formatTimeAgo} from '../../utils/timeAgo'
 import {getImageUrl} from '@/utils/getImageUrl'
 
-interface FavouritePost {
+interface LikedPost {
   postId: number
   title: string
   content: string
@@ -28,18 +28,18 @@ interface FavouritePost {
   }
 }
 
-export default function MyFavourite() {
-  const [favourites, setFavourites] = useState<FavouritePost[]>([])
+export default function MyLikes() {
+  const [likedPosts, setLikedPosts] = useState<LikedPost[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
-    fetchFavourites()
+    fetchLikedPosts()
   }, [currentPage])
 
-  const fetchFavourites = async () => {
+  const fetchLikedPosts = async () => {
     try {
       const token = sessionStorage.getItem('token')
       if (!token) {
@@ -47,22 +47,25 @@ export default function MyFavourite() {
         return
       }
 
-      const response = await fetch(
-        `/api/member/posts/favourites?page=${currentPage - 1}&size=10`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+      const memberId = sessionStorage.getItem('mid')
+      if (!memberId) {
+        setError('회원 정보를 찾을 수 없습니다.')
+        return
+      }
+
+      const response = await fetch(`/api/posts/likes?page=${currentPage - 1}&size=10`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      )
+      })
 
       if (!response.ok) {
-        throw new Error('찜한 게시글을 불러오는데 실패했습니다.')
+        throw new Error('좋아요한 게시글을 불러오는데 실패했습니다.')
       }
 
       const data = await response.json()
-      setFavourites(data.content)
+      setLikedPosts(data.content)
       setTotalPages(data.totalPages)
     } catch (err) {
       setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.')
@@ -71,12 +74,15 @@ export default function MyFavourite() {
     }
   }
 
-  const handleRemoveFavourite = async (postId: number) => {
+  const handleRemoveLike = async (postId: number, postType: string) => {
     try {
       const token = sessionStorage.getItem('token')
       if (!token) return
 
-      const response = await fetch(`/api/posts/${postId}/favourite`, {
+      const memberId = sessionStorage.getItem('mid')
+      if (!memberId) return
+
+      const response = await fetch(`/api/${postId}/like?memberId=${memberId}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -85,13 +91,13 @@ export default function MyFavourite() {
       })
 
       if (!response.ok) {
-        throw new Error('찜하기 취소에 실패했습니다.')
+        throw new Error('좋아요 취소에 실패했습니다.')
       }
 
       // 목록에서 제거
-      setFavourites(prev => prev.filter(post => post.postId !== postId))
+      setLikedPosts(prev => prev.filter(post => post.postId !== postId))
     } catch (err) {
-      console.error('찜하기 취소 실패:', err)
+      console.error('좋아요 취소 실패:', err)
     }
   }
 
@@ -103,7 +109,7 @@ export default function MyFavourite() {
           <div className="row align-items-center">
             <div className="col-lg-6 col-md-6 col-12">
               <div className="breadcrumbs-content">
-                <h1 className="page-title">찜한 게시글</h1>
+                <h1 className="page-title">좋아요한 게시글</h1>
               </div>
             </div>
             <div className="col-lg-6 col-md-6 col-12">
@@ -111,7 +117,7 @@ export default function MyFavourite() {
                 <li>
                   <Link to="/">홈</Link>
                 </li>
-                <li>찜한 게시글</li>
+                <li>좋아요한 게시글</li>
               </ul>
             </div>
           </div>
@@ -155,7 +161,7 @@ export default function MyFavourite() {
                           fontWeight: '600',
                           margin: 0
                         }}>
-                        찜한 게시글
+                        좋아요한 게시글
                       </h3>
                     </div>
 
@@ -163,11 +169,11 @@ export default function MyFavourite() {
                       <div className="text-center py-4">로딩중...</div>
                     ) : error ? (
                       <div className="text-center py-4 text-danger">{error}</div>
-                    ) : favourites.length === 0 ? (
-                      <div className="text-center py-4">찜한 게시글이 없습니다.</div>
+                    ) : likedPosts.length === 0 ? (
+                      <div className="text-center py-4">좋아요한 게시글이 없습니다.</div>
                     ) : (
                       <div className="service-items">
-                        {favourites.map(post => (
+                        {likedPosts.map(post => (
                           <div
                             key={post.postId}
                             className="service-item"
@@ -199,63 +205,49 @@ export default function MyFavourite() {
                                       borderRadius: '8px'
                                     }}
                                   />
-                                  <div className="title-info">
-                                    <h3
+                                  <div>
+                                    <h4
                                       style={{
+                                        margin: 0,
                                         fontSize: '1.1rem',
-                                        marginBottom: '5px',
-                                        color: '#333'
+                                        fontWeight: '600'
                                       }}>
-                                      <Link
-                                        to={`/posts/${post.serviceCategory.toLowerCase()}/read/${
-                                          post.postId
-                                        }`}>
-                                        {post.title}
-                                      </Link>
-                                    </h3>
+                                      {post.title}
+                                    </h4>
                                     <p
-                                      className="price"
                                       style={{
+                                        margin: '5px 0 0',
                                         color: '#666',
                                         fontSize: '0.9rem'
                                       }}>
-                                      {post.hourlyRate.toLocaleString()}원 / 시간
-                                    </p>
-                                    <p
-                                      style={{
-                                        color: '#999',
-                                        fontSize: '0.8rem',
-                                        margin: 0
-                                      }}>
-                                      {formatTimeAgo(post.regDate)}
+                                      {post.serviceCategory}
                                     </p>
                                   </div>
                                 </div>
                               </div>
-                              <div className="col-lg-2 col-md-2 col-12">
-                                <div className="service-category">
-                                  <span
-                                    style={{
-                                      padding: '5px 10px',
-                                      backgroundColor: '#f8f9fa',
-                                      borderRadius: '5px',
-                                      fontSize: '0.9rem',
-                                      color: '#666'
-                                    }}>
-                                    {post.serviceCategory}
-                                  </span>
+                              <div className="col-lg-3 col-md-3 col-12">
+                                <div
+                                  style={{
+                                    color: '#666',
+                                    fontSize: '0.9rem'
+                                  }}>
+                                  <p style={{margin: '5px 0'}}>
+                                    시급: {post.hourlyRate.toLocaleString()}원
+                                  </p>
+                                  <p style={{margin: '5px 0'}}>
+                                    위치: {post.defaultLocation}
+                                  </p>
                                 </div>
                               </div>
-                              <div className="col-lg-4 col-md-4 col-12">
-                                <div className="service-status">
-                                  <span
-                                    className="status-text"
-                                    style={{
-                                      color: '#666',
-                                      fontSize: '0.9rem'
-                                    }}>
-                                    {post.defaultLocation}
-                                  </span>
+                              <div className="col-lg-3 col-md-3 col-12">
+                                <div
+                                  style={{
+                                    color: '#666',
+                                    fontSize: '0.9rem'
+                                  }}>
+                                  <p style={{margin: '5px 0'}}>
+                                    작성일: {formatTimeAgo(post.regDate)}
+                                  </p>
                                 </div>
                               </div>
                               <div className="col-lg-2 col-md-2 col-12">
@@ -280,7 +272,12 @@ export default function MyFavourite() {
                                     <i className="lni lni-eye"></i>
                                   </Link>
                                   <button
-                                    onClick={() => handleRemoveFavourite(post.postId)}
+                                    onClick={() =>
+                                      handleRemoveLike(
+                                        post.postId,
+                                        post.serviceCategory.toLowerCase()
+                                      )
+                                    }
                                     className="action-btn delete"
                                     style={{
                                       padding: '8px',

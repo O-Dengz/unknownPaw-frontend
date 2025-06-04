@@ -13,7 +13,7 @@ interface PetSummary {
   imagePath?: string | null
 }
 
-interface FavouritePost {
+interface LikedPost {
   postId: number
   title: string
   content: string
@@ -42,9 +42,9 @@ export default function Dashboard() {
   /* local state */
   const [pets, setPets] = useState<PetSummary[]>([])
   const [isLoading, setLoading] = useState(true)
-  const [favourites, setFavourites] = useState<FavouritePost[]>([])
-  const [favouritesLoading, setFavouritesLoading] = useState(true)
-  const [favouritesError, setFavouritesError] = useState<string | null>(null)
+  const [likedPosts, setLikedPosts] = useState<LikedPost[]>([])
+  const [likedPostsLoading, setLikedPostsLoading] = useState(true)
+  const [likedPostsError, setLikedPostsError] = useState<string | null>(null)
 
   /* 회원‧펫 데이터 로딩 */
   useEffect(() => {
@@ -89,48 +89,45 @@ export default function Dashboard() {
     })()
   }, [user, setUser])
 
-  /* 찜한 게시글 로딩 */
+  /* 좋아요한 게시글 로딩 */
   useEffect(() => {
-    const fetchFavourites = async () => {
+    const fetchLikedPosts = async () => {
       try {
         const token = sessionStorage.getItem('token')
         if (!token) {
-          setFavouritesError('로그인이 필요합니다.')
+          setLikedPostsError('로그인이 필요합니다.')
           return
         }
 
         const memberId = sessionStorage.getItem('mid')
         if (!memberId) {
-          setFavouritesError('회원 정보를 찾을 수 없습니다.')
+          setLikedPostsError('회원 정보를 찾을 수 없습니다.')
           return
         }
 
-        const response = await fetch(
-          `/api/member/${memberId}/posts/favourites?page=0&size=3`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
+        const response = await fetch(`/api/posts/likes?page=0&size=3`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
           }
-        )
+        })
 
         if (!response.ok) {
-          throw new Error('찜한 게시글을 불러오는데 실패했습니다.')
+          throw new Error('좋아요한 게시글을 불러오는데 실패했습니다.')
         }
 
         const data = await response.json()
-        setFavourites(data.content)
+        setLikedPosts(data.content)
       } catch (err) {
-        setFavouritesError(
+        setLikedPostsError(
           err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.'
         )
       } finally {
-        setFavouritesLoading(false)
+        setLikedPostsLoading(false)
       }
     }
 
-    fetchFavourites()
+    fetchLikedPosts()
   }, [])
 
   if (isLoading) {
@@ -454,7 +451,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* --- 찜한 게시글 --- */}
+                {/* --- 좋아요한 게시글 --- */}
                 <div className="row mt-4">
                   <div className="col-12">
                     <div
@@ -475,7 +472,7 @@ export default function Dashboard() {
                           position: 'relative',
                           paddingBottom: '15px'
                         }}>
-                        찜한 게시글
+                        좋아요한 게시글
                         <span
                           style={{
                             position: 'absolute',
@@ -488,17 +485,19 @@ export default function Dashboard() {
                           }}></span>
                       </h3>
 
-                      {favouritesLoading ? (
+                      {likedPostsLoading ? (
                         <div className="text-center py-4">로딩중...</div>
-                      ) : favouritesError ? (
+                      ) : likedPostsError ? (
                         <div className="text-center py-4 text-danger">
-                          {favouritesError}
+                          {likedPostsError}
                         </div>
-                      ) : favourites.length === 0 ? (
-                        <div className="text-center py-4">찜한 게시글이 없습니다.</div>
+                      ) : likedPosts.length === 0 ? (
+                        <div className="text-center py-4">
+                          좋아요한 게시글이 없습니다.
+                        </div>
                       ) : (
                         <div className="service-items">
-                          {favourites.map(post => (
+                          {likedPosts.map(post => (
                             <div
                               key={post.postId}
                               className="service-item"

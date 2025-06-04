@@ -274,9 +274,92 @@ export default function PostAd() {
                         )}
 
                         {step === 3 && (
-                          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-4">
-                            {/* 약관 내용 */}
-                            <div className="flex items-center mt-4">
+                          <div className="space-y-5 text-sm leading-relaxed text-gray-700 max-h-[360px] overflow-y-auto pr-2">
+                            <p>
+                              본 게시글을 통해 진행되는 반려견 돌봄 활동(이하 ‘케어
+                              서비스’)은 “모르는 개 산책(이하 ‘플랫폼’)”을 통해 연결된
+                              보호자(이하 ‘의뢰인’)와 돌보미(이하 ‘케어자’) 간의 자율적인
+                              계약에 따라 이루어집니다.
+                            </p>
+                            <p>
+                              플랫폼은 중개 및 커뮤니티 서비스만을 제공하며, 케어 서비스의
+                              실제 이행 및 그 과정에서 발생하는 문제(사고, 분쟁, 보상
+                              등)에 대해 직접적인 책임을 지지 않습니다.
+                            </p>
+
+                            <div>
+                              <h4 className="font-semibold text-gray-800 mb-1">
+                                제1조 [케어 활동 전 확인 의무]
+                              </h4>
+                              <ul className="list-disc list-inside space-y-1">
+                                <li>
+                                  의뢰인과 케어자는 서비스 이전에 반려견의 성향, 건강 상태
+                                  등을 충분히 협의해야 합니다.
+                                </li>
+                                <li>
+                                  의뢰인은 반려견의 예방접종, 기초훈련 여부 등을 반드시
+                                  확인해야 합니다.
+                                </li>
+                              </ul>
+                            </div>
+
+                            <br />
+
+                            <div>
+                              <h4 className="font-semibold text-gray-800 mb-1">
+                                제2조 [안전 수칙 및 책임]
+                              </h4>
+                              <ul className="list-disc list-inside space-y-1">
+                                <li>
+                                  산책 중에는 리드줄 착용 등 법적 안전수칙을 준수해야
+                                  합니다.
+                                </li>
+                                <li>
+                                  서비스 중 발생한 사고의 책임은 당사자에게 있습니다.
+                                </li>
+                              </ul>
+                            </div>
+
+                            <br />
+
+                            <div>
+                              <h4 className="font-semibold text-gray-800 mb-1">
+                                제3조 [금전 거래 및 분쟁 방지]
+                              </h4>
+                              <ul className="list-disc list-inside space-y-1">
+                                <li>
+                                  주요 조건은 반드시 사전에 합의하고, 문자 등으로 기록을
+                                  남겨야 합니다.
+                                </li>
+                                <li>
+                                  플랫폼은 현금 거래를 지원하지 않으며, 사적 거래는 본인의
+                                  책임입니다.
+                                </li>
+                              </ul>
+                            </div>
+
+                            <br />
+
+                            <div>
+                              <h4 className="font-semibold text-gray-800 mb-1">
+                                제4조 [신뢰 기반 커뮤니티 운영]
+                              </h4>
+                              <ul className="list-disc list-inside space-y-1">
+                                <li>이용자는 배려와 신뢰를 기반으로 활동해야 합니다.</li>
+                                <li>
+                                  악의적 행위 시 플랫폼 정책에 따라 제재될 수 있습니다.
+                                </li>
+                              </ul>
+                            </div>
+
+                            <br />
+
+                            <p className="mt-2 text-sm text-gray-600">
+                              본 게시글을 등록하거나 응답함으로써, 위 약관에 동의한 것으로
+                              간주됩니다.
+                            </p>
+                            {/* ★ 약관 동의 체크박스 추가! */}
+                            <div className="mt-6 flex items-center">
                               <input
                                 type="checkbox"
                                 id="agree"
@@ -284,13 +367,14 @@ export default function PostAd() {
                                 onChange={e => setAgree(e.target.checked)}
                                 className="mr-2"
                               />
-                              <label htmlFor="agree" className="text-sm">
-                                위 이용약관에 동의합니다
+                              <label
+                                htmlFor="agree"
+                                className="text-gray-800 font-medium">
+                                약관에 동의합니다.
                               </label>
                             </div>
                           </div>
                         )}
-
                         <div className="flex justify-between mt-6">
                           {step > 1 && (
                             <button

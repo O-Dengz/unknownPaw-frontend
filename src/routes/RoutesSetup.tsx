@@ -16,7 +16,7 @@ import Faq from '../pages/myPage/Faq'
 import ReservationDetails from '../pages/myPage/ReservationDetails'
 import ReservationDetailsView from '../pages/myPage/ReservationDetailsView'
 import MyPosts from '../pages/myPage/MyPosts'
-import MyFavourite from '../pages/myPage/MyFavourite'
+import MyLikes from '../pages/myPage/MyLikes'
 import MemberProfile from '../pages/member/MemberProfile'
 import PostAd from '../pages/postAd/PostAd'
 import EditPetOwnerPost from '@/pages/postAd/ModifyPetOwnerPost'
@@ -45,7 +45,7 @@ export default function RoutesSetup() {
         <Route path="/reservation-details" element={<ReservationDetails />} />
         <Route path="/reservation-details/:rno" element={<ReservationDetailsView />} />
         <Route path="/my-posts" element={<MyPosts />} />
-        <Route path="/myfavourite" element={<MyFavourite />} />
+        <Route path="/mylikes" element={<MyLikes />} />
         <Route path="/pet-settings" element={<PetSettings />} />
         <Route path="/member/profile/simple/:mid" element={<MemberProfile />} />
         <Route path="/posts/:postType/edit/:postId" element={<ModifyPetOwnerPost />} />

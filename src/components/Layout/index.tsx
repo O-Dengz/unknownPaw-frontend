@@ -22,7 +22,7 @@ import Faq from '../../pages/myPage/Faq'
 import ReservationDetails from '../../pages/myPage/ReservationDetails'
 import ReservationDetailsView from '../../pages/myPage/ReservationDetailsView'
 import MyPosts from '../../pages/myPage/MyPosts'
-import MyFavourite from '../../pages/myPage/MyFavourite'
+import MyLikes from '../../pages/myPage/MyLikes'
 
 /* ---------- 멤버 ---------- */
 import MemberProfile from '../../pages/member/MemberProfile'

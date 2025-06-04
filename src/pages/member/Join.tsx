@@ -79,6 +79,11 @@ export function Join() {
   >('idle')
   const [phoneCheckMessage, setPhoneCheckMessage] = useState<string>('')
 
+  const [petFile, setPetFile] = useState<File | null>(null)
+  const [petPreview, setPetPreview] = useState<string | null>(null)
+  const [petImageError, setPetImageError] = useState<string | null>(null)
+  const [uploadingPetImage, setUploadingPetImage] = useState(false)
+
   const changed = useCallback(
     (key: string) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       setForm(obj => ({...obj, [key]: e.target.value}))
@@ -278,6 +283,19 @@ export function Join() {
     }
   }
 
+  // 펫 이미지 파일 선택 핸들러
+  const handlePetImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null
+    if (!file) return
+    if (file.size > 10 * 1024 * 1024) {
+      setPetImageError('10MB 이하 이미지만 업로드 가능합니다.')
+      return
+    }
+    setPetImageError(null)
+    setPetFile(file)
+    setPetPreview(URL.createObjectURL(file))
+  }
+
   // 최종 onSubmit 함수
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -368,9 +386,20 @@ export function Join() {
     }
   }
 
-  const handlePetSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handlePetSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    regist(email, pass, phoneNumber, name, nickname, birthday, gender, address, petForm)
+    regist(
+      email,
+      pass,
+      phoneNumber,
+      name,
+      nickname,
+      birthday,
+      gender,
+      address,
+      petForm,
+      petFile
+    )
   }
 
   const regist = async (
@@ -382,13 +411,16 @@ export function Join() {
     birthday: string,
     gender: string,
     address: string,
-    petInfo?: PetFormType
+    petInfo?: PetFormType,
+    petImage?: File | null
   ) => {
     try {
       let res: Response
-      if (selectedFile) {
+      if (selectedFile || petImage) {
         const formData = new FormData()
-        formData.append('file', selectedFile)
+        if (selectedFile) {
+          formData.append('file', selectedFile)
+        }
         formData.append('email', email)
         formData.append('password', pass)
         formData.append('phoneNumber', phoneNumber)
@@ -401,12 +433,15 @@ export function Join() {
         if (petInfo) {
           const convertedPetInfo = {
             ...petInfo,
-            petBirth: parseInt(petInfo.petBirth), // 문자열을 정수로 변환
-            weight: parseFloat(petInfo.weight), // 문자열을 실수로 변환
-            petGender: petInfo.petGender, // 이미 boolean
-            neutering: petInfo.neutering // 이미 boolean
+            petBirth: parseInt(petInfo.petBirth),
+            weight: parseFloat(petInfo.weight),
+            petGender: petInfo.petGender,
+            neutering: petInfo.neutering
           }
           formData.append('petInfo', JSON.stringify(convertedPetInfo))
+          if (petImage) {
+            formData.append('petImage', petImage)
+          }
         }
 
         res = await fetch('/api/member/registerWithImage', {
@@ -820,6 +855,40 @@ export function Join() {
           <div className="modal-content">
             <h3 className="modal-title">반려동물 정보 입력</h3>
             <form onSubmit={handlePetSubmit} className="pet-form-grid">
+              <div className="form-field">
+                <label className="form-label">펫 이미지</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePetImageChange}
+                  style={{display: 'none'}}
+                  id="petImage"
+                />
+                <div className="image-upload-container">
+                  {!petPreview && (
+                    <label htmlFor="petImage" className="file-upload">
+                      <i className="lni lni-cloud-upload" /> 펫 이미지 선택
+                    </label>
+                  )}
+                  {petPreview && (
+                    <div className="image-preview">
+                      <img
+                        src={petPreview}
+                        alt="펫 이미지 미리보기"
+                        style={{
+                          width: 120,
+                          height: 120,
+                          objectFit: 'cover',
+                          borderRadius: '50%'
+                        }}
+                      />
+                    </div>
+                  )}
+                  {petImageError && (
+                    <p className="validation-message error">{petImageError}</p>
+                  )}
+                </div>
+              </div>
               <div className="form-field">
                 <label className="form-label">이름</label>
                 <input

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {useParams, useNavigate, Link} from 'react-router-dom'
+import axios from 'axios'
 import './Post.css'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
 import KakaoMap from './components/KakaoMap'
@@ -48,7 +49,7 @@ export function ItemDetails() {
   const [postDTO, setPostDTO] = useState<PostDTO | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [isFavorited, setIsFavorited] = useState(false)
+  const [isLiked, setIsLiked] = useState(false)
   const myMemberId = Number(sessionStorage.getItem('mid'))
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [showModal, setShowModal] = useState(false)
@@ -96,37 +97,40 @@ export function ItemDetails() {
     if (postId && postType) fetchPost()
   }, [postId, postType])
 
-  // 찜 상태 확인을 위한 별도의 useEffect
+  // 좋아요 상태 확인을 위한 별도의 useEffect
   useEffect(() => {
     if (postId && !loading) {
-      checkIfFavorited()
+      checkIfLiked()
     }
   }, [postId, loading])
 
-  const checkIfFavorited = async () => {
+  const checkIfLiked = async () => {
     const token = sessionStorage.getItem('token')
     if (!token || !postId) return
 
     try {
-      const response = await fetch(
-        `/api/posts/${postType?.toLowerCase()}/${postId}/favourite/check`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+      const response = await axios.get(`/api/posts/likes`, {
+        params: {
+          memberId: myMemberId,
+          page: 0,
+          size: 100 // 충분히 큰 수로 설정하여 모든 좋아요 목록을 가져옴
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      )
-      if (response.ok) {
-        const data = await response.json()
-        setIsFavorited(data)
+      })
+
+      if (response.status === 200) {
+        const likedPosts = response.data.content
+        setIsLiked(likedPosts.some((post: any) => post.postId === Number(postId)))
       }
     } catch (error) {
-      console.error('찜 여부 확인 실패:', error)
+      console.error('좋아요 여부 확인 실패:', error)
     }
   }
 
-  const handleFavorite = async () => {
+  const handleLike = async () => {
     const token = sessionStorage.getItem('token')
     if (!token || !postId) {
       alert('로그인이 필요합니다.')
@@ -134,33 +138,28 @@ export function ItemDetails() {
     }
 
     try {
-      const method = isFavorited ? 'DELETE' : 'POST'
-      const response = await fetch(
-        `/api/posts/${postType?.toLowerCase()}/${postId}/favourite`,
-        {
-          method,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+      const method = isLiked ? 'delete' : 'post'
+      const response = await axios[method](`/api/posts/${postId}/like`, undefined, {
+        params: {memberId: myMemberId},
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      )
+      })
 
-      if (response.ok) {
-        setIsFavorited(!isFavorited)
+      if (response.status === 200) {
+        setIsLiked(!isLiked)
         // 게시글 정보 업데이트
         if (postDTO) {
           setPostDTO({
             ...postDTO,
-            likes: isFavorited ? postDTO.likes - 1 : postDTO.likes + 1
+            likes: isLiked ? postDTO.likes - 1 : postDTO.likes + 1
           })
         }
-      } else {
-        throw new Error('찜하기 처리에 실패했습니다.')
       }
     } catch (error) {
-      console.error('찜하기 처리 실패:', error)
-      alert('찜하기 처리 중 오류가 발생했습니다.')
+      console.error('좋아요 처리 실패:', error)
+      alert('좋아요 처리 중 오류가 발생했습니다.')
     }
   }
 
@@ -354,12 +353,10 @@ export function ItemDetails() {
                       style={{backgroundColor: '#6c5ce7'}}>
                       채팅 열기
                     </button>
-                    <button className="likes" onClick={handleFavorite}>
+                    <button className="likes" onClick={handleLike}>
                       <i
-                        className={`lni ${
-                          isFavorited ? 'lni-heart-filled' : 'lni-heart'
-                        }`}
-                        style={{color: isFavorited ? '#e74c3c' : 'inherit'}}></i>
+                        className={`lni ${isLiked ? 'lni-heart-filled' : 'lni-heart'}`}
+                        style={{color: isLiked ? '#e74c3c' : 'inherit'}}></i>
                     </button>
                   </div>
                 </div>
