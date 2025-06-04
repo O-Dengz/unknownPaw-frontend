@@ -1,5 +1,6 @@
 import {Link, useNavigate} from 'react-router-dom'
 import {useAuth} from '../../contexts/AuthContext'
+import '../../assets/styles/fonts.css'
 
 const MainHeader = () => {
   const {isLoggedIn, logout} = useAuth() // ⬅️ Context에서 상태 받아오기
@@ -19,6 +20,7 @@ const MainHeader = () => {
         left: 0,
         right: 0,
         width: '100%',
+        height: '100px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -30,13 +32,21 @@ const MainHeader = () => {
       <Link
         to="/"
         style={{
-          fontSize: '2.5rem',
-          fontWeight: 'bold',
-          color: '#50bcdf',
+          display: 'flex',
+          alignItems: 'center',
           textDecoration: 'none',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+          paddingTop: '60px'
         }}>
-        UnknownPaw
+        <img
+          src="/assets/images/logo/모개로고.png"
+          alt="모르는 개 산책"
+          style={{
+            height: '120px',
+            width: 'auto',
+            objectFit: 'contain',
+            transform: 'rotate(-12deg)'
+          }}
+        />
       </Link>
 
       {/* 버튼 영역 */}

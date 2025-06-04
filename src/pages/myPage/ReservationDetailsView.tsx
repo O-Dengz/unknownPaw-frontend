@@ -8,12 +8,14 @@ interface ReservationDetails {
   type: string
   date: string
   owner: string
+  sitter?: string
   petName: string
   duration: string
   price: string
   rating: string
-  chat: string
+  chat?: string
   location: string
+  petId: number | null // ✅ 추가: 역할 구분용
 }
 
 export default function ReservationDetailsView() {
@@ -21,16 +23,19 @@ export default function ReservationDetailsView() {
   const [detail, setDetail] = useState<ReservationDetails | null>(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [viewMode, setViewMode] = useState<'owner' | 'sitter'>('owner') // ✅ 역할 구분 상태
 
   useEffect(() => {
     const fetchDetail = async () => {
       try {
         setLoading(true)
         setError('')
-        const response = await axios.get(
-          `/api/appointment/${rno}`
-        )
+        const response = await axios.get(`/api/appointment/${rno}`)
         setDetail(response.data as ReservationDetails)
+
+        // ✅ petId 유무로 맡긴/맡은 예약 구분
+        const isOwner = !!response.data.petId
+        setViewMode(isOwner ? 'owner' : 'sitter')
       } catch (err) {
         setError('상세 정보를 불러오지 못했습니다.')
         console.error('Error fetching reservation details:', err)
@@ -111,16 +116,31 @@ export default function ReservationDetailsView() {
                               <p className="mb-0">{detail.duration}</p>
                             </div>
                             <div className="mb-3">
-                              <label className="text-muted">금액</label>
+                              <label className="text-muted">시급</label>
                               <p className="mb-0">{detail.price}</p>
                             </div>
-                          </div>
-                          <div className="col-md-6">
-                            <h5 className="mb-3">고객 정보</h5>
                             <div className="mb-3">
-                              <label className="text-muted">펫 주인</label>
-                              <p className="mb-0">{detail.owner}</p>
+                              <label className="text-muted">채팅 메시지</label>
+                              <p className="mb-0">{detail.chat || '없음'}</p>
                             </div>
+                          </div>
+
+                          <div className="col-md-6">
+                            <h5 className="mb-3">회원 정보</h5>
+                            {viewMode === 'owner' ? (
+                              // 내가 맡긴 예약 → 상대는 시터
+                              <div className="mb-3">
+                                <label className="text-muted">펫시터</label>
+                                <p className="mb-0">{detail.sitter || '알 수 없음'}</p>
+                              </div>
+                            ) : (
+                              // 내가 맡은 예약 → 상대는 오너
+                              <div className="mb-3">
+                                <label className="text-muted">펫 오너</label>
+                                <p className="mb-0">{detail.owner || '알 수 없음'}</p>
+                              </div>
+                            )}
+
                             <div className="mb-3">
                               <label className="text-muted">반려동물</label>
                               <p className="mb-0">{detail.petName}</p>

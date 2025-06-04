@@ -2,8 +2,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 60px 20px;
+  padding: 120px 20px 60px;
   background-color: #f8f9fa;
+  min-height: calc(100vh - 60px);
 }
 
 .login-box {
@@ -245,11 +246,11 @@
   text-decoration: none;
 }
 
-/* Breadcrumbs ?ㅽ???*/
+/* Breadcrumbs 스타일 수정 */
 .breadcrumbs {
   background-color: #f8f9fa;
-  padding: 20px 0;
-  border-bottom: 1px solid #e9ecef;
+  padding: 100px 0 20px;
+  margin-bottom: 0;
 }
 
 .breadcrumbs .page-title {

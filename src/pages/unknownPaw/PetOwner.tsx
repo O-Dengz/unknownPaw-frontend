@@ -4,6 +4,8 @@ import {Pagination} from '../../components/Pagination'
 import {formatTimeAgo} from '../../utils/timeAgo'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
 import PawRating from '../../components/PawRating'
+import {getImageUrl} from '@/utils/getImageUrl'
+import {UniversalSkeleton} from '@/components/UniversalSkeleton'
 
 interface MemberResponseDTO {
   mid: number
@@ -17,6 +19,13 @@ interface MemberResponseDTO {
   regDate?: string
 }
 
+interface ImageDTO {
+  imageId: number
+  imagePath: string
+  thumbnailPath?: string
+  isMain: boolean
+}
+
 interface Post {
   postId: number
   title: string
@@ -27,11 +36,7 @@ interface Post {
   chatCount?: number
   defaultLocation: string
   regDate: string
-  image?: {
-    imageId: number
-    imagePath: string
-    isMain: boolean
-  }[]
+  images?: ImageDTO[]
   member?: MemberResponseDTO
 }
 
@@ -99,6 +104,11 @@ export function PetOwner() {
   }
 
   useEffect(() => {
+    console.log(
+      '목록 images:',
+      posts.map(p => p.images)
+    )
+
     const searchParams = new URLSearchParams(location.search)
     const urlPage = pageRequest.page + 1
     searchParams.set('page', urlPage.toString())
@@ -120,6 +130,11 @@ export function PetOwner() {
   }, [pageRequest, navigate])
 
   useEffect(() => {
+    console.log(
+      '목록 images:',
+      posts.map(p => p.images)
+    )
+
     const fetchPosts = () => {
       setLoading(true)
       setError(null)
@@ -133,7 +148,7 @@ export function PetOwner() {
       }
 
       const pageParam = pageRequest.page
-      let apiUrl = `/api/posts/petowner/list?page=${pageParam}&size=${pageRequest.size}`;
+      let apiUrl = `/api/posts/petowner/list?page=${pageParam}&size=${pageRequest.size}`
 
       if (pageRequest.type) {
         apiUrl += `&type=${pageRequest.type}`
@@ -193,23 +208,40 @@ export function PetOwner() {
     }))
   }
 
-  if (loading) return <div>로딩 중...</div>
-  if (error) return <div>{error}</div>
+  if (error)
+    return (
+      <div className="pet-owner-page">
+        <ScrollToTopButton />
+        <section className="items-grid section custom-padding page-content">
+          <div className="container">
+            <div className="row">
+              <div className="col-12">
+                <div className="section-title">
+                  <h2>Pet Owner</h2>
+                  <p>서비스를 요청하고 제안을 받아보세요!</p>
+                </div>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-12 text-center p-4">
+                <h5 className="mb-3 text-red-600">{error}</h5>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    )
 
   return (
     <div className="pet-owner-page">
       <ScrollToTopButton />
-      <section className="items-grid section custom-padding">
+      <section className="items-grid section">
         <div className="container">
           <div className="row">
             <div className="col-12">
               <div className="section-title">
-                <h2 className="wow fadeInUp" data-wow-delay=".4s">
-                  Pet Owner
-                </h2>
-                <p className="wow fadeInUp" data-wow-delay=".6s">
-                  서비스를 요청하고 제안을 받아보세요!
-                </p>
+                <h2>Pet Owner</h2>
+                <p>서비스를 요청하고 제안을 받아보세요!</p>
               </div>
             </div>
           </div>
@@ -314,7 +346,8 @@ export function PetOwner() {
                 <span className="separator">|</span>
                 <button
                   className={`sort-button ${
-                    pageRequest.sortBy === 'hourlyRate' && pageRequest.sortOrder === 'DESC'
+                    pageRequest.sortBy === 'hourlyRate' &&
+                    pageRequest.sortOrder === 'DESC'
                       ? 'active'
                       : ''
                   }`}
@@ -326,8 +359,10 @@ export function PetOwner() {
           </div>
           <div className="single-head">
             <div className="row">
-              {!loading && posts?.length > 0 ? (
-                posts?.map((post, index) => (
+              {loading ? (
+                <UniversalSkeleton type="list" />
+              ) : posts?.length > 0 ? (
+                posts.map((post, index) => (
                   <div key={post.postId} className="col-lg-4 col-md-6 col-12">
                     <div
                       className="single-grid wow fadeInUp"
@@ -335,28 +370,36 @@ export function PetOwner() {
                       <div className="image">
                         <Link
                           to={`/posts/petowner/read/${post.postId}`}
-                          className="thumbnail">
+                          className="thumbnail block overflow-hidden"
+                          style={{borderRadius: '10px', height: '220px', width: '100%'}}>
                           <img
                             src={
-                              post.image?.[0]?.imagePath || '/assets/images/pet/dog-2.jpg'
+                              post.images?.[0]
+                                ? getImageUrl(
+                                    post.images[0].thumbnailPath ??
+                                      post.images[0].imagePath
+                                  )
+                                : '/assets/images/pet/dog-2.jpg'
                             }
-                            alt="#"
+                            alt={post.title}
+                            className="w-full h-full object-cover object-center"
+                            style={{display: 'block'}}
                           />
                         </Link>
                         <div className="author">
                           <div className="author-image">
-                            <Link to={`/profile/simple/${post.member?.mid}`}>
+                            <Link to={`/member/profile/simple/${post.member?.mid}`}>
                               <img
                                 src={
-                                  post.member?.profileImagePath ||
-                                  '/assets/images/items-grid/author-1.jpg'
+                                  post.member?.profileImagePath
+                                    ? getImageUrl(post.member.profileImagePath)
+                                    : '/assets/images/items-grid/author-1.jpg'
                                 }
-                                alt="#"
+                                alt={post.member?.nickname}
                               />
                               <span>{post.member?.nickname || 'Unknown'}</span>
                             </Link>
                           </div>
-                          <p className="sale">예약하기</p>
                         </div>
                       </div>
                       <div className="content">
@@ -401,7 +444,7 @@ export function PetOwner() {
                     </div>
                   </div>
                 ))
-              ) : !loading && posts?.length === 0 ? (
+              ) : (
                 <div className="col-12 text-center p-4">
                   <h5 className="mb-3">🔍 검색 결과가 없습니다.</h5>
                   <p className="text-muted">다른 키워드로 다시 시도해보세요.</p>
@@ -411,7 +454,7 @@ export function PetOwner() {
                     ← 이전 페이지로 돌아가기
                   </button>
                 </div>
-              ) : null}
+              )}
             </div>
           </div>
           {pageInfo && !loading && (

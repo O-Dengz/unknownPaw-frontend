@@ -1,0 +1,115 @@
+.breadcrumbs {
+  background-color: #f9f9f9;
+  padding: 20px 0 !important;
+  margin-bottom: 30px !important;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.breadcrumb-nav {
+  display: flex;
+  list-style: none;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.breadcrumb-nav li a {
+  color: #666;
+  text-decoration: none;
+}
+
+.blog-single {
+  padding-top: 160px !important;
+  padding-bottom: 40px;
+}
+
+.post-thumbnils img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.post-details {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.post-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.post-meta {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  color: #888;
+}
+
+.post-meta i {
+  margin-right: 6px;
+}
+
+/* CommunityPost.css 파일 하단에 중복되거나 충돌 가능성이 있는 규칙들 제거 */
+/* .blog-single { display: block !important; min-height: auto !important; } */ /* 필요하면 유지 */
+/* section.blog-single { display: block !important; min-height: auto !important; } */ /* 필요하면 유지 */
+
+/* main section.blog-single { ... padding-top: 20px !important; } */ /* 이 규칙을 제거합니다 */
+
+/* Common padding for About, PetOwner, PetSitter, and Community pages */
+main .about-us.section,
+main .items-grid.section,
+main .pet-owner-page .section,
+main .pet-sitter-page .section,
+main .latest-news-area.blog-list,
+main .how-works.section {
+  padding-top: 100px !important; /* 이 부분은 다른 페이지를 위해 유지 */
+  padding-bottom: 60px !important;
+}
+
+/* Remove any existing padding styles */
+/* main .section { padding: 0 !important; } */ /* 이 규칙은 제거합니다 - 너무 광범위하게 패딩 제거 */
+
+/* main .page-content { padding-top: 0 !important; } */ /* 이 규칙은 제거합니다 */
+
+main .custom-padding {
+  padding: 0 !important;
+}
+
+/* Override breadcrumbs padding */
+main .breadcrumbs {
+  padding: 20px 0 !important;
+  margin-bottom: 30px !important;
+}
+
+/* Override about-us content padding */
+main .about-us .content-right {
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* Override how-works padding */
+main .how-works {
+  padding: 0 !important;
+}
+
+.reserve-button {
+  background-color: #32ade6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-top: 12px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s;
+  text-align: center;
+}

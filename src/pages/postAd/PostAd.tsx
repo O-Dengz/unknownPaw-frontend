@@ -2,22 +2,8 @@ import {useState, useCallback} from 'react'
 import {useNavigate} from 'react-router-dom'
 import PetOwnerForm from './PetOwnerForm'
 import PetSitterForm from './PetSitterForm'
-import CommunityForm from './CommunityForm' // CommunityForm 컴포넌트 임포트 확인
+import CommunityForm from './CommunityForm'
 import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
-
-interface PostData {
-  title: string
-  content: string
-  serviceCategory?: string
-  hourlyRate?: number
-  defaultLocation?: string
-  walkDate?: string
-  petId?: number
-  experience?: string
-  certificates?: string[]
-  communityCategory?: string
-  images?: File[]
-}
 
 const toPostTypeEnum = (category: string): string => {
   const normalized = category.trim().toLowerCase()
@@ -28,52 +14,50 @@ const toPostTypeEnum = (category: string): string => {
 }
 
 const toEndpointPath = (category: string): string => {
-  switch (category.trim().toLowerCase()) {
-    case 'petowner':
-      return 'pet_owner'
-    case 'petsitter':
-      return 'pet_sitter'
-    case 'community':
-      return 'community'
-    default:
-      throw new Error('유효하지 않은 카테고리입니다.')
-  }
+  const normalized = category.trim().toLowerCase()
+  if (normalized === 'petowner') return 'petowner'
+  if (normalized === 'petsitter') return 'petsitter'
+  if (normalized === 'community') return 'community'
+  throw new Error('유효하지 않은 카테고리입니다.')
 }
 
-const toServiceCategory = (kor: string): string => {
-  switch (kor) {
-    case '산책':
-      return 'WALK'
-    case '호텔링':
-      return 'HOTELING'
-    case '돌봄':
-      return 'CARE'
-    default:
-      return 'WALK'
-  }
+const toServiceCategory = (category: string): string => {
+  const normalized = category.trim().toUpperCase()
+  if (['WALK', 'HOTEL', 'CARE'].includes(normalized)) return normalized
+  throw new Error('유효하지 않은 서비스 카테고리입니다.')
+}
+
+interface PostData {
+  title: string
+  content: string
+  serviceCategory: string
+  hourlyRate: number
+  defaultLocation: string
+  serviceDate?: string
+  images?: File[]
+  petId?: number
+  petExperience?: string
+  license?: string[]
 }
 
 export default function PostAd() {
   const navigate = useNavigate()
 
   const [step, setStep] = useState(1)
-  const [category, setCategory] = useState('') // PetOwner | PetSitter | Community (메인 카테고리 선택)
+  const [category, setCategory] = useState('') // PetOwner | PetSitter | Community
   const [agree, setAgree] = useState(false)
 
-  // 모든 폼 데이터를 하나의 상태로 관리
   const [postData, setPostData] = useState<PostData>({
     title: '',
     content: '',
-    serviceCategory: '', // PetOwner/PetSitter용
+    serviceCategory: '',
     hourlyRate: 0,
-    defaultLocation: '',
-    communityCategory: '', // Community용 필드 추가
-    images: [] // 이미지 배열 초기화
+    defaultLocation: ''
   })
 
   const nextStep = () => {
     if (step === 1 && !category) {
-      alert('게시글 유형 카테고리를 선택해주세요') // "펫오너", "펫시터", "커뮤니티"
+      alert('카테고리를 선택해주세요')
       return
     }
     setStep(s => Math.min(s + 1, 3))
@@ -84,14 +68,13 @@ export default function PostAd() {
   }
 
   const handleFormDataChange = useCallback((data: Partial<PostData>) => {
-    // images는 배열이므로 기존 배열을 유지하면서 새 이미지 추가/교체 로직 필요
-    if (data.images !== undefined) {
-      setPostData(prev => ({...prev, ...data, images: data.images}))
-    } else {
-      setPostData(prev => ({...prev, ...data}))
+    const result: Partial<PostData> = {...data}
+    // serviceDate가 "YYYY-MM-DD"라면 자동 변환
+    if (result.serviceDate && /^\d{4}-\d{2}-\d{2}$/.test(result.serviceDate)) {
+      result.serviceDate = result.serviceDate + 'T00:00:00'
     }
+    setPostData(prev => ({...prev, ...result}))
   }, [])
-
   const ensureMemberId = async (token: string): Promise<string> => {
     const mid = sessionStorage.getItem('mid')
     if (mid) return mid
@@ -113,263 +96,310 @@ export default function PostAd() {
 
     try {
       const token = sessionStorage.getItem('token')
-      if (!token) {
-        alert('로그인이 필요합니다.')
+      if (!token) throw new Error('로그인이 필요합니다')
+
+      const memberId = await ensureMemberId(token)
+      const endpointType = toEndpointPath(category)
+
+      // 커뮤니티 게시글인 경우 다른 엔드포인트 사용
+      if (category === 'Community') {
+        const formData = new FormData()
+        const communityDTO = {
+          title: postData.title,
+          content: postData.content,
+          communityCategory: postData.serviceCategory || 'GENERAL' // 선택된 카테고리 사용, 없으면 GENERAL
+        }
+        formData.append(
+          'community',
+          new Blob([JSON.stringify(communityDTO)], {
+            type: 'application/json'
+          })
+        )
+
+        if (postData.images && postData.images.length > 0) {
+          postData.images.forEach(file => formData.append('images', file))
+        }
+
+        const response = await fetch(`/api/community/posts?memberId=${memberId}`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          body: formData
+        })
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          throw new Error(errorText || '게시글 등록에 실패했습니다')
+        }
+
+        alert('게시글이 성공적으로 등록되었습니다! 😄')
+        navigate('/community/posts')
         return
       }
 
-      const memberId = await ensureMemberId(token)
-      let postIdToNavigate: number | null = null // 페이지 이동에 사용할 postId
+      // 기존 펫시터/펫오너 게시글 로직
+      const postDTO = {
+        title: postData.title,
+        content: postData.content,
+        serviceCategory: toServiceCategory(postData.serviceCategory),
+        hourlyRate: String(postData.hourlyRate),
+        defaultLocation: postData.defaultLocation,
+        serviceDate: postData.serviceDate,
+        petId: postData.petId,
+        petExperience: postData.petExperience,
+        license: postData.license
+      }
 
-      if (category === 'community') {
-        // 🚀 커뮤니티 게시글: FormData로 DTO와 이미지 한 번에 전송
-        // 유효성 검사 강화: communityCategory가 선택되었는지 확인
-        if (!postData.communityCategory) {
-          alert('커뮤니티 게시글 카테고리를 선택해주세요!') // '일반 게시글', '이벤트' 등
-          return // 카테고리가 없으면 여기서 중단
-        }
-        if (!postData.title || !postData.content) {
-          alert('제목과 내용을 입력해주세요.')
-          return
-        }
+      let endpoint
+      let body: string | FormData
+      let headers: Record<string, string>
 
-        const communityFormData = new FormData()
-
-        // 1. DTO (게시글 내용)를 JSON 문자열로 변환 후 Blob으로 감싸서 FormData에 추가
-        //    백엔드에서 @RequestPart("community")로 받으므로 "community"라는 이름으로 추가합니다.
-        const dto = {
-          title: postData.title,
-          content: postData.content,
-          communityCategory: postData.communityCategory // CommunityForm에서 받아온 값 사용
-        }
-        communityFormData.append(
-          'community', // 🚨 이 부분을 "community"로 변경하여 백엔드와 일치
-          new Blob([JSON.stringify(dto)], {type: 'application/json'})
-        )
-
-        console.log('커뮤니티 DTO 준비:', dto)
-
-        // 2. 이미지 파일들(images)을 FormData에 추가 (존재하는 경우)
-        //    백엔드에서 @RequestPart(value = "images", ...)로 받으므로 "images"라는 이름으로 추가합니다.
-        if (postData.images && postData.images.length > 0) {
-          postData.images.forEach(file => {
-            communityFormData.append('images', file) // 🚨 이 부분을 "images"로 변경하여 백엔드와 일치
-          })
-          console.log('커뮤니티 이미지 준비:', postData.images.length, '개')
-        } else {
-          console.log('커뮤니티 게시글에 첨부된 이미지 없음')
-        }
-
-        // FormData 내용 확인 (디버깅용)
-        for (let [key, value] of communityFormData.entries()) {
-          console.log(`Community FormData -> ${key}:`, value)
-        }
-
-        // 3. 서버로 FormData 전송 (memberId는 @RequestParam이므로 URL에 포함)
-        const postRes = await fetch(
-          `/api/community/posts-with-image?memberId=${memberId}`, // 🚨 백엔드 컨트롤러 경로와 일치
-          {
-            method: 'POST',
-            headers: {
-              // Content-Type은 FormData 사용 시 브라우저가 자동으로 설정 (boundary 포함)
-              // 수동으로 'multipart/form-data'를 설정하면 boundary 누락으로 오류 발생 가능
-              Authorization: `Bearer ${token}`
-            },
-            body: communityFormData // FormData 객체를 body로 사용
-          }
-        )
-
-        if (!postRes.ok) {
-          const errorText = await postRes.text()
-          console.error('[커뮤니티 게시글 등록 실패]', errorText, postRes.status)
-          throw new Error(errorText || '커뮤니티 게시글 등록에 실패했습니다')
-        }
-        const response = await postRes.json() // 백엔드에서 postId를 반환
-        postIdToNavigate = response // 백엔드가 postId 자체를 body로 반환한다고 가정 (Long 타입)
-        console.log('커뮤니티 게시글 등록 성공, postId:', postIdToNavigate)
-
-        // 중요: 커뮤니티의 경우 이미지가 함께 전송되므로, 별도의 이미지 업로드 로직이 필요 없습니다.
+      if (postData.images && postData.images.length > 0) {
+        endpoint = `/api/posts/${endpointType}/registerWithImage?memberId=${memberId}`
+        body = new FormData()
+        body.append('post', JSON.stringify(postDTO))
+        postData.images.forEach(file => (body as FormData).append('file', file))
+        headers = {Authorization: `Bearer ${token}`}
       } else {
-        // 펫 오너/시터 게시글 (기존 로직 유지)
-        const endpointType = toEndpointPath(category)
-        const baseUrl = `/api/posts/${endpointType}`
-
-        const dto = {
-          title: postData.title,
-          content: postData.content,
-          serviceCategory: toServiceCategory(postData.serviceCategory as string),
-          hourlyRate: postData.hourlyRate,
-          defaultLocation: postData.defaultLocation,
-          walkDate: postData.walkDate,
-          petId: postData.petId,
-          postType: toPostTypeEnum(category)
-        }
-
-        console.log('펫오너/시터 최종 전송 DTO:', JSON.stringify(dto, null, 2))
-
-        const postRes = await fetch(`${baseUrl}/register?memberId=${memberId}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json', // 여기는 JSON 방식 유지
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify(dto)
-        })
-
-        if (!postRes.ok) {
-          const errorText = await postRes.text()
-          console.log('[전송되는 DTO (펫오너/시터)]', dto)
-          console.error('[펫오너/시터 게시글 등록 실패]', errorText)
-          throw new Error(errorText || '펫오너/시터 게시글 등록에 실패했습니다')
-        }
-        const response = await postRes.json()
-        const actualPostId = response.postId // postId는 response 객체 안에 있다고 가정
-        postIdToNavigate = actualPostId
-
-        // 펫 오너/시터의 경우, 기존 이미지 업로드 로직 사용
-        if (postData.images?.length && actualPostId) {
-          const imgForm = new FormData()
-          postData.images.forEach(f => imgForm.append('file', f))
-          imgForm.append('targetId', String(actualPostId))
-
-          const imgRes = await fetch(
-            `/api/posts/image/upload/${category.toLowerCase()}`,
-            {
-              method: 'POST',
-              headers: {Authorization: `Bearer ${token}`},
-              body: imgForm
-            }
-          )
-          if (!imgRes.ok) {
-            const imgErrorText = await imgRes.text()
-            console.error('[펫오너/시터 이미지 업로드 실패]', imgErrorText)
-            // 게시글은 등록되었으나 이미지 업로드 실패 시 사용자에게 알릴 수 있음
-            // (여기서는 에러를 던져서 전체 실패로 처리하지만, 정책에 따라 다를 수 있음)
-            throw new Error(imgErrorText || '이미지 업로드에 실패했습니다')
-          }
-          console.log('펫오너/시터 이미지 업로드 성공')
+        endpoint = `/api/posts/${endpointType}/register?memberId=${memberId}`
+        body = JSON.stringify(postDTO)
+        headers = {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       }
 
-      // 게시글 및 (필요시) 이미지 업로드 성공 후
-      if (postIdToNavigate !== null) {
-        alert('게시글이 성공적으로 등록되었습니다! 😄')
-        navigate('/dashboard') // 또는 상세 페이지로 이동 navigate(`/community/${postIdToNavigate}`);
-      } else {
-        // postId를 못 받은 경우 (이런 경우는 거의 없어야 함)
-        console.error('postId를 응답으로부터 받지 못했습니다.')
-        alert('게시글 등록은 되었으나, 페이지 이동에 필요한 정보를 받지 못했습니다.')
-        navigate('/dashboard') // 일단 대시보드로
+      const postRes = await fetch(endpoint, {
+        method: 'POST',
+        headers,
+        body
+      })
+
+      if (!postRes.ok) {
+        const errorText = await postRes.text()
+        throw new Error(errorText || '게시글 등록에 실패했습니다')
       }
+
+      alert('게시글이 성공적으로 등록되었습니다! 😄')
+      navigate('/dashboard')
     } catch (err) {
-      console.error('게시글 등록 전체 프로세스 에러:', err)
+      console.error(err)
       alert(err instanceof Error ? err.message : '등록 중 오류가 발생했습니다')
     }
   }
-
   return (
-    <section className="dashboard section mt-120">
-      <div className="container">
-        <div className="row">
-          <div className="col-lg-3 col-md-4 col-12">
-            <DashboardSidebar />
+    <div className="page-wrapper">
+      {/* --- Breadcrumb --------------------------------------------------- */}
+      <div className="breadcrumbs">
+        <div className="container">
+          <div className="row align-items-center">
+            <div className="col-lg-6">
+              <h1 className="page-title">게시글 작성</h1>
+            </div>
+            <div className="col-lg-6">
+              <ul className="breadcrumb-nav">
+                <li>
+                  <a href="/">홈</a>
+                </li>
+                <li>게시글 작성</li>
+              </ul>
+            </div>
           </div>
-          <div className="col-lg-9 col-md-8 col-12">
-            <div className="main-content">
-              <div className="dashboard-stats">
-                <div className="row">
-                  <div className="col-lg-12">
-                    <div className="main-content bg-white p-8 rounded-xl shadow-lg">
-                      <h2 className="text-2xl font-bold mb-8">게시글 작성</h2>
-                      <div className="flex justify-between mb-10">
-                        {['카테고리 설정', '상세 내용', '이용약관'].map((label, idx) => {
-                          const n = idx + 1
-                          return (
-                            <div key={n} className="text-center flex-1">
-                              <div
-                                className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center font-bold ${
-                                  step === n
-                                    ? 'bg-[var(--primary)] text-white'
-                                    : 'bg-gray-200 text-gray-500'
-                                }`}>
-                                {n}
-                              </div>
-                              <div
-                                className={`mt-2 text-sm ${
-                                  step === n ? 'text-[var(--primary)]' : 'text-gray-500'
-                                }`}>
-                                {label}
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                      {step === 1 && (
-                        <div className="form-group">
-                          <label className="text-gray-700 font-medium">카테고리*</label>
-                          <select
-                            className="form-control"
-                            value={category}
-                            onChange={e => setCategory(e.target.value)}>
-                            <option value="">카테고리 선택</option>
-                            <option value="petowner">펫 오너</option>
-                            <option value="petsitter">펫 시터</option>
-                            <option value="community">커뮤니티</option>
-                          </select>
-                        </div>
-                      )}
-                      {step === 2 && (
-                        <>
-                          {category === 'petowner' && (
-                            <PetOwnerForm onDataChange={handleFormDataChange} />
-                          )}
-                          {category === 'petsitter' && (
-                            <PetSitterForm onDataChange={handleFormDataChange} />
-                          )}
-                          {category === 'community' && (
-                            <CommunityForm onDataChange={handleFormDataChange} />
-                          )}
-                        </>
-                      )}
-                      {step === 3 && (
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-4">
-                          {/* 약관 내용 */}
-                          <div className="flex items-center mt-4">
-                            <input
-                              type="checkbox"
-                              id="agree"
-                              checked={agree}
-                              onChange={e => setAgree(e.target.checked)}
-                              className="mr-2"
-                            />
-                            <label htmlFor="agree" className="text-sm">
-                              위 이용약관에 동의합니다
-                            </label>
-                          </div>
-                        </div>
-                      )}
+        </div>
+      </div>
 
-                      <div className="flex justify-between mt-6">
-                        {step > 1 && (
+      {/* --- 본문 --------------------------------------------------------- */}
+      <section className="dashboard section">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-3 col-md-4 col-12">
+              <DashboardSidebar />
+            </div>
+            <div className="col-lg-9 col-md-8 col-14">
+              <div className="main-content">
+                <div className="dashboard-stats">
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <div className="main-content bg-white p-8 rounded-xl shadow-lg">
+                        <div className="settings-tabs mb-4">
                           <button
-                            onClick={prevStep}
-                            className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
-                            이전
+                            className={`tab-button ${step === 1 ? 'active' : ''}`}
+                            onClick={() => setStep(1)}>
+                            카테고리 설정
                           </button>
+                          <button
+                            className={`tab-button ${step === 2 ? 'active' : ''}`}
+                            onClick={() => setStep(2)}>
+                            상세 내용
+                          </button>
+                          <button
+                            className={`tab-button ${step === 3 ? 'active' : ''}`}
+                            onClick={() => setStep(3)}>
+                            이용약관
+                          </button>
+                        </div>
+
+                        {step === 1 && (
+                          <h2 className="text-2xl font-bold mb-8">게시글 작성</h2>
                         )}
-                        {step < 3 ? (
-                          <button
-                            onClick={nextStep}
-                            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 ml-auto">
-                            다음
-                          </button>
-                        ) : (
-                          <button
-                            onClick={handleSubmit}
-                            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 ml-auto">
-                            등록
-                          </button>
+
+                        {step === 1 && (
+                          <div className="form-group">
+                            <label className="text-gray-700 font-medium">카테고리*</label>
+                            <select
+                              className="form-control"
+                              value={category}
+                              onChange={e => setCategory(e.target.value)}>
+                              <option value="">카테고리 선택</option>
+                              <option value="PetOwner">펫 오너</option>
+                              <option value="PetSitter">펫 시터</option>
+                              <option value="Community">커뮤니티</option>
+                            </select>
+                          </div>
                         )}
+
+                        {step === 2 && (
+                          <>
+                            {category === 'PetOwner' && (
+                              <PetOwnerForm onDataChange={handleFormDataChange} />
+                            )}
+                            {category === 'PetSitter' && (
+                              <PetSitterForm onDataChange={handleFormDataChange} />
+                            )}
+                            {category === 'Community' && (
+                              <CommunityForm onDataChange={handleFormDataChange} />
+                            )}
+                          </>
+                        )}
+
+                        {step === 3 && (
+                          <div className="space-y-5 text-sm leading-relaxed text-gray-700 max-h-[360px] overflow-y-auto pr-2">
+                            <p>
+                              본 게시글을 통해 진행되는 반려견 돌봄 활동(이하 ‘케어
+                              서비스’)은 “모르는 개 산책(이하 ‘플랫폼’)”을 통해 연결된
+                              보호자(이하 ‘의뢰인’)와 돌보미(이하 ‘케어자’) 간의 자율적인
+                              계약에 따라 이루어집니다.
+                            </p>
+                            <p>
+                              플랫폼은 중개 및 커뮤니티 서비스만을 제공하며, 케어 서비스의
+                              실제 이행 및 그 과정에서 발생하는 문제(사고, 분쟁, 보상
+                              등)에 대해 직접적인 책임을 지지 않습니다.
+                            </p>
+
+                            <div>
+                              <h4 className="font-semibold text-gray-800 mb-1">
+                                제1조 [케어 활동 전 확인 의무]
+                              </h4>
+                              <ul className="list-disc list-inside space-y-1">
+                                <li>
+                                  의뢰인과 케어자는 서비스 이전에 반려견의 성향, 건강 상태
+                                  등을 충분히 협의해야 합니다.
+                                </li>
+                                <li>
+                                  의뢰인은 반려견의 예방접종, 기초훈련 여부 등을 반드시
+                                  확인해야 합니다.
+                                </li>
+                              </ul>
+                            </div>
+
+                            <br />
+
+                            <div>
+                              <h4 className="font-semibold text-gray-800 mb-1">
+                                제2조 [안전 수칙 및 책임]
+                              </h4>
+                              <ul className="list-disc list-inside space-y-1">
+                                <li>
+                                  산책 중에는 리드줄 착용 등 법적 안전수칙을 준수해야
+                                  합니다.
+                                </li>
+                                <li>
+                                  서비스 중 발생한 사고의 책임은 당사자에게 있습니다.
+                                </li>
+                              </ul>
+                            </div>
+
+                            <br />
+
+                            <div>
+                              <h4 className="font-semibold text-gray-800 mb-1">
+                                제3조 [금전 거래 및 분쟁 방지]
+                              </h4>
+                              <ul className="list-disc list-inside space-y-1">
+                                <li>
+                                  주요 조건은 반드시 사전에 합의하고, 문자 등으로 기록을
+                                  남겨야 합니다.
+                                </li>
+                                <li>
+                                  플랫폼은 현금 거래를 지원하지 않으며, 사적 거래는 본인의
+                                  책임입니다.
+                                </li>
+                              </ul>
+                            </div>
+
+                            <br />
+
+                            <div>
+                              <h4 className="font-semibold text-gray-800 mb-1">
+                                제4조 [신뢰 기반 커뮤니티 운영]
+                              </h4>
+                              <ul className="list-disc list-inside space-y-1">
+                                <li>이용자는 배려와 신뢰를 기반으로 활동해야 합니다.</li>
+                                <li>
+                                  악의적 행위 시 플랫폼 정책에 따라 제재될 수 있습니다.
+                                </li>
+                              </ul>
+                            </div>
+
+                            <br />
+
+                            <p className="mt-2 text-sm text-gray-600">
+                              본 게시글을 등록하거나 응답함으로써, 위 약관에 동의한 것으로
+                              간주됩니다.
+                            </p>
+                            {/* ★ 약관 동의 체크박스 추가! */}
+                            <div className="mt-6 flex items-center">
+                              <input
+                                type="checkbox"
+                                id="agree"
+                                checked={agree}
+                                onChange={e => setAgree(e.target.checked)}
+                                className="mr-2"
+                              />
+                              <label
+                                htmlFor="agree"
+                                className="text-gray-800 font-medium">
+                                약관에 동의합니다.
+                              </label>
+                            </div>
+                          </div>
+                        )}
+                        <div className="flex justify-between mt-6">
+                          {step > 1 && (
+                            <button
+                              onClick={prevStep}
+                              className="reserve-button"
+                              style={{width: '120px'}}>
+                              이전
+                            </button>
+                          )}
+                          {step < 3 ? (
+                            <button
+                              onClick={nextStep}
+                              className="reserve-button"
+                              style={{width: '120px'}}>
+                              다음
+                            </button>
+                          ) : (
+                            <button
+                              onClick={handleSubmit}
+                              className="reserve-button"
+                              style={{width: '120px'}}>
+                              등록하기
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -378,7 +408,7 @@ export default function PostAd() {
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   )
 }
