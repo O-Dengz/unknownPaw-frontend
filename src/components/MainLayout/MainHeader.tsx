@@ -35,13 +35,13 @@ const MainHeader = () => {
           display: 'flex',
           alignItems: 'center',
           textDecoration: 'none',
-          paddingTop: '60px'
+          paddingTop: '80px'
         }}>
         <img
-          src="/assets/images/logo/모개로고.png"
+          src="/assets/images/logo/모개로고1.png"
           alt="모르는 개 산책"
           style={{
-            height: '120px',
+            height: '160px',
             width: 'auto',
             objectFit: 'contain',
             transform: 'rotate(-12deg)'
@@ -55,17 +55,30 @@ const MainHeader = () => {
           <button
             onClick={() => navigate('/dashboard')}
             style={{
-              color: 'white',
-              backgroundColor: 'transparent',
-              fontSize: '1.1rem',
-              padding: '0.7rem 1.5rem',
-              border: '2px solid white',
-              borderRadius: '5px',
+              backgroundColor: 'white',
+              color: '#32ade6',
+              fontWeight: 700,
+              fontSize: '1.2rem',
+              border: 'none',
+              borderRadius: '999px',
+              padding: '0.9rem 2.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.7rem',
+              boxShadow: '0 1px 6px rgba(0,0,0,0.05)',
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
+              letterSpacing: '0.02em'
             }}>
             마이페이지
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="8" r="4" stroke="#32ade6" strokeWidth="2.2" />
+              <path
+                d="M4 20c0-4 4-6 8-6s8 2 8 6"
+                stroke="#32ade6"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+              />
+            </svg>
           </button>
         ) : (
           <>

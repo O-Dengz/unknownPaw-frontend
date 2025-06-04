@@ -20,7 +20,7 @@ export function Footer() {
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-section">
-          <h3 className="footer-title">UnknownPaw</h3>
+          <h3 className="footer-title">모르는 개 산책</h3>
           <p className="footer-description">
             반려동물과 함께하는 행복한 일상을 위한 서비스
           </p>

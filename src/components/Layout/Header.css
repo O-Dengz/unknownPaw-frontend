@@ -160,3 +160,16 @@
 .fix-button:hover::before {
   left: 100%;
 }
+.navbar-nav .nav-item{
+  margin: 0 18px;          /* ← 좌‧우 여백(기존보다 살짝 넓게) */
+}
+
+.navbar-nav .nav-link{
+  font-size: 1.05rem;      /* ≈ 16-17 px  정도로 살짝 확대 */
+  line-height: 1.4;        /* 클릭영역 높이 확보 */
+}
+
+/* 데스크톱에서만 패딩 조금 더 */
+@media (min-width: 992px){
+  .navbar-nav .nav-link{ padding: 8px 0; }
+}
