@@ -38,25 +38,37 @@ export default function CommunityPost() {
     fetchPosts()
   }, [postId])
 
-  const fetchPost = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/unknownPaw/api/community/${postId}`
-      )
-      if (!response.ok) {
-        throw new Error('게시글을 불러오는데 실패했습니다.')
+   const fetchPost = async () => {
+    // --- 추가할 로그 3: fetchPost 시작 시점 확인 ---
+    console.log('fetchPost 함수 시작');
+    try {
+      const response = await fetch(
+        `http://localhost:8080/unknownPaw/api/community/${postId}`
+      );
+      if (!response.ok) {
+        throw new Error('게시글을 불러오는데 실패했습니다.');
+      }
+      const data = await response.json();
+      console.log('API 응답 - 게시글 상세 데이터:', data); // 기존 로그 유지
+      console.log('API 응답 - 게시글 이미지 배열:', data.communityImages); // 기존 로그 유지
+      // --- 추가할 로그 4: 이미지 배열의 첫 번째 요소와 타입 확인 ---
+      if (data.communityImages && data.communityImages.length > 0) {
+        console.log('첫 번째 이미지 파일명:', data.communityImages[0], '타입:', typeof data.communityImages[0]);
+      } else {
+        console.log('communityImages 배열이 비어있거나 없음.');
       }
-      const data = await response.json()
-      console.log('게시글 상세 데이터:', data)
-      console.log('게시글 이미지:', data.communityImages)
-      setPost(data)
-      setLoading(false)
-    } catch (error) {
-      console.error('게시글을 불러오는데 실패했습니다:', error)
-      setError('게시글을 불러오는데 실패했습니다.')
-      setLoading(false)
-    }
-  }
+      setPost(data);
+      setLoading(false);
+    // --- 추가할 로그 5: fetchPost 완료 (성공) ---
+    console.log('fetchPost 함수 완료 (성공)');
+    } catch (error) {
+      console.error('게시글을 불러오는데 실패했습니다:', error); // 기존 로그 유지
+      setError('게시글을 불러오는데 실패했습니다.');
+      setLoading(false);
+    // --- 추가할 로그 6: fetchPost 완료 (실패) ---
+    console.log('fetchPost 함수 완료 (실패)');
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -133,13 +145,14 @@ export default function CommunityPost() {
           <div className="row">
             <div className="col-lg-8 col-md-12 col-12">
               <div className="single-inner">
-                <div className="post-thumbnils">
-                  <img
-                    src={
-                      post.communityImages[0]
-                        ? `http://localhost:8080/unknownPaw/api/community/images/${post.communityImages[0]}`
-                        : '/src/assets/no-img.gif'
-                    }
+                <div className="image">
+                 <img
+                  src={
+                  // 이 부분이 핵심입니다!
+                  post.communityImages[0]
+                    ? `http://localhost:8080/unknownPaw/api/community/images/${encodeURIComponent(post.communityImages[0])}` // 백엔드 URL을 정확히 명시
+                    : '/src/assets/no-img.gif' // 이미지가 없을 때의 대체 이미지
+                        }
                     alt={post.title}
                     style={{
                       width: '100%',
@@ -148,10 +161,10 @@ export default function CommunityPost() {
                       borderRadius: '8px'
                     }}
                     onError={e => {
-                      console.error('이미지 로드 실패:', e)
-                      console.log('실패한 이미지 URL:', e.currentTarget.src)
-                      e.currentTarget.src = '/src/assets/no-img.gif'
-                    }}
+                    console.error('이미지 로드 실패:', e)
+                    console.log('실패한 이미지 URL:', e.currentTarget.src) // 이 로그를 다시 확인하여, 이제는 백엔드 URL이 찍히는지 확인
+                    e.currentTarget.src = '/src/assets/no-img.gif'
+                  }}
                   />
                 </div>
                 <div className="post-details">

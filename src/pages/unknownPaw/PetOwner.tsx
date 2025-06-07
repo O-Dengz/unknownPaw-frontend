@@ -5,7 +5,7 @@ import {formatTimeAgo} from '../../utils/timeAgo'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
 import PawRating from '../../components/PawRating'
 import {getImageUrl} from '@/utils/getImageUrl'
-import {UniversalSkeleton} from '@/components/UniversalSkeleton'
+import {UniversalSkeleton} from "../../components/UniversalSkeleton"
 
 interface MemberResponseDTO {
   mid: number

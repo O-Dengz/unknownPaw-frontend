@@ -23,6 +23,7 @@ import EditPetOwnerPost from '@/pages/postAd/ModifyPetOwnerPost'
 import {PetSettings} from '../pages/myPage/PetSettings'
 import NoMatch from './NoMatch'
 import ModifyPetOwnerPost from '@/pages/postAd/ModifyPetOwnerPost'
+import RegisterPetPage from '@/pages/myPage/RegisterPetPage'
 
 export default function RoutesSetup() {
   return (
@@ -47,6 +48,7 @@ export default function RoutesSetup() {
         <Route path="/my-posts" element={<MyPosts />} />
         <Route path="/mylikes" element={<MyLikes />} />
         <Route path="/pet-settings" element={<PetSettings />} />
+        <Route path="/register-pet" element={<RegisterPetPage />} />
         <Route path="/member/profile/simple/:mid" element={<MemberProfile />} />
         <Route path="/posts/:postType/edit/:postId" element={<ModifyPetOwnerPost />} />
       </Route>

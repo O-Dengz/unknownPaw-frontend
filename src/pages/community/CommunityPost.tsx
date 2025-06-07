@@ -270,11 +270,14 @@ export default function CommunityPost() {
                 {post.communityImages[0] && (
                   <div style={{marginBottom: '24px'}}>
                     <img
-                      src={post.communityImages[0] || getRandomImage()}
+                      src={
+                        post.communityImages[0]
+                            ? `http://localhost:8080/unknownPaw/api/community/images/${encodeURIComponent(post.communityImages[0])}`
+                            : getRandomImage()
+                        }
                       alt={post.title}
                       style={{
                         width: '100%',
-                        maxHeight: '420px',
                         objectFit: 'cover',
                         borderRadius: '8px',
                         background: '#f8f8f8'

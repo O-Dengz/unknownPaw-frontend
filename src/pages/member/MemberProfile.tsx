@@ -6,6 +6,7 @@ import {Footer} from '../../components/Layout/Footer'
 import PawRating from '../../components/PawRating'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
 import {getImageUrl} from '@/utils/getImageUrl' // Import getImageUrl
+import { getPetImageUrl } from '@/utils/getPetImageUrl'
 
 interface MemberResponseDTO {
   mid: number
@@ -330,15 +331,13 @@ export default function MemberProfile() {
                             <div className="pet-image">
                               <img
                                 src={
-                                  pet.petImagePath?.trim()
-                                    ? pet.petImagePath
-                                    : '/assets/images/pet/dog-1.jpg'
+                                  getPetImageUrl(pet.petId, pet.petImagePath, pet.thumbnailPath) // ✨ 여기에 getPetImageUrl 사용
                                 }
                                 alt={`${pet.petName} 이미지`}
                                 className="pet-image"
                               />
                             </div>
-                            <div className="pet-info">
+                           <div className="pet-info">
                               <h4>
                                 이름: <strong>{pet.petName || '정보 없음'}</strong>
                               </h4>

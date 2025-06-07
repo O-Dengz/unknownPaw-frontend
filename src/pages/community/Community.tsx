@@ -1,4 +1,4 @@
-// src/pages/community/Community.tsx
+// src/pages/community/Community.tsx 진짜 커뮤니티 리스트
 import React, {useState, useEffect} from 'react'
 import '../../../public/assets/css/LineIcons.2.0.css'
 import '../../../public/assets/css/animate.css'
@@ -338,7 +338,12 @@ export function Community() {
                           <a href={`/communitypost/${post.communityId}`}>
                             <img
                               className="thumb object-cover h-40 w-full"
-                              src={post.communityImages[0] || getRandomImage()}
+                              src={
+                                // *** 이 부분을 수정합니다. ***
+                                post.communityImages[0]
+                                    ? `http://localhost:8080/unknownPaw/api/community/images/${encodeURIComponent(post.communityImages[0])}`
+                                    : getRandomImage()
+                                }
                               alt={post.title}
                             />
                           </a>
