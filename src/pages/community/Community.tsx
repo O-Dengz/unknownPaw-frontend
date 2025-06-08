@@ -20,6 +20,19 @@ const getRandomImage = () => {
   const randomIndex = Math.floor(Math.random() * randomImages.length)
   return randomImages[randomIndex]
 }
+// 이미지 경로 정제 및 URL 생성 함수 (새로 추가)
+const getCommunityImageUrl = (imagePath: string) => {
+  if (!imagePath) return getRandomImage();
+
+  // 'COMMUNITY/' 또는 'community/' 접두사 제거
+  let fileName = imagePath.replace(/^(COMMUNITY\/|community\/)/, '');
+
+  // 파일 이름 자체에 특수 문자가 있을 경우를 대비해 인코딩
+  // 단, 경로 구분자 '/'는 인코딩하지 않도록 주의.
+  // 이 경우 'fileName'은 이미 경로 구분자가 없는 순수 파일 이름이므로 encodeURIComponent 사용 가능.
+  return `http://localhost:8080/unknownPaw/api/community/images/${encodeURIComponent(fileName)}`;
+};
+
 
 interface CommunityPost {
   communityId: number
@@ -329,21 +342,17 @@ export function Community() {
         <div className="row">
           <div className="col-lg-8 col-md-7 col-12">
             <div className="row">
-              {sortedPosts.length > 0 ? (
-                sortedPosts.map(post =>
-                  viewMode === 'card' ? (
+               {sortedPosts.length > 0 ? (
+                sortedPosts.map(post => {
+                  console.log(post.communityImages[0] + "커뮤니티 이미지 확인"); // 콘솔 로그는 여기에 유지
+                  return viewMode === 'card' ? (
                     <div key={post.communityId} className="col-lg-4 col-md-6 col-12 mb-4">
                       <div className="single-news wow fadeInUp" data-wow-delay=".2s">
                         <div className="image">
                           <a href={`/communitypost/${post.communityId}`}>
                             <img
                               className="thumb object-cover h-40 w-full"
-                              src={
-                                // *** 이 부분을 수정합니다. ***
-                                post.communityImages[0]
-                                    ? `http://localhost:8080/unknownPaw/api/community/images/${encodeURIComponent(post.communityImages[0])}`
-                                    : getRandomImage()
-                                }
+                              src={getCommunityImageUrl(post.communityImages[0])} // 새로 만든 함수 사용
                               alt={post.title}
                             />
                           </a>
@@ -367,6 +376,7 @@ export function Community() {
                                 gap: '8px',
                                 fontSize: '0.8em',
                                 color: '#888',
+                              
                                 fontWeight: 400
                               }}>
                               <span>
@@ -482,7 +492,7 @@ export function Community() {
                       </div>
                     </div>
                   )
-                )
+})
               ) : (
                 <div className="col-12">
                   <p>게시글이 없습니다.</p>

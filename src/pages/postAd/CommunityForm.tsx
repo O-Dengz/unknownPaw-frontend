@@ -68,7 +68,7 @@ export default function CommunityForm({
         setMember(data)
       } catch (err) {
         console.error('회원 정보 오류:', err)
-        alert(err instanceof Error ? err.message : '알 수 없는 오류입니다.')
+        // alert(err instanceof Error ? err.message : '알 수 없는 오류입니다.') // Canvas에서 alert 사용 지양
       }
     }
     fetchMemberData()
@@ -97,18 +97,17 @@ export default function CommunityForm({
   }, [title, content, communityCategory, image, onDataChange]) // image를 의존성 배열에 추가
 
   // 📨 제출 처리
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (!member?.id) {
-      alert('회원 정보를 다시 확인해주세요 😥')
+      // alert('회원 정보를 다시 확인해주세요 😥') // Canvas에서 alert 사용 지양
+      console.error('회원 정보를 다시 확인해주세요 😥');
       return
     }
 
-    // ✅ 이 부분이 PostAd.tsx:153(fetch 호출) 이전에 실행되어야 합니다!
     if (!communityCategory) {
-      alert('카테고리를 선택해주세요!')
+      // alert('카테고리를 선택해주세요!') // Canvas에서 alert 사용 지양
       console.error('카테고리가 선택되지 않았습니다. 요청을 중단합니다.') // 디버깅을 위해 추가
       return // 카테고리가 없으면 여기서 즉시 중단
     }
@@ -127,36 +126,38 @@ export default function CommunityForm({
       const communityData = {title, content, communityCategory: communityCategory}
       const formData = new FormData()
       formData.append(
-        'communityRequestDTO',
+        'community', // 백엔드 @RequestPart("community")와 일치
         new Blob([JSON.stringify(communityData)], {type: 'application/json'})
       )
-      if (image) formData.append('communityImage', image)
+      // ⭐ 이 부분을 수정합니다: 'communityImage' -> 'images'
+      if (image) formData.append('images', image) // ⭐ 백엔드 @RequestPart(value = "images")와 일치
 
-      // 백엔드 URL 경로 수정: /api/community/{category}/register -> /api/community/posts-with-image
-      // 기존에 URL에 카테고리를 넣는 로직이 있었습니다. 백엔드 컨트롤러와 일치시켜야 합니다.
-      // 현재 백엔드 컨트롤러의 @PostMapping("/posts-with-image")는 URL에 카테고리가 없습니다.
-      // URL을 백엔드 컨트롤러와 동일하게 변경해야 합니다.
-      const url = `/api/community/posts-with-image?memberId=${member.id}` // 수정된 URL
+      // 백엔드 URL 경로: /api/community/posts (POST)
+      const url = `/api/community/posts?memberId=${member.id}` 
 
       const res = await fetch(url, {
-        // 이 라인이 PostAd.tsx:153 에러의 원인이 되는 fetch 호출입니다.
         method: 'POST',
-        headers: {Authorization: `Bearer ${token}`},
+        headers: {
+          // 'Content-Type': 'multipart/form-data'는 FormData 사용 시 자동으로 설정됩니다.
+          // 직접 설정하면 Boundary가 누락되어 오류가 발생할 수 있습니다.
+          Authorization: `Bearer ${token}`
+        },
         body: formData
       })
 
       if (!res.ok) {
         const errText = await res.text()
         console.error('응답 실패:', errText)
-        throw new Error('게시글 등록에 실패했어요 😢')
+        throw new Error(`게시글 등록에 실패했어요 😢 (${errText})`)
       }
 
-      alert('게시글 등록 성공! 🥳')
+      // alert('게시글 등록 성공! 🥳') // Canvas에서 alert 사용 지양
+      console.log('게시글 등록 성공! 🥳');
       resetForm()
       onDataChange?.(true)
     } catch (err) {
       console.error('제출 오류:', err)
-      alert(err instanceof Error ? err.message : '예상치 못한 오류 발생!')
+      // alert(err instanceof Error ? err.message : '예상치 못한 오류 발생!') // Canvas에서 alert 사용 지양
     }
   }
 

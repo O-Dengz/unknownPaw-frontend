@@ -1,174 +1,141 @@
-import {useParams, useNavigate} from 'react-router-dom'
-import {useState, useEffect} from 'react'
-import '../../../public/assets/css/LineIcons.2.0.css'
-import '../../../public/assets/css/animate.css'
-import '../../../public/assets/css/bootstrap.min.css'
-import '../../../public/assets/css/glightbox.min.css'
-import '../../../public/assets/css/main.css'
-import '../../../public/assets/css/tiny-slider.css'
-import './CommunityPost.css'
-import {getImageUrl} from '../../utils/getImageUrl'
+import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+// CSS 파일 경로를 수정합니다. public 디렉토리의 자산은 일반적으로 루트에서 절대 경로로 참조됩니다.
+// import '/assets/css/LineIcons.2.0.css';
+// import '/assets/css/animate.css';
+// import '/assets/css/bootstrap.min.css';
+// import '/assets/css/glightbox.min.css';
+// import '/assets/css/main.css';
+// import '/assets/css/tiny-slider.css';
+import './CommunityPost.css'; // CommunityPost.tsx와 같은 디렉토리에 있다고 가정
+import { getImageUrl } from '../../utils/getImageUrl'; // getImageUrl 유틸리티 함수 경로 (src 내부 모듈)
+import CommunityComments from './CommunityComments'; // ★ 분리된 CommunityComments 컴포넌트 임포트 ★
 
-// 랜덤 이미지 목록
+// 랜덤 이미지 목록 (이미지 로드 실패 시 대체용)
 const randomImages = [
   '/src/assets/무료나눔.png',
   '/src/assets/오댕이.jpg',
   '/src/assets/피카츄 군침싹.jpg',
   '/src/assets/no-img.gif'
-]
+];
 
 // 랜덤 이미지 선택 함수
 const getRandomImage = () => {
-  const randomIndex = Math.floor(Math.random() * randomImages.length)
-  return randomImages[randomIndex]
-}
+  const randomIndex = Math.floor(Math.random() * randomImages.length);
+  return randomImages[randomIndex];
+};
 
+// --- 추가할 함수 시작 ---
+const getCommunityImageUrl = (imagePath: string) => {
+  if (!imagePath) return getRandomImage();
+
+  // 'COMMUNITY/' 또는 'community/' 접두사 제거
+  let fileName = imagePath.replace(/^(COMMUNITY\/|community\/)/, '');
+
+  // 파일 이름 자체에 특수 문자가 있을 경우를 대비해 인코딩
+  return `http://localhost:8080/unknownPaw/api/community/images/${encodeURIComponent(fileName)}`;
+};
+// --- 추가할 함수 끝 ---
+
+// 커뮤니티 게시글 데이터 인터페이스
 interface CommunityPost {
-  communityId: number
-  title: string
-  content: string
-  likes: number
-  commentCount: number
-  authorName: string
-  authorNickname: string
-  authorProfileImage: string
-  communityCategory: string
-  regDate: string
-  communityImages: string[]
-  viewCount: number
-  authorId: number
+  communityId: number;
+  title: string;
+  content: string;
+  likes: number;
+  commentCount: number;
+  authorName: string;
+  authorNickname: string;
+  authorProfileImage: string;
+  communityCategory: string;
+  regDate: string;
+  viewCount: number;
+  authorId: number;
+  communityImages: string[]; // 게시글에 첨부된 이미지 URL 목록
 }
 
+// ===============================================
+// CommunityPost 컴포넌트 (게시글 상세 페이지)
+// ===============================================
 export default function CommunityPost() {
-  const {postId} = useParams()
-  const [post, setPost] = useState<CommunityPost | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [posts, setPosts] = useState<CommunityPost[]>([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [searchType, setSearchType] = useState<'title' | 'author' | 'content'>('title')
-  const navigate = useNavigate()
+  const { postId } = useParams<{ postId: string }>(); // URL에서 postId 가져오기
+  const [post, setPost] = useState<CommunityPost | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchPost()
-    fetchPosts()
-  }, [postId])
-
-  const fetchPost = async () => {
+  // 게시글 정보 불러오기 함수
+  const fetchPost = useCallback(async (id: number) => {
+    setLoading(true);
+    setError(null);
     try {
-      const token = sessionStorage.getItem('token')
+      const token = sessionStorage.getItem('token');
       if (!token) {
-        setError('로그인이 필요합니다.')
-        window.location.href = '/login'
-        return
+        setError('로그인이 필요합니다.');
+        // 실제 애플리케이션에서는 로그인 페이지로 리다이렉션
+        window.location.href = '/login';
+        return;
       }
 
-      console.log('Fetching post from:', `/api/community/posts/${postId}`)
-      const response = await fetch(`/api/community/posts/${postId}`, {
+      const response = await fetch(`/api/community/posts/${id}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
           Accept: 'application/json'
         }
-      })
+      });
 
       if (!response.ok) {
-        const errorText = await response.text()
-        console.error('API Error:', {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorText
-        })
-        throw new Error(`게시글을 불러오는데 실패했습니다. (${response.status})`)
+        const errorText = await response.text();
+        throw new Error(`게시글을 불러오는데 실패했습니다. (${response.status}: ${errorText})`);
       }
 
-      const data = await response.json()
-      console.log('API Response:', data)
-      setPost(data)
-      setLoading(false)
-    } catch (error) {
-      console.error('Error fetching post:', error)
-      setError(
-        error instanceof Error ? error.message : '게시글을 불러오는데 실패했습니다.'
-      )
-      setLoading(false)
-    }
-  }
-
-  const fetchPosts = async () => {
-    try {
-      const token = sessionStorage.getItem('token')
-      if (!token) {
-        setError('로그인이 필요합니다.')
-        window.location.href = '/login'
-        return
-      }
-
-      console.log('Fetching posts from:', '/api/community/posts')
-      const response = await fetch('/api/community/posts', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
-        }
-      })
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('API Error:', {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorText
-        })
-        throw new Error(`게시물을 불러오는데 실패했습니다. (${response.status})`)
-      }
-
-      const data = await response.json()
-      console.log('API Response:', data)
-      if (Array.isArray(data)) {
-        setPosts(data)
+      const data = await response.json();
+      if (data) {
+        setPost(data);
       } else {
-        console.error('API 응답이 배열이 아닙니다:', data)
-        setPosts([])
+        setError('게시글 데이터가 비어있습니다.');
       }
-    } catch (error) {
-      console.error('Error fetching posts:', error)
-      setPosts([])
+    } catch (err) {
+      console.error('Error fetching post:', err);
+      setError(
+        err instanceof Error ? err.message : '게시글을 불러오는데 실패했습니다.'
+      );
+    } finally {
+      setLoading(false);
     }
-  }
+  }, []); // 의존성 배열 비움: 함수 자체는 재생성될 필요 없음
 
-  const handleSearch = () => {
-    if (!searchTerm.trim()) {
-      return
-    }
-
-    const searchTermLower = searchTerm.toLowerCase()
-    const filtered = posts.filter(post => {
-      switch (searchType) {
-        case 'title':
-          return post.title.toLowerCase().includes(searchTermLower)
-        case 'author':
-          return (
-            post.authorName.toLowerCase().includes(searchTermLower) ||
-            post.authorNickname.toLowerCase().includes(searchTermLower)
-          )
-        case 'content':
-          return post.content.toLowerCase().includes(searchTermLower)
-        default:
-          return true
+  // postId 변경 시 게시글 정보 다시 불러오기
+  useEffect(() => {
+    if (postId) {
+      const numericPostId = Number(postId);
+      if (isNaN(numericPostId) || numericPostId <= 0) {
+        setError('유효하지 않은 게시글 ID입니다.');
+        setLoading(false);
+        return;
       }
-    })
-    // 검색 결과로 이동
-    if (filtered.length > 0) {
-      window.location.href = `/communitypost/${filtered[0].communityId}`
+      fetchPost(numericPostId);
+    } else {
+      setError('게시글 ID가 없습니다.');
+      setLoading(false);
     }
-  }
+  }, [postId, fetchPost]); // postId와 fetchPost가 변경될 때마다 실행
 
-  if (loading) return <div>로딩중...</div>
-  if (error) return <div>{error}</div>
-  if (!post) return <div>게시글을 찾을 수 없습니다.</div>
+  if (loading) return <div style={{ textAlign: 'center', marginTop: '50px' }}>로딩중...</div>;
+  if (error) return <div style={{ textAlign: 'center', marginTop: '50px', color: 'red' }}>{error}</div>;
+  if (!post) return <div style={{ textAlign: 'center', marginTop: '50px' }}>게시글을 찾을 수 없습니다.</div>;
+
+  // 게시글 등록일자를 보기 좋게 포맷팅 (메타 정보용)
+  const formatPostRegDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
   return (
     <>
@@ -188,7 +155,7 @@ export default function CommunityPost() {
                     <img
                       src="/assets/images/logo/logo.png"
                       alt="UnknownPaw"
-                      style={{height: '30px'}}
+                      style={{ height: '30px' }}
                     />
                   </a>
                 </li>
@@ -202,9 +169,9 @@ export default function CommunityPost() {
         </div>
       </div>
 
-      {/* Blog Single Area */}
-      <section className="section blog-single" style={{padding: '20px 0 !important'}}>
-        <div className="container" style={{marginTop: '-80px'}}>
+      {/* Blog Single Area (게시글 본문) */}
+      <section className="section blog-single" style={{ padding: '20px 0' }}>
+        <div className="container" style={{ marginTop: '-80px' }}>
           <div className="row">
             <div className="col-12">
               <div
@@ -236,7 +203,7 @@ export default function CommunityPost() {
                     marginBottom: '18px',
                     flexWrap: 'wrap'
                   }}>
-                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <img
                       src={getImageUrl(post.authorProfileImage) || '/assets/no-img.gif'}
                       alt={post.authorNickname}
@@ -248,39 +215,41 @@ export default function CommunityPost() {
                         border: '1px solid #eee'
                       }}
                     />
-                    <span style={{fontWeight: 500, fontSize: '1.05em'}}>
+                    <span style={{ fontWeight: 500, fontSize: '1.05em' }}>
                       {post.authorNickname}
                     </span>
                   </div>
-                  <span style={{color: '#888', fontSize: '0.98em'}}>
+                  <span style={{ color: '#888', fontSize: '0.98em' }}>
                     <i className="lni lni-calendar"></i>{' '}
-                    {new Date(post.regDate).toLocaleDateString()}
+                    {formatPostRegDate(post.regDate)}
                   </span>
-                  <span style={{color: '#888', fontSize: '0.98em'}}>
+                  <span style={{ color: '#888', fontSize: '0.98em' }}>
                     <i className="lni lni-eye"></i> {post.viewCount}
                   </span>
-                  <span style={{color: '#888', fontSize: '0.98em'}}>
+                  <span style={{ color: '#888', fontSize: '0.98em' }}>
                     <i className="lni lni-heart"></i> {post.likes}
                   </span>
-                  <span style={{color: '#888', fontSize: '0.98em'}}>
+                  <span style={{ color: '#888', fontSize: '0.98em' }}>
                     <i className="lni lni-comments"></i> {post.commentCount}
                   </span>
                 </div>
                 {/* 이미지 */}
-                {post.communityImages[0] && (
-                  <div style={{marginBottom: '24px'}}>
+                {post.communityImages && post.communityImages.length > 0 && ( // post.communityImages가 비어있지 않고 길이가 0보다 클 때만
+                  console.log(post.communityImages + '이미지 확인용'),
+                  <div style={{ marginBottom: '24px' }}>
                     <img
-                      src={
-                        post.communityImages[0]
-                            ? `http://localhost:8080/unknownPaw/api/community/images/${encodeURIComponent(post.communityImages[0])}`
-                            : getRandomImage()
-                        }
+                      src={getCommunityImageUrl(post.communityImages[0])} // 여기를 수정!
                       alt={post.title}
                       style={{
                         width: '100%',
                         objectFit: 'cover',
                         borderRadius: '8px',
                         background: '#f8f8f8'
+                      }}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.onerror = null; // Prevent infinite loop
+                        target.src = getRandomImage(); // Fallback to random image
                       }}
                     />
                   </div>
@@ -306,8 +275,9 @@ export default function CommunityPost() {
           style={{
             display: 'flex',
             justifyContent: 'center',
-            gap: '12px' /* 버튼 사이 간격 */,
-            marginTop: '20px' /* 상단 여백 */
+            gap: '12px', /* 버튼 사이 간격 */
+            marginTop: '20px', /* 상단 여백 */
+            marginBottom: '40px' // 댓글 섹션과의 간격
           }}>
           <button
             onClick={() => navigate(-1)}
@@ -318,35 +288,26 @@ export default function CommunityPost() {
             }}>
             목록으로
           </button>
+          {/* 현재 로그인한 사용자가 게시글 작성자인 경우에만 수정 버튼 표시 */}
           {post.authorId === Number(sessionStorage.getItem('mid')) && (
             <button
               onClick={() => navigate(`/community/edit/${post.communityId}`)}
               className="reserve-button"
               style={{
-                background: '#f4c150',
+                background: '#f4c150', // 당근마켓 느낌의 색상 (주황색)
                 color: '#fff'
               }}>
               수정하기
             </button>
           )}
         </div>
+
+        {/* 댓글 섹션 추가 */}
+        <div className="container">
+          {/* postId가 유효한 숫자이고 post가 있을 때만 댓글 컴포넌트 렌더링 */}
+          {postId && !isNaN(Number(postId)) && Number(postId) > 0 && <CommunityComments />}
+        </div>
       </section>
     </>
-  )
-}
-
-// 스타일 정의
-const styles = {
-  popularFeedMeta: {
-    display: 'flex',
-    gap: '15px',
-    marginTop: '5px',
-    fontSize: '0.9em',
-    color: '#666'
-  },
-  popularFeedItem: {
-    marginBottom: '15px',
-    paddingBottom: '15px',
-    borderBottom: '1px solid #eee'
-  }
+  );
 }
