@@ -74,7 +74,7 @@ export default function ModifyCommunityPost() {
       )
       if (image) formData.append('communityImage', image)
 
-      const res = await fetch(`/api/community/posts/${postId}`, {
+      const res = await fetch(`/api/community/posts/${postId}/edit-with-image`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}` },
         body: formData
