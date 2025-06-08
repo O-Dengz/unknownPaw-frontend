@@ -1,14 +1,16 @@
 import {useState, useEffect} from 'react'
+import { resolvePreviewSrc } from '../../utils/resolvePreviewSrc'
+
 
 interface Pet {
-  id: number
-  name: string
+  petId: number
+  petName: string
   breed: string
-  birthDate: string
-  gender: boolean
+  petBirth: string
+  petGender: boolean
   weight: number
   mbti: string
-  isNeutered: boolean
+  neutering: boolean
   introduction: string
 }
 
@@ -21,46 +23,75 @@ interface Member {
   emailVerified: boolean
   pets: Pet[]
 }
+export interface PetOwnerFormProps {
+  onDataChange: (data: PostFormData) => void
+  initialData?: Partial<PostFormData>
+  initialImageUrl?: string | null
+  mode?: 'create' | 'edit'
+}
 
 // Post 기본 인터페이스
-interface PostFormData {
+export interface PostFormData {
   title: string
   content: string
   serviceCategory: string
-  desiredHourlyRate: number
+  hourlyRate: number
   defaultLocation: string
-  walkDate?: string
+  serviceDate?: string
   images?: File[]
   petId?: number
 }
 
-interface PetOwnerFormProps {
-  onDataChange: (data: PostFormData) => void
-}
-
-export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
-  const [member, setMember] = useState<Member | null>(null)
-  const [selectedPet, setSelectedPet] = useState<Pet | null>(null)
-  const [image, setImage] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-
+export default function PetOwnerForm({
+  onDataChange,
+  initialData,
+  initialImageUrl,
+  mode = 'create'
+}: PetOwnerFormProps) {
   const [postData, setPostData] = useState<PostFormData>({
     title: '',
     content: '',
     serviceCategory: '',
-    desiredHourlyRate: 0,
+    hourlyRate: 0,
     defaultLocation: '',
-    walkDate: ''
+    serviceDate: ''
   })
-
+  const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl || null)
   useEffect(() => {
-    // 로그인된 사용자 정보 가져오기
+    setPreviewUrl(initialImageUrl || null)
+  }, [initialImageUrl])
+  const [member, setMember] = useState<Member | null>(null)
+  const [selectedPet, setSelectedPet] = useState<Pet | null>(null)
+  const [image, setImage] = useState<File | null>(null)
+
+  // 1. member와 initialData(수정모드)가 들어오면 폼에 값 채우기
+  useEffect(() => {
+    if (member && initialData && mode === 'edit') {
+      // (1) 기존 pet 선택
+      const found = member.pets.find(pet => pet.petId === initialData.petId)
+      if (found) setSelectedPet(found)
+      // (2) postData 채우기
+      setPostData(prev => ({...prev, ...initialData}))
+    }
+  }, [member, initialData, mode])
+
+  // 2. 폼 데이터가 바뀔 때 부모에게 전달
+  useEffect(() => {
+    if (selectedPet && postData.title !== '') {
+      onDataChange({
+        ...postData,
+        petId: selectedPet.petId,
+        images: image ? [image] : undefined
+      })
+    }
+  }, [postData, selectedPet, image, onDataChange])
+
+  // 3. 마운트시 멤버 정보 가져오기
+  useEffect(() => {
     const fetchMemberData = async () => {
       try {
-        const token = localStorage.getItem('token') // JWT 토큰 가져오기
-        if (!token) {
-          throw new Error('로그인이 필요합니다.')
-        }
+        const token = sessionStorage.getItem('token')
+        if (!token) throw new Error('로그인이 필요합니다.')
 
         const response = await fetch('/api/member/profile/simple/me', {
           headers: {
@@ -69,17 +100,12 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
           }
         })
 
-        if (!response.ok) {
-          throw new Error('사용자 정보를 불러오는데 실패했습니다.')
-        }
+        if (!response.ok) throw new Error('사용자 정보를 불러오는데 실패했습니다.')
 
         const data = await response.json()
         setMember(data)
-        if (data?.pets?.length > 0) {
-          setSelectedPet(data.pets[0])
-        }
+        if (data?.pets?.length > 0) setSelectedPet(data.pets[0])
       } catch (error) {
-        console.error('Failed to fetch member data:', error)
         alert(
           error instanceof Error
             ? error.message
@@ -87,33 +113,35 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
         )
       }
     }
-
     fetchMemberData()
   }, [])
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      const file = event.target.files[0]
-      setImage(file)
-      setPreviewUrl(URL.createObjectURL(file))
-
-      onDataChange({
-        ...postData,
-        images: [file]
-      })
+  // handleImageUpload 함수 수정
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      alert('10MB를 초과한 파일은 업로드할 수 없습니다.');
+      return;
     }
-  }
-
-  // 폼 데이터가 변경될 때마다 부모 컴포넌트에 알림
+    setImage(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    
+    onDataChange({
+      ...postData,
+      images: [file],
+      petId: selectedPet?.petId,
+    });
+  };
+  
+  // 2️⃣ 폼 데이터가 바뀔 때마다 부모로 전달
   useEffect(() => {
-    if (selectedPet) {
-      onDataChange({
-        ...postData,
-        petId: selectedPet.id,
-        images: image ? [image] : undefined
-      })
-    }
-  }, [postData, selectedPet, image, onDataChange])
+    onDataChange({
+      ...postData,
+      petId: selectedPet?.petId,            
+      images: image ? [image] : undefined,
+    });
+  }, [postData, selectedPet, image, onDataChange]);
 
   return (
     <div>
@@ -150,9 +178,9 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
             onChange={e => setPostData({...postData, serviceCategory: e.target.value})}
             className="form-control">
             <option value="">카테고리를 선택하세요</option>
-            <option value="산책">산책</option>
-            <option value="호텔링">호텔링</option>
-            <option value="돌봄">돌봄</option>
+            <option value="WALK">산책</option>
+            <option value="HOTEL">호텔링</option>
+            <option value="CARE">돌봄</option>
           </select>
         </div>
 
@@ -161,10 +189,8 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
           <label className="text-gray-700 font-medium">시급</label>
           <input
             type="number"
-            value={postData.desiredHourlyRate}
-            onChange={e =>
-              setPostData({...postData, desiredHourlyRate: Number(e.target.value)})
-            }
+            value={postData.hourlyRate}
+            onChange={e => setPostData({...postData, hourlyRate: Number(e.target.value)})}
             placeholder="시급을 입력하세요"
             className="form-control"
           />
@@ -175,8 +201,8 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
           <label className="text-gray-700 font-medium">산책 희망 날짜</label>
           <input
             type="date"
-            value={postData.walkDate || ''}
-            onChange={e => setPostData({...postData, walkDate: e.target.value})}
+            value={postData.serviceDate || ''}
+            onChange={e => setPostData({...postData, serviceDate: e.target.value})}
             className="form-control"
           />
         </div>
@@ -199,10 +225,13 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
           <div className="border-2 border-dashed border-gray-300 p-6 rounded-lg text-center text-gray-500 relative">
             <div className="text-4xl mb-2">+</div>
             <p>파일 선택</p>
+
+            {/* 꼭 부모가 relative여야 inset-0이 동작합니다 */}
             <input
               type="file"
               onChange={handleImageUpload}
-              className="absolute inset-0 opacity-0 cursor-pointer"
+              style={{display: 'block'}}
+              className="absolute inset-0 opacity-0 cursor-pointer z-10"
               accept="image/*"
             />
             <p className="text-sm mt-2 text-gray-400">최대 업로드 용량: 10MB</p>
@@ -212,7 +241,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
             <div className="mt-4">
               <p className="text-gray-700 font-medium mb-2">미리보기</p>
               <img
-                src={previewUrl}
+                src={resolvePreviewSrc(previewUrl)}
                 alt="미리보기"
                 className="w-full h-64 object-cover rounded-md border"
               />
@@ -288,15 +317,15 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
           <div className="form-group mb-6">
             <label className="text-gray-700 font-medium">반려동물 선택</label>
             <select
-              value={selectedPet?.id || ''}
+              value={selectedPet?.petId || ''}
               onChange={e => {
-                const pet = member.pets.find(p => p.id === Number(e.target.value))
+                const pet = member.pets.find(p => p.petId === Number(e.target.value))
                 setSelectedPet(pet || null)
               }}
               className="form-control">
               {member.pets.map(pet => (
-                <option key={pet.id} value={pet.id}>
-                  {pet.name}
+                <option key={pet.petId} value={pet.petId}>
+                  {pet.petName}
                 </option>
               ))}
             </select>
@@ -310,7 +339,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
               <label className="text-gray-700">이름</label>
               <input
                 type="text"
-                value={selectedPet.name}
+                value={selectedPet.petName}
                 readOnly
                 className="form-control bg-gray-100"
               />
@@ -328,7 +357,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
               <label className="text-gray-700">생년월일</label>
               <input
                 type="text"
-                value={selectedPet.birthDate}
+                value={selectedPet.petBirth}
                 readOnly
                 className="form-control bg-gray-100"
               />
@@ -337,7 +366,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
               <label className="text-gray-700">성별</label>
               <input
                 type="text"
-                value={selectedPet.gender ? '수컷' : '암컷'}
+                value={selectedPet.petGender ? '수컷' : '암컷'}
                 readOnly
                 className="form-control bg-gray-100"
               />
@@ -364,7 +393,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
               <label className="text-gray-700">중성화 여부</label>
               <input
                 type="text"
-                value={selectedPet.isNeutered ? '예' : '아니오'}
+                value={selectedPet.neutering ? '예' : '아니오'}
                 readOnly
                 className="form-control bg-gray-100"
               />

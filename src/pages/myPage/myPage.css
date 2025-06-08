@@ -4,6 +4,66 @@
   padding: 20px;
   border-radius: 10px;
   border: 1px solid #eee;
+  height: fit-content;
+}
+
+/* 모든 마이페이지 섹션에 공통으로 적용될 스타일 (패딩은 여기서만 관리) */
+.dashboard.section,
+.dashboard.selection,
+.my-posts-page .dashboard,
+.section.dashboard {
+  /* padding-top: 120px !important; */ /* 페이지별로 관리 */
+  padding-bottom: 60px !important; /* 하단 패딩은 공통 적용 */
+  /* margin-top: 0 !important; */
+  min-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+}
+
+.page-wrapper > section,
+main > section {
+  /* 이 셀렉터에 대한 일반적인 패딩은 제거하고 개별 페이지 CSS에서 관리 */
+  margin-top: 0 !important; /* 이 라인도 확인하고 필요시 조정 또는 제거 */
+  min-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 메인 콘텐츠 */
+.main-content {
+  flex: 1;
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  margin-bottom: 30px;
+  min-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .dashboard.section,
+  .dashbard.selection,
+  .my-posts-page .dashboard,
+  .page-wrapper > section,
+  main > section,
+  .section.dashboard {
+    padding-top: 100px !important;
+    padding-bottom: 60px !important;
+  }
+  .main-content {
+    padding: 20px;
+  }
+}
+
+/* Bootstrap과 Tailwind CSS 클래스 오버라이드 */
+.pt-100,
+.pt-\[100px\],
+[class*='pt-'],
+[class*='mt-'] {
+  padding-top: 100px !important;
+  margin-top: 0 !important;
 }
 
 .dashboard-sidebar .user-image {
@@ -141,7 +201,29 @@
 }
 
 .form-group {
+  position: relative;
   margin-bottom: 20px;
+}
+
+.image-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.image-row img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.image-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .form-group label {
@@ -152,6 +234,7 @@
 }
 
 .form-group input[type='text'],
+.form-group input[type='number'],
 .form-group input[type='email'],
 .form-group input[type='password'],
 .form-group input[type='tel'],
@@ -193,9 +276,53 @@
   font-size: 14px;
   color: #666;
 }
+.form-group input[type='password'],
+.form-group input[type='text'] {
+  /* type이 text일 때도 동일하게 적용 */
+  padding-right: 45px; /* 눈 모양 아이콘이 들어갈 공간 확보. 아이콘 너비 + 여백 */
+  width: 100%; /* 필드 너비 100% */
+  box-sizing: border-box; /* 패딩이 너비에 포함되도록 */
+}
 
 .form-group .file-upload:hover {
   background: #f0f0f0;
+}
+
+.password-toggle-button {
+  position: absolute; /* 부모인 .form-group을 기준으로 위치 지정 */
+  right: 10px; /* 오른쪽에서 10px 떨어진 위치 */
+  top: 50%; /* 상단에서 50% 위치 */
+  transform: translateY(-50%); /* 버튼 자체 높이의 절반만큼 위로 이동하여 중앙 정렬 */
+  background: none; /* 배경 제거 */
+  border: none; /* 테두리 제거 */
+  cursor: pointer; /* 마우스 오버 시 포인터 변경 */
+  padding: 0; /* 내부 패딩 제거 */
+  display: flex; /* 아이콘 중앙 정렬을 위해 flex 사용 */
+  align-items: center; /* 수직 중앙 정렬 */
+  justify-content: center; /* 수평 중앙 정렬 */
+  width: 30px; /* 버튼 너비 */
+  height: 30px; /* 버튼 높이 */
+  color: #888; /* 아이콘 색상 (회색 계열) */
+  z-index: 10; /* 인풋 필드 위에 오도록 z-index 설정 */
+}
+.password-toggle-button:hover {
+  color: #555; /* 호버 시 색상 변경 */
+}
+
+/* 아이콘 크기 조정 (Tailwind CSS h-5 w-5에 해당하는 크기) */
+.password-toggle-button svg {
+  width: 20px; /* h-5, w-5는 보통 1.25rem = 20px */
+  height: 20px;
+}
+
+/* 모바일 등 작은 화면에서의 반응형 디자인 (선택 사항) */
+@media (max-width: 768px) {
+  .password-toggle-button {
+    right: 8px; /* 작은 화면에서 오른쪽 여백 조정 */
+  }
+  .form-group input {
+    padding-right: 40px;
+  }
 }
 
 .update-profile-btn {
@@ -227,14 +354,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-/* 메인 콘텐츠 */
-.main-content {
-  background: #fff;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
 /* 상세 목록 */
@@ -317,11 +436,17 @@
 
 .toggle-buttons {
   display: flex;
-  gap: 10px;
+  gap: 30px;
+}
+
+.toggle-buttons .toggle-button {
+  padding: 4px 20px;
+  font-size: 0.8rem;
+  min-width: 50px;
 }
 
 .toggle-button {
-  padding: 8px 20px;
+  padding: 4px 10px;
   border: 1px solid #eee;
   border-radius: 8px;
   background: #fff;
@@ -675,11 +800,6 @@
   background: #ccc;
 }
 
-.dashboard.section {
-  padding-top: 30px;
-  padding-bottom: 60px;
-}
-
 /* FAQ 스타일 */
 .accordion {
   margin-bottom: 40px;
@@ -976,6 +1096,9 @@
   border-radius: 8px;
   margin-bottom: 30px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  flex: 1; /* 남은 공간 채우기 */
+  display: flex;
+  flex-direction: column;
 }
 
 .block-title {
@@ -1040,10 +1163,10 @@
   border-radius: 4px;
   object-fit: cover;
 }
-.item-list-title  {
+.item-list-title {
   margin-top: 20px;
   margin-bottom: 20px;
-  color: #00000;
+  color: #000000;
 }
 
 .title-info {
@@ -1142,6 +1265,12 @@
   justify-content: center;
 }
 
+.pagination-mgt {
+  margin-top: 80px;
+  display: flex;
+  justify-content: center;
+}
+
 .pagination-list {
   display: flex;
   gap: 5px;
@@ -1150,7 +1279,7 @@
   list-style: none;
 }
 
-.pagination-list li a {
+.pagination-list li button {
   width: 32px;
   height: 32px;
   display: flex;
@@ -1162,16 +1291,53 @@
   background: #f8f9fa;
   text-decoration: none;
   transition: all 0.2s ease;
+  border: 1px solid #eee;
 }
 
-.pagination-list li.active a {
+.pagination-list li.active button {
   background: #32ade6;
   color: #fff;
+  border-color: #32ade6;
 }
 
-.pagination-list li a:hover {
+.pagination-list li button:hover {
   background: #32ade6;
   color: #fff;
+  border-color: #32ade6;
+}
+
+.link-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #f0f0f0;
+  color: #333;
+  font-size: 14px;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  margin: 0;
+}
+
+.link-button:hover {
+  background-color: #ddd;
+}
+
+.link-button:active {
+  background-color: #ccc;
+}
+
+.link-button.active {
+  background-color: #f1a852;
+  color: white;
 }
 
 /* 반응형 */
@@ -1205,4 +1371,107 @@
   .service-item .row > [class*='col-'] {
     margin-bottom: 8px;
   }
+}
+
+/* 메인 콘텐츠 영역 */
+.main-content {
+  flex: 1;
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  margin-bottom: 30px;
+  min-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 대시보드 블록 */
+.dashboard-block {
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  flex: 1; /* 남은 공간 채우기 */
+  display: flex;
+  flex-direction: column;
+}
+
+/* 페이지 래퍼 */
+.page-wrapper {
+  position: relative;
+  min-height: 100vh;
+  padding-top: 0 !important;
+}
+
+/* 브레드크럼 */
+.breadcrumbs {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #fff;
+  padding: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 컨테이너 */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* 행 */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -15px;
+}
+
+/* 컬럼 */
+.col-lg-3,
+.col-lg-9,
+.col-md-4,
+.col-md-8,
+.col-12 {
+  padding: 0 15px;
+}
+
+/* 탭 버튼 스타일 */
+.settings-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1rem;
+}
+
+.settings-tabs .tab-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  color: #6b7280;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 0.375rem;
+}
+
+.settings-tabs .tab-button:hover {
+  color: var(--primary);
+  background-color: #f3f4f6;
+}
+
+.settings-tabs .tab-button.active {
+  color: var(--primary);
+  background-color: #f3f4f6;
+  font-weight: 600;
+}
+
+/* Common padding for all pages */
+.section {
+  padding-bottom: 60px !important; /* 하단 패딩만 유지 */
 }

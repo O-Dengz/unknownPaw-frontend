@@ -1,10 +1,11 @@
 // src/pages/unknownPaw/List.tsx
-
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useRef} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
+import {getImageUrl} from '../../utils/getImageUrl'
+import {formatTimeAgo} from '../../utils/timeAgo'
 
-import BackgroundVideo from '../../components/BackgroundVideo'
-import MainHeader from '../../components/MainHeader'
+//import BackgroundVideo from '../../components/MainLayout/BackgroundVideo'
+//import MainHeader from '../../components/MainLayout/MainHeader'
 
 import '../../../public/assets/css/LineIcons.2.0.css'
 import '../../../public/assets/css/animate.css'
@@ -16,9 +17,10 @@ import './List.css'
 
 interface ImageDTO {
   imageId: number
-  imageUrl: string
+  imagePath: string
+  thumbnailPath?: string
+  isMain: boolean
 }
-
 interface Post {
   postId: number
   title: string
@@ -32,9 +34,22 @@ interface Post {
   regDate: string
   modDate: string
   email: string
-  image: ImageDTO[]
+  images?: ImageDTO[]
   isPetSitterPost: boolean
+  member?: {
+    mid: number
+    email: string
+    nickname: string
+    profileImagePath?: string
+    pawRate?: number
+  }
 }
+
+const bannerImages = [
+  '/src/assets/banner1.png',
+  '/src/assets/banner2.png',
+  '/src/assets/banner3.png'
+]
 
 export function List() {
   const navigate = useNavigate()
@@ -43,254 +58,318 @@ export function List() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  /* ---------------- 배너 ---------------- */
+  const [currentBanner, setCurrentBanner] = useState(0)
+  const bannerInterval = useRef<NodeJS.Timeout | null>(null)
+
   useEffect(() => {
-    let isMounted = true
-
-    const fetchPosts = async () => {
-      setIsLoading(true)
-
-      const token = sessionStorage.getItem('token')
-      if (!token) {
-        setError('로그인이 필요합니다.')
-        navigate('/login', {replace: true})
-        return
-      }
-
-      const headers = {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      }
-
-      const cachedData = sessionStorage.getItem('cachedPosts')
-      if (cachedData) {
-        const {ownerPosts, sitterPosts, timestamp} = JSON.parse(cachedData)
-        if (Date.now() - timestamp < 5 * 60 * 1000) {
-          if (isMounted) {
-            setOwnerPosts(ownerPosts)
-            setSitterPosts(sitterPosts)
-            setIsLoading(false)
-            return
-          }
-        }
-      }
-
-      try {
-        const [ownerRes, sitterRes] = await Promise.all([
-          fetch('/api/posts/petowner/recent/random6', {headers}),
-          fetch('/api/posts/petsitter/recent/random6', {headers})
-        ])
-
-        const handleErrors = (res: Response, type: string) => {
-          if (res.status === 403) {
-            sessionStorage.clear()
-            navigate('/login', {replace: true})
-            throw new Error('세션이 만료되었습니다. 다시 로그인해주세요.')
-          }
-          if (!res.ok) {
-            throw new Error(`${type} 게시글 목록 조회 실패: ${res.status}`)
-          }
-        }
-
-        handleErrors(ownerRes, '펫오너')
-        handleErrors(sitterRes, '펫시터')
-
-        const owners: Post[] = await ownerRes.json()
-        const sitters: Post[] = await sitterRes.json()
-
-        const processedOwnerPosts = owners.map(post => ({
-          ...post,
-          isPetSitterPost: false
-        }))
-        const processedSitterPosts = sitters.map(post => ({
-          ...post,
-          isPetSitterPost: true
-        }))
-
-        if (isMounted) {
-          setOwnerPosts(processedOwnerPosts)
-          setSitterPosts(processedSitterPosts)
-          sessionStorage.setItem(
-            'cachedPosts',
-            JSON.stringify({
-              ownerPosts: processedOwnerPosts,
-              sitterPosts: processedSitterPosts,
-              timestamp: Date.now()
-            })
-          )
-        }
-      } catch (err: any) {
-        if (isMounted) setError(err.message || '게시글을 불러오는데 실패했습니다.')
-      } finally {
-        if (isMounted) setIsLoading(false)
-      }
-    }
-
-    fetchPosts()
-
+    bannerInterval.current = setInterval(
+      () => setCurrentBanner(p => (p + 1) % bannerImages.length),
+      3000
+    )
     return () => {
-      isMounted = false
+      if (bannerInterval.current) {
+        clearInterval(bannerInterval.current)
+      }
     }
-  }, [navigate])
+  }, [])
 
-  const renderPostCards = (posts: Post[]) =>
-    posts.map(post => {
-      const thumbnailUrl =
-        post.image && post.image.length > 0
-          ? post.image[0].imageUrl
-          : '/assets/images/items-grid/2.jpg'
-
-      return (
-        <div className="col-lg-4 col-md-6 col-12" key={post.postId}>
-          <Link
-            to={`/post/${post.isPetSitterPost ? 'PETSITTER' : 'PETOWNER'}/${post.postId}`}
-            className="single-grid wow fadeInUp random-post-card"
-            data-wow-delay=".2s">
-            <div className="image">
-              <div className="thumbnail">
-                <img
-                  src={thumbnailUrl}
-                  alt="썸네일"
-                  style={{width: '100%', height: '200px', objectFit: 'cover'}}
-                />
-              </div>
-              <div className="author">
-                <div className="author-image">
-                  <img
-                    src={thumbnailUrl}
-                    alt="작성자"
-                    style={{
-                      width: '40px',
-                      height: '40px',
-                      objectFit: 'cover',
-                      borderRadius: '50%'
-                    }}
-                  />
-                  <span>{post.email}</span>
-                </div>
-                <p className="sale">{post.isPetSitterPost ? '펫시터' : '펫오너'}</p>
-              </div>
-            </div>
-
-            <div className="content">
-              <div className="top-content">
-                <span className="tag">{post.serviceCategory}</span>
-                <h3 className="title">{post.title}</h3>
-                <p className="update-time">
-                  업데이트: {new Date(post.modDate).toLocaleDateString()}
-                </p>
-                <p className="location">위치: {post.defaultLocation}</p>
-                <p className="rate">희망 시급: {post.hourlyRate.toLocaleString()}원</p>
-              </div>
-              <div className="bottom-content">
-                <span className="like">
-                  <i className="lni lni-heart" /> {post.likes}
-                </span>
-                <span className="chat">
-                  <i className="lni lni-comments" /> {post.chatCount}
-                </span>
-              </div>
-            </div>
-          </Link>
-        </div>
-      )
-    })
-
-  const handleScrollTop = (e: React.MouseEvent) => {
-    e.preventDefault()
-    window.scrollTo({top: 0, behavior: 'smooth'})
-  }
-
-  if (isLoading) {
-    return (
-      <div className="container text-center py-5">
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
+  const goToBanner = (idx: number) => {
+    setCurrentBanner(idx)
+    bannerInterval.current && clearInterval(bannerInterval.current)
+    bannerInterval.current = setInterval(
+      () => setCurrentBanner(p => (p + 1) % bannerImages.length),
+      3000
     )
   }
 
-  if (error) {
+  /* --------------- 데이터 로드 --------------- */
+  useEffect(() => {
+    let alive = true
+    ;(async () => {
+      try {
+        const token = sessionStorage.getItem('token')
+        if (!token) return navigate('/login', {replace: true})
+
+        const headers = {Authorization: `Bearer ${token}`}
+        const [oRes, sRes] = await Promise.all([
+          fetch('/api/posts/petowner/recent/random6', {headers}),
+          fetch('/api/posts/petsitter/recent/random6', {headers})
+        ])
+        if (oRes.status === 403 || sRes.status === 403) {
+          sessionStorage.clear()
+          return navigate('/login', {replace: true})
+        }
+
+        const owners = (await oRes.json()) as Post[]
+        const sitters = (await sRes.json()) as Post[]
+
+        const sortDesc = (arr: Post[]) =>
+          [...arr].sort((a, b) => +new Date(b.regDate) - +new Date(a.regDate)).slice(0, 6)
+
+        if (alive) {
+          setOwnerPosts(sortDesc(owners).map(p => ({...p, isPetSitterPost: false})))
+          setSitterPosts(sortDesc(sitters).map(p => ({...p, isPetSitterPost: true})))
+          setIsLoading(false)
+        }
+      } catch (e: any) {
+        alive && setError(e.message || '데이터를 불러오지 못했습니다.')
+      }
+    })()
+    return () => {
+      alive = false
+    }
+  }, [navigate])
+
+  /* ---------------- 렌더 함수 ---------------- */
+  const prettyDate = (d: string) =>
+    (Date.now() - +new Date(d)) / 864e5 < 7
+      ? formatTimeAgo(d)
+      : `${new Date(d).getFullYear()}년 ${new Date(d).getMonth() + 1}월 ${new Date(
+          d
+        ).getDate()}일`
+
+  const renderCards = (posts: Post[]) =>
+    posts.map(p => (
+      <div className="col-lg-4 col-md-6 col-12" key={p.postId}>
+        <Link
+          to={`/posts/${p.isPetSitterPost ? 'petsitter' : 'petowner'}/read/${p.postId}`}
+          className="single-grid wow fadeInUp random-post-card"
+          data-wow-delay=".2s">
+          <div className="image">
+            <div className="thumbnail">
+              <img
+                src={
+                  p.images?.[0]
+                    ? getImageUrl(p.images[0].thumbnailPath ?? p.images[0].imagePath)
+                    : '/assets/images/pet/dog-2.jpg'
+                }
+                alt=""
+                style={{width: '100%', height: 200, objectFit: 'cover'}}
+              />
+            </div>
+            <div className="author">
+              <div className="author-image">
+                <img
+                  src={
+                    p.member?.profileImagePath
+                      ? getImageUrl(p.member.profileImagePath)
+                      : '/assets/images/items-grid/author-1.jpg'
+                  }
+                  alt=""
+                  style={{width: 40, height: 40, borderRadius: '50%'}}
+                />
+                <span>{p.member?.nickname || p.email}</span>
+              </div>
+              <p className="sale">{p.isPetSitterPost ? '펫시터' : '펫오너'}</p>
+            </div>
+          </div>
+          <div className="content">
+            <div className="top-content">
+              <span className="tag">{p.serviceCategory}</span>
+              <h3 className="title">{p.title}</h3>
+              <p className="update-time">등록일: {prettyDate(p.regDate)}</p>
+              <p className="location">위치: {p.defaultLocation || '정보 없음'}</p>
+              <p className="rate">
+                시급: {p.hourlyRate ? `${p.hourlyRate.toLocaleString()}원` : '협의가능'}
+              </p>
+            </div>
+            <div className="bottom-content">
+              <span className="like">
+                <i className="lni lni-heart" /> {p.likes}
+              </span>
+              <span className="chat">
+                <i className="lni lni-comments" /> {p.chatCount}
+              </span>
+            </div>
+          </div>
+        </Link>
+      </div>
+    ))
+
+  /* ---------------- 로딩 / 에러 ---------------- */
+  if (isLoading)
+    return (
+      <div className="container text-center py-5">
+        <div className="spinner-border" />
+      </div>
+    )
+  if (error)
     return (
       <div className="container text-center py-5">
         <div className="alert alert-danger">{error}</div>
       </div>
     )
-  }
 
+  /* ------------------- 뷰 ------------------- */
   return (
-    <>
-      <span onClick={handleScrollTop} className="scroll-top btn-hover">
-        <i className="lni lni-chevron-up" />
-      </span>
+    <div className="list-page-wrapper">
+      <>
+        {/* scroll-top */}
+        <span
+          className="scroll-top btn-hover"
+          onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
+          <i className="lni lni-chevron-up" />
+        </span>
 
-      <section
-        className="hero-area overlay"
-        style={{height: '60vh', position: 'relative', overflow: 'hidden'}}>
-        <MainHeader />
-        <BackgroundVideo />
-      </section>
-
-      <section className="categories-section">
-        <div className="container">
-          <div className="row">
-            {[
-              {
-                to: '/petowner/list',
-                img: '/assets/images/items-grid/1.jpg',
-                title: '펫오너 게시판',
-                desc: '반려동물을 돌봐줄 사람을 찾고 있다면 여기로!'
-              },
-              {
-                to: '/petsitter/list',
-                img: '/assets/images/items-grid/3.jpg',
-                title: '펫시터 게시판',
-                desc: '펫시터로 활동하고 싶다면 이곳을 확인해보세요!'
-              },
-              {
-                to: '/community',
-                img: '/assets/images/items-grid/4.jpg',
-                title: '커뮤니티 게시판',
-                desc: '자유롭게 소통할 수 있는 반려동물 커뮤니티'
-              }
-            ].map((item, idx) => (
-              <div className="col-lg-4 col-md-6 col-12" key={idx}>
-                <Link
-                  to={item.to}
-                  className="single-grid wow fadeInUp same-height-card card-link"
-                  data-wow-delay={`.${idx + 1}s`}
-                  onClick={e => {
-                    e.preventDefault()
-                    navigate(item.to)
-                  }}>
-                  <div className="image">
-                    <img src={item.img} alt={item.title} />
-                  </div>
-                  <div className="content text-center">
-                    <h3 className="title">{item.title}</h3>
-                    <p>{item.desc}</p>
-                  </div>
-                </Link>
-              </div>
-            ))}
+        {/* 히어로 영역 ------------------------------------------------------ */}
+        <section className="hero-area overlay baemin-hero">
+          <div className="baemin-hero-inner">
+            <div className="baemin-hero-text">
+              <h1>
+                반려동물과 함께
+                <br />
+                사람과 사람을 잇다
+              </h1>
+              <p>산책, 돌봄, 커뮤니티까지 한 번에!</p>
+            </div>
+            <img
+              src="/assets/images/main image.png"
+              alt="메인 이미지"
+              className="baemin-hero-image"
+            />
           </div>
-        </div>
-      </section>
+          <div
+            className="scroll-down-indicator"
+            onClick={() =>
+              window.scrollTo({top: window.innerHeight, behavior: 'smooth'})
+            }>
+            <svg width="54" height="60" viewBox="0 0 54 60" fill="none">
+              <path
+                d="M27 8
+         Q30 26 27 38
+         Q24 50 27 52"
+                stroke="#fff"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeDasharray="2,5"
+                fill="none"
+                style={{
+                  filter: 'drop-shadow(0px 2px 7px rgba(50,173,230,0.09))'
+                }}
+              />
+              <path
+                d="M21 46 L27 54 L33 46"
+                stroke="#fff"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </svg>
+            <span className="scroll-text">아래로</span>
+          </div>
+        </section>
 
-      <section className="posts-section">
-        <div className="container">
-          <h2 className="section-title mb-4">펫오너 게시글</h2>
-          <div className="row">{renderPostCards(ownerPosts)}</div>
-        </div>
-      </section>
-
-      <section className="posts-section">
-        <div className="container">
-          <h2 className="section-title mb-4">펫시터 게시글</h2>
-          <div className="row">{renderPostCards(sitterPosts)}</div>
-        </div>
-      </section>
-    </>
+        <section className="hero-area overlay baemin-hero2">
+          <div className="row mt-4">
+            <div className="col-12">
+              <div
+                className="main-banner-area"
+                style={{
+                  width: '100%',
+                  maxWidth: 1200,
+                  margin: '0 auto',
+                  position: 'relative',
+                  textAlign: 'center',
+                  minHeight: 280
+                }}>
+                <img
+                  src={bannerImages[currentBanner]}
+                  alt=""
+                  style={{
+                    width: '100%',
+                    height: 360,
+                    borderRadius: 20,
+                    objectFit: 'cover',
+                    boxShadow: '0 4px 32px rgba(0,0,0,.08)',
+                    transition: 'all .6s cubic-bezier(.23,1,.32,1)'
+                  }}
+                />
+                <button
+                  onClick={() =>
+                    goToBanner(
+                      (currentBanner - 1 + bannerImages.length) % bannerImages.length
+                    )
+                  }
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: 32,
+                    transform: 'translateY(-50%)',
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
+                    border: 0,
+                    cursor: 'pointer',
+                    background: 'rgba(255,255,255,.7)',
+                    boxShadow: '0 2px 6px rgba(0,0,0,.13)',
+                    fontSize: 24
+                  }}>
+                  ←
+                </button>
+                <button
+                  onClick={() => goToBanner((currentBanner + 1) % bannerImages.length)}
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    right: 32,
+                    transform: 'translateY(-50%)',
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
+                    border: 0,
+                    cursor: 'pointer',
+                    background: 'rgba(255,255,255,.7)',
+                    boxShadow: '0 2px 6px rgba(0,0,0,.13)',
+                    fontSize: 24
+                  }}>
+                  →
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="baemin-hero2-inner">
+            {/* 이미지와 텍스트를 하나의 래퍼로 감싸기 */}
+            <div className="baemin-hero2-visual">
+              <img
+                src="/assets/images/main image2.png"
+                alt="특별한 서비스"
+                className="baemin-hero-image"
+              />
+              <div className="baemin-hero-text">
+                <h1>
+                  산책, 호텔링, 돌봄
+                  <br />
+                  반려동물 맞춤형 서비스
+                </h1>
+                <div className="baemin-hero-desc">
+                  사랑스러운 동물들과 믿음직한 도우미들을 만나보세요!
+                </div>
+              </div>
+            </div>
+            {/* 버튼은 hero2-inner의 가장 아래, 하단 중앙에! */}
+            <div className="baemin-hero2-buttons">
+              <button
+                className="hero-circle-btn"
+                onClick={() => navigate('/petowner/list')}>
+                돌봐주세요
+              </button>
+              <button
+                className="hero-circle-btn"
+                onClick={() => navigate('/petsitter/list')}>
+                돌봐줄게요
+              </button>
+              <button
+                className="hero-circle-btn"
+                onClick={() => navigate('/community/posts')}>
+                커뮤니티
+              </button>
+            </div>
+            <div className="hero2-guide-msg">버튼을 눌러 게시판으로 이동하세요</div>
+          </div>
+        </section>
+      </>
+    </div>
   )
 }

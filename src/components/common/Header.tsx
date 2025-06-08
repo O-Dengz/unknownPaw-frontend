@@ -17,7 +17,9 @@ const Header: React.FC = () => {
                 <nav className="nav-menu">
                   <ul>
                     <li>
-                      <Link to="/">홈</Link>
+                      <Link to="/">
+                        <img src="/assets/images/logo/logo.png" alt="UnknownPaw" style={{ height: '30px' }} />
+                      </Link>
                     </li>
                     <li>
                       <Link to="/petowner/list">반려인</Link>

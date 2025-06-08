@@ -4,46 +4,26 @@ import '../../../public/assets/css/bootstrap.min.css'
 import '../../../public/assets/css/glightbox.min.css'
 import '../../../public/assets/css/main.css'
 import '../../../public/assets/css/tiny-slider.css'
+import Header from '../../components/Layout/Header'
+import './Post.css'
 
 export function About() {
   return (
     <>
-      {/* <!--[if lte IE 9]> */}
-      <p className="browserupgrade">
-        You are using an <strong>outdated</strong> browser. Please
-        <a href="https://browsehappy.com/">upgrade your browser</a> to improve your
-        experience and security.
-      </p>
-      {/* <![endif]--> */}
-
-      {/* <!-- Start Breadcrumbs --> */}
-      <div className="breadcrumbs">
+      <Header />
+      <main className="item-details">
         <div className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-6 col-md-6 col-12">
-              <div className="breadcrumbs-content">
-                <h1 className="page-title">About Us</h1>
+          <div className="row">
+            <div className="col-12">
+              <div className="section-title">
+                <h2>About Us</h2>
+                <p>모르는 개 산책 서비스에 대해 알아보세요</p>
               </div>
             </div>
-            <div className="col-lg-6 col-md-6 col-12">
-              <ul className="breadcrumb-nav">
-                <li>
-                  <a href="index.html">Home</a>
-                </li>
-                <li>About Us</li>
-              </ul>
-            </div>
           </div>
-        </div>
-      </div>
-      {/* <!-- End Breadcrumbs -->
-
-    <!-- Start About Area --> */}
-      <section className="about-us section">
-        <div className="container">
           <div className="row align-items-center justify-content-center">
             <div className="col-lg-6 col-md-12 col-12">
-              <div className="content-left wow fadeInLeft" data-wow-delay=".3s">
+              <div className="content-left">
                 <img src="assets/images/about/choose-left.jpg" alt="#" />
                 <a
                   href="https://www.youtube.com/watch?v=r44RKWyfcFw&fbclid=IwAR21beSJORalzmzokxDRcGfkZA1AtRTE__l5N4r09HcGS5Y6vOluyouM9EM"
@@ -53,9 +33,7 @@ export function About() {
               </div>
             </div>
             <div className="col-lg-6 col-md-12 col-12">
-              {/* <!-- content-1 start --> */}
-              <div className="content-right wow fadeInRight" data-wow-delay=".5s">
-                {/* <!-- Heading --> */}
+              <div className="content-right">
                 <span className="sub-heading">About</span>
                 <h2>'모르는 개 산책' 서비스 소개</h2>
                 <p>
@@ -71,124 +49,11 @@ export function About() {
                   있도록 도와줍니다. 예를 들어, 시베리안 허스키나 보더콜리는 활동적인
                   산책러와, 말티즈나 퍼그는 가벼운 산책을 원하는 사람과 연결됩니다.
                 </p>
-                {/* <!-- End Heading --> */}
               </div>
             </div>
           </div>
         </div>
-      </section>
-      {/* <!-- End About Area -->
-
-    <!-- Start How Works Area --> */}
-      <section className="how-works section">
-        <div className="container">
-          <div className="row">
-            <div className="col-12">
-              <div className="section-title">
-                <h2 className="wow fadeInUp" data-wow-delay=".4s">
-                  How it Works
-                </h2>
-                <p className="wow fadeInUp" data-wow-delay=".6s">
-                  There are many variations of passages of Lorem Ipsum available, but the
-                  majority have suffered alteration in some form.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-lg-4 col-md-4 col-12">
-              {/* <!-- Start Single Work --> */}
-              <div className="single-work wow fadeInUp" data-wow-delay=".2s">
-                <span className="serial">01</span>
-                <h3>Create Account</h3>
-                <p>
-                  Lorem ipsum dolor sit amet constur adipisicing sed do eiusmod tempor
-                  incididunt labore.
-                </p>
-              </div>
-              {/* <!-- End Single Work --> */}
-            </div>
-            <div className="col-lg-4 col-md-4 col-12">
-              {/* <!-- Start Single Work --> */}
-              <div className="single-work wow fadeInUp" data-wow-delay=".4s">
-                <span className="serial">02</span>
-                <h3>Post Your Ads</h3>
-                <p>
-                  Lorem ipsum dolor sit amet constur adipisicing sed do eiusmod tempor
-                  incididunt labore.
-                </p>
-              </div>
-              {/* <!-- End Single Work --> */}
-            </div>
-            <div className="col-lg-4 col-md-4 col-12">
-              {/* <!-- Start Single Work --> */}
-              <div className="single-work wow fadeInUp" data-wow-delay=".6s">
-                <span className="serial">03</span>
-                <h3>Sell Your Item</h3>
-                <p>
-                  Lorem ipsum dolor sit amet constur adipisicing sed do eiusmod tempor
-                  incididunt labore.
-                </p>
-              </div>
-              {/* <!-- End Single Work --> */}
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* <!-- End How Works Area -->
-
-    <!-- Start Achievement Area --> */}
-      <section className="our-achievement section">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-3 col-md-3 col-12">
-              <div className="single-achievement wow fadeInUp" data-wow-delay=".2s">
-                <h3 className="counter">
-                  <span id="secondo1" className="countup" cup-end="1250">
-                    1250
-                  </span>
-                  +
-                </h3>
-                <p>Regular Ads</p>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-12">
-              <div className="single-achievement wow fadeInUp" data-wow-delay=".4s">
-                <h3 className="counter">
-                  <span id="secondo2" className="countup" cup-end="350">
-                    350
-                  </span>
-                  +
-                </h3>
-                <p>Locations</p>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-12">
-              <div className="single-achievement wow fadeInUp" data-wow-delay=".6s">
-                <h3 className="counter">
-                  <span id="secondo3" className="countup" cup-end="2500">
-                    2500
-                  </span>
-                  +
-                </h3>
-                <p>Reguler Members</p>
-              </div>
-            </div>
-            <div className="col-lg-3 col-md-3 col-12">
-              <div className="single-achievement wow fadeInUp" data-wow-delay=".6s">
-                <h3 className="counter">
-                  <span id="secondo3" className="countup" cup-end="250">
-                    250
-                  </span>
-                  +
-                </h3>
-                <p>Premium Ads</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* <!-- End Achievement Area --> */}
+      </main>
     </>
   )
 }

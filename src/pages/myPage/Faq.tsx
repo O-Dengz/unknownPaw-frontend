@@ -1,11 +1,35 @@
 import {useState} from 'react'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
+import axios from 'axios'
+import { DashboardSidebar } from '../../components/features/dashboard/DashboardSidebar'
+import {InquiryHistoryModal} from '../../components/InquiryHistoryModal'
 
 export default function Faq() {
   const [activeAccordion, setActiveAccordion] = useState<string | null>('collapseOne')
+  const [showHistory, setShowHistory] = useState(false)
 
   const toggleAccordion = (id: string) => {
     setActiveAccordion(activeAccordion === id ? null : id)
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const form = e.currentTarget
+
+    const subject = form.subject.value
+    const message = form.message.value
+    const memberString = sessionStorage.getItem('member')
+    const member = memberString ? JSON.parse(memberString) : null
+    const mid = member?.mid
+
+    if (!mid) return alert('로그인이 필요합니다.')
+
+    try {
+      await axios.post('/api/contact', {subject, message, mid})
+      alert('문의가 등록되었습니다.')
+      form.reset()
+    } catch {
+      alert('문의 등록에 실패했습니다.')
+    }
   }
 
   return (
@@ -21,7 +45,13 @@ export default function Faq() {
             <div className="col-lg-6 col-md-6 col-12">
               <ul className="breadcrumb-nav">
                 <li>
-                  <a href="/">홈</a>
+                  <a href="/">
+                    <img
+                      src="/assets/images/logo/logo.png"
+                      alt="UnknownPaw"
+                      style={{height: '30px'}}
+                    />
+                  </a>
                 </li>
                 <li>자주 묻는 질문</li>
               </ul>
@@ -32,7 +62,7 @@ export default function Faq() {
 
       <section className="dashboard section">
         <div className="container">
-          <div className="row">
+          <div className="row d-flex">
             <div className="col-lg-3 col-md-4 col-12">
               <DashboardSidebar />
             </div>
@@ -301,8 +331,8 @@ export default function Faq() {
                 </div>
 
                 <div className="contact-section">
-                  <div className="row">
-                    <div className="col-lg-5 col-12">
+                  <div className="row d-flex">
+                    <div className="col-lg-6 col-12">
                       <div className="contact-info">
                         <div className="contact-info-content">
                           <h2>고객센터 안내</h2>
@@ -361,7 +391,7 @@ export default function Faq() {
                         </div>
                       </div>
                     </div>
-                    <div className="col-lg-7 col-12">
+                    <div className="col-lg-6 col-12">
                       <div className="contact-form-wrapper">
                         <div className="form-title">
                           <h2>문의하기</h2>
@@ -370,18 +400,8 @@ export default function Faq() {
                             작성해 주세요.
                           </p>
                         </div>
-                        <form className="form" onSubmit={e => e.preventDefault()}>
+                        <form className="form" onSubmit={handleSubmit}>
                           <div className="row">
-                            <div className="col-lg-6 col-12">
-                              <div className="form-group">
-                                <input
-                                  name="name"
-                                  type="text"
-                                  placeholder="이름"
-                                  required
-                                />
-                              </div>
-                            </div>
                             <div className="col-lg-6 col-12">
                               <div className="form-group">
                                 <input
@@ -392,62 +412,51 @@ export default function Faq() {
                                 />
                               </div>
                             </div>
-                            <div className="col-lg-6 col-12">
-                              <div className="form-group">
-                                <input
-                                  name="email"
-                                  type="email"
-                                  placeholder="이메일"
-                                  required
-                                />
-                              </div>
-                            </div>
-                            <div className="col-lg-6 col-12">
-                              <div className="form-group">
-                                <input
-                                  name="phone"
-                                  type="text"
-                                  placeholder="연락처"
-                                  required
-                                />
-                              </div>
-                            </div>
                             <div className="col-12">
                               <div className="form-group message">
                                 <textarea
                                   name="message"
-                                  placeholder="문의내용을 입력해 주세요."></textarea>
+                                  placeholder="문의내용을 입력해 주세요."
+                                  required></textarea>
                               </div>
                             </div>
-                            <div className="col-12">
+                            <div className="col-12 d-flex gap-3 align-items-center">
                               <div className="form-group button">
                                 <button type="submit" className="btn">
                                   문의하기
                                 </button>
                               </div>
+                              <button
+                                type="button"
+                                className="btn btn-outline-secondary"
+                                onClick={() => setShowHistory(true)}>
+                                나의 문의 내역 보기
+                              </button>
                             </div>
                           </div>
                         </form>
+                        {showHistory && (
+                          <InquiryHistoryModal onClose={() => setShowHistory(false)} />
+                        )}
                       </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="map-section">
-                  <div className="map-container">
-                    <div className="mapouter">
-                      <div className="gmap_canvas">
-                        <iframe
-                          // 원하는 위치로 바꾸고 싶을 땐 : 웹사이트 임베드 - google maps platform에서 api 발급
-                          width="100%"
-                          height="500"
-                          id="gmap_canvas"
-                          src="https://maps.google.com/maps?q=서울특별시+강남구+테헤란로+123&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                          frameBorder="0"
-                          scrolling="no"
-                          marginHeight={0}
-                          marginWidth={0}
-                        />
+                      <div className="map-section">
+                        <div className="map-container">
+                          <div className="mapouter">
+                            <div className="gmap_canvas">
+                              <iframe
+                                // 원하는 위치로 바꾸고 싶을 땐 : 웹사이트 임베드 - google maps platform에서 api 발급
+                                width="100%"
+                                height="300"
+                                id="gmap_canvas"
+                                src="https://maps.google.com/maps?q=서울특별시+강남구+테헤란로+123&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                frameBorder="0"
+                                scrolling="no"
+                                marginHeight={0}
+                                marginWidth={0}
+                              />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -1,0 +1,175 @@
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.login-button {
+  padding: 8px 16px;
+  color: #34b7a7;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.login-button:hover {
+  color: #2da89a;
+}
+
+.join-button {
+  padding: 8px 16px;
+  background-color: #34b7a7;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.join-button:hover {
+  background-color: #2da89a;
+}
+
+.header-button .btn {
+  display: inline-flex; /* 핵심! 한 줄 정렬 */
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap; /* 줄바꿈 금지! */
+  gap: 8px; /* 아이콘과 글자 사이 여백 */
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.2);
+  border: none;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.header-button .btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+  box-shadow: 0 6px 25px rgba(14, 165, 233, 0.3);
+}
+
+.header-button .btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(14, 165, 233, 0.15);
+}
+
+.header-button .btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+}
+
+.header-button .btn:hover::before {
+  left: 100%;
+}
+
+.header-button .btn i {
+  font-size: 18px;
+}
+
+/* Floating Button Styles */
+.floating-button {
+  background: #f1a852;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(241, 168, 82, 0.2);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.floating-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(241, 168, 82, 0.3);
+  background: #e89a42;
+}
+
+.floating-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(241, 168, 82, 0.2);
+}
+
+.floating-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+}
+
+.floating-button:hover::before {
+  left: 100%;
+}
+
+.fix-button {
+  background: #f1a852;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(241, 168, 82, 0.2);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.fix-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(241, 168, 82, 0.3);
+  background: #e89a42;
+}
+
+.fix-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(241, 168, 82, 0.2);
+}
+
+.fix-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+}
+
+.fix-button:hover::before {
+  left: 100%;
+}
+.navbar-nav .nav-item{
+  margin: 0 18px;          /* ← 좌‧우 여백(기존보다 살짝 넓게) */
+}
+
+.navbar-nav .nav-link{
+  font-size: 1.05rem;      /* ≈ 16-17 px  정도로 살짝 확대 */
+  line-height: 1.4;        /* 클릭영역 높이 확보 */
+}
+
+/* 데스크톱에서만 패딩 조금 더 */
+@media (min-width: 992px){
+  .navbar-nav .nav-link{ padding: 8px 0; }
+}

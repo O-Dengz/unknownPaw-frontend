@@ -1,194 +1,113 @@
-import React, {useState} from 'react'
-import {Link} from 'react-router-dom'
-import {DashboardSidebar} from '../../components/DashboardSidebar'
+// src/pages/myPage/MyPosts.tsx
+
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+import { DashboardSidebar } from '../../components/DashboardSidebar'
+import { Link } from 'react-router-dom'
 import './myPage.css'
 
-interface Item {
+interface PostItem {
   id: number
   title: string
-  price: string
-  location: string
-  category: string
-  status: string
-  image: string
+  regDate: string
+  likes: number
+  imageUrl?: string
+  category?: string
 }
 
-export default function MyItems() {
-  const [items, setItems] = useState<Item[]>([
-    {
-      id: 1,
-      title: '강아지 산책 서비스',
-      price: '15,000원/시간',
-      location: '부산시 수영구',
-      category: '산책',
-      status: '진행중',
-      image: '/assets/images/pet/dog-1.jpg'
-    },
-    {
-      id: 2,
-      title: '고양이 돌봄 서비스',
-      price: '20,000원/시간',
-      location: '부산시 기장군',
-      category: '돌봄',
-      status: '완료',
-      image: '/assets/images/pet/dog-1.jpg'
-    },
-    {
-      id: 3,
-      title: '강아지 장기 돌봄',
-      price: '50,000원/일',
-      location: '부산시 강서구',
-      category: '돌봄',
-      status: '진행중',
-      image: '/assets/images/pet/dog-1.jpg'
-    },
-    {
-      id: 4,
-      title: '반려동물 호텔링 서비스',
-      price: '35,000원/일',
-      location: '부산시 금정구',
-      category: '호텔링',
-      status: '예약중',
-      image: '/assets/images/pet/dog-1.jpg'
-    }
-  ])
+type TabType = 'PET_OWNER' | 'PET_SITTER' | 'COMMUNITY'
 
-  const handleDelete = (id: number) => {
-    const confirmed = window.confirm('정말 삭제하시겠습니까?')
-    if (confirmed) {
-      setItems(prevItems => prevItems.filter(item => item.id !== id))
+interface ApiError {
+  response?: { status: number; statusText: string }
+  request?: any
+  message?: string
+}
+
+export default function MyPosts() {
+  const [activeTab, setActiveTab] = useState<TabType>('PET_OWNER')
+  const [posts, setPosts] = useState<PostItem[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const fetchPosts = async (type: TabType) => {
+    try {
+      setLoading(true)
+      setError('')
+      const memberString = sessionStorage.getItem('member')
+      const member = memberString ? JSON.parse(memberString) : null
+      const mid = member?.mid
+
+      if (!mid) throw new Error('로그인이 필요합니다.')
+
+      const urlMap: Record<TabType, string> = {
+        PET_OWNER: `http://localhost:8080/unknownPaw/api/posts/petowner/my/${mid}`,
+        PET_SITTER: `http://localhost:8080/unknownPaw/api/posts/petsitter/my/${mid}`,
+        COMMUNITY: `http://localhost:8080/unknownPaw/api/community/my/${mid}`
+      }
+
+      const response = await axios.get(urlMap[type])
+      setPosts(response.data)
+    } catch (err) {
+      const apiError = err as ApiError
+      if (apiError.response) {
+        setError(`불러오기 실패 (${apiError.response.status}: ${apiError.response.statusText})`)
+      } else if (apiError.request) {
+        setError('서버에 연결할 수 없습니다.')
+      } else {
+        setError(err instanceof Error ? err.message : '알 수 없는 오류 발생')
+      }
+    } finally {
+      setLoading(false)
     }
   }
 
-  const total = items.length
-  const inProgress = items.filter(item => item.status === '진행중').length
-  const reserved = items.filter(item => item.status === '예약중').length
-  const completed = items.filter(item => item.status === '완료').length
+  useEffect(() => {
+    fetchPosts(activeTab)
+  }, [activeTab])
 
   return (
-    <div>
-      <div className="breadcrumbs">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-6 col-md-6 col-12">
-              <div className="breadcrumbs-content">
-                <h1 className="page-title">내 게시글</h1>
+    <div className="my-posts-page">
+      <div className="container dashboard">
+        <div className="row">
+          <div className="col-lg-3">
+            <DashboardSidebar />
+          </div>
+
+          <div className="col-lg-9">
+            <div className="main-content">
+              <h2 className="mb-4">내가 쓴 글</h2>
+
+              {/* 🔽 탭 */}
+              <div className="tab-buttons mb-3 d-flex gap-2">
+                <button className={`btn ${activeTab === 'PET_OWNER' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setActiveTab('PET_OWNER')}>펫오너</button>
+                <button className={`btn ${activeTab === 'PET_SITTER' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setActiveTab('PET_SITTER')}>펫시터</button>
+                <button className={`btn ${activeTab === 'COMMUNITY' ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setActiveTab('COMMUNITY')}>커뮤니티</button>
               </div>
-            </div>
-            <div className="col-lg-6 col-md-6 col-12">
-              <ul className="breadcrumb-nav">
-                <li>
-                  <Link to="/">Home</Link>
-                </li>
-                <li>내 게시글</li>
-              </ul>
+
+              {loading ? (
+                <p>불러오는 중...</p>
+              ) : error ? (
+                <p className="text-danger">{error}</p>
+              ) : posts.length === 0 ? (
+                <p>작성한 글이 없습니다.</p>
+              ) : (
+                posts.map(post => (
+                  <div key={post.id} className="post-card p-3 border rounded mb-3 shadow-sm d-flex gap-3 align-items-center">
+                    <img src={post.imageUrl || '/assets/images/default-thumbnail.jpg'} alt="thumbnail" style={{ width: 120, height: 80, objectFit: 'cover' }} />
+                    <div>
+                      <h5>{post.title}</h5>
+                      <p>작성일: {post.regDate}</p>
+                      <p>좋아요 ❤️: {post.likes}</p>
+                      {post.category && <p>카테고리: {post.category}</p>}
+                      <Link to={`/post/${post.id}`} className="btn btn-sm btn-outline-secondary mt-1">상세보기</Link>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
       </div>
-
-      <section className="dashboard section">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-3 col-md-4 col-12">
-              <DashboardSidebar />
-            </div>
-            <div className="col-lg-9 col-md-8 col-12">
-              <div className="main-content">
-                <div className="dashboard-block mt-0">
-                  <div className="service-list">
-                    <div className="service-header">
-                      <div className="row">
-                        <div className="col-12">
-                          <div className="header-info">
-                            <span>전체 {total}</span>
-                            <span>진행중 {inProgress}</span>
-                            <span>예약중 {reserved}</span>
-                            <span>완료 {completed}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="service-items">
-                      {items.map(item => (
-                        <div key={item.id} className="service-item">
-                          <div className="row">
-                            <div className="col-lg-4 col-md-4 col-12">
-                              <div className="service-title">
-                                <img src={item.image} alt={item.title} />
-                                <div className="title-info">
-                                  <h3>{item.title}</h3>
-                                  <p className="price">{item.price}</p>
-                                  <p className="location">{item.location}</p>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-2 col-md-2 col-12">
-                              <div className="service-category">
-                                <span>{item.category}</span>
-                              </div>
-                            </div>
-                            <div className="col-lg-4 col-md-4 col-12">
-                              <div className="service-status">
-                                <div className="status-bar">
-                                  <div className={`status-progress ${item.status}`}></div>
-                                </div>
-                                <span className="status-text">{item.status}</span>
-                              </div>
-                            </div>
-                            <div className="col-lg-2 col-md-2 col-12">
-                              <div className="service-actions">
-                                <Link
-                                  to="#"
-                                  onClick={() => alert('수정 기능은 준비 중입니다.')}
-                                  className="action-btn edit">
-                                  <i className="lni lni-pencil"></i>
-                                </Link>
-                                <Link to={`/post/${item.id}`} className="action-btn view">
-                                  <i className="lni lni-eye"></i>
-                                </Link>
-                                <Link
-                                  to="#"
-                                  onClick={() => handleDelete(item.id)}
-                                  className="action-btn delete">
-                                  <i className="lni lni-trash"></i>
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="pagination">
-                      <ul className="pagination-list">
-                        <li>
-                          <Link to="#">1</Link>
-                        </li>
-                        <li className="active">
-                          <Link to="#">2</Link>
-                        </li>
-                        <li>
-                          <Link to="#">3</Link>
-                        </li>
-                        <li>
-                          <Link to="#">4</Link>
-                        </li>
-                        <li>
-                          <Link to="#">
-                            <i className="lni lni-chevron-right"></i>
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }

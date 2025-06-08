@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, {useState, useEffect} from 'react'
 import '../../../public/assets/css/LineIcons.2.0.css'
 import '../../../public/assets/css/animate.css'
 import '../../../public/assets/css/bootstrap.min.css'
 import '../../../public/assets/css/glightbox.min.css'
 import '../../../public/assets/css/main.css'
 import '../../../public/assets/css/tiny-slider.css'
+import {UniversalSkeleton} from '../../components/_Skeletons/UniversalSkeleton'
+import {getImageUrl} from '../../utils/getImageUrl'
 
 // 기본 이미지 배열
 const defaultImages = [
@@ -19,56 +21,64 @@ const getRandomDefaultImage = () => {
   return defaultImages[randomIndex]
 }
 
+// 이미지 URL 생성 함수 추가
+const getCommunityImageUrl = (imageName: string) => {
+  if (!imageName) return getRandomDefaultImage()
+  // CommunityPost.tsx와 동일한 이미지 URL 형식 사용
+  return `http://localhost:8080/unknownPaw/api/community/images/${encodeURIComponent(
+    imageName
+  )}`
+}
+
 // 커스텀 스타일 추가
 const styles = {
   metaDetails: {
-    marginTop: '10px',
+    marginTop: '10px'
   },
   metaDetailsTop: {
     display: 'flex',
     gap: '15px',
-    marginBottom: '2px',
+    marginBottom: '2px'
   },
   metaDetailsMiddle: {
     display: 'flex',
     gap: '15px',
-    marginBottom: '5px',
+    marginBottom: '5px'
   },
   metaDetailsBottom: {
     display: 'flex',
-    gap: '15px',
+    gap: '15px'
   },
   metaItem: {
     display: 'flex',
     alignItems: 'center',
-    gap: '5px',
+    gap: '5px'
   },
   thumbnailImage: {
     width: '100%',
     height: '200px',
     objectFit: 'cover' as const,
-    borderRadius: '8px',
+    borderRadius: '8px'
   },
   imageContainer: {
     position: 'relative' as const,
     overflow: 'hidden',
     borderRadius: '8px',
-    marginBottom: '15px',
+    marginBottom: '15px'
   },
   popularFeedMeta: {
     display: 'flex',
     gap: '15px',
     marginTop: '5px',
     fontSize: '0.9em',
-    color: '#666',
+    color: '#666'
   },
   popularFeedItem: {
     marginBottom: '15px',
     paddingBottom: '15px',
-    borderBottom: '1px solid #eee',
+    borderBottom: '1px solid #eee'
   }
 }
-
 interface CommunityPost {
   communityId: number
   title: string
@@ -105,10 +115,13 @@ export function Community() {
     try {
       const response = await fetch('http://localhost:8080/unknownPaw/api/community')
       const data = await response.json()
+      console.log('커뮤니티 게시글 데이터:', data)
+      console.log('첫 번째 게시글의 이미지:', data[0]?.communityImages)
       setPosts(data)
       setFilteredPosts(data)
       setLoading(false)
     } catch (error) {
+      console.error('게시물을 불러오는 데 실패했습니다:', error)
       setError('게시물을 불러오는 데 실패했습니다.')
       setLoading(false)
     }
@@ -126,8 +139,10 @@ export function Community() {
         case 'title':
           return post.title.toLowerCase().includes(searchTermLower)
         case 'author':
-          return post.authorName.toLowerCase().includes(searchTermLower) || 
-                 post.authorNickname.toLowerCase().includes(searchTermLower)
+          return (
+            post.authorName.toLowerCase().includes(searchTermLower) ||
+            post.authorNickname.toLowerCase().includes(searchTermLower)
+          )
         case 'content':
           return post.content.toLowerCase().includes(searchTermLower)
         default:
@@ -137,11 +152,64 @@ export function Community() {
     setFilteredPosts(filtered)
   }
 
-  if (loading) return <div>로딩중...</div>
+  if (loading)
+    return (
+      <section className="section latest-news-area blog-list page-content">
+        <div className="container">
+          <div className="row">
+            <div className="col-12">
+              <div className="section-title">
+                <h2 className="wow fadeInUp" data-wow-delay=".4s">
+                  Community
+                </h2>
+                <p className="wow fadeInUp" data-wow-delay=".6s">
+                  서비스를 요청하고 제안을 받아보세요!
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-lg-8 col-md-7 col-12">
+              <div className="row">
+                <UniversalSkeleton type="list" />
+              </div>
+            </div>
+            <aside className="col-lg-4 col-md-5 col-12">
+              <div className="sidebar blog-grid-page">
+                <div className="widget search-widget">
+                  <h5 className="widget-title">
+                    <span>게시글 검색</span>
+                  </h5>
+                  <div className="search-form">
+                    <div className="animate-pulse">
+                      <div className="h-10 bg-gray-200 rounded mb-3"></div>
+                      <div className="h-10 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="widget popular-feeds mt-5">
+                  <h5 className="widget-title">
+                    <span>인기 게시물</span>
+                  </h5>
+                  <div className="popular-feed-loop">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="single-popular-feed animate-pulse">
+                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div className="h-3 bg-gray-100 rounded w-1/2"></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+    )
   if (error) return <div>{error}</div>
 
   return (
-    <section className="section latest-news-area blog-list" style={{ paddingTop: '150px' }}>
+    <section className="section latest-news-area blog-list page-content custom-padding">
       <div className="container">
         {/* 상단 제목 및 네비게이션 */}
         <div className="row">
@@ -162,7 +230,7 @@ export function Community() {
           {/* 게시물 영역 (왼쪽 8컬럼) */}
           <div className="col-lg-8 col-md-7 col-12">
             <div className="row">
-              {filteredPosts.map((post) => (
+              {filteredPosts.map(post => (
                 <div key={post.communityId} className="col-lg-4 col-md-6 col-12 mb-4">
                   <div className="single-news wow fadeInUp" data-wow-delay=".2s">
                     <div className="image" style={styles.imageContainer}>
@@ -170,8 +238,13 @@ export function Community() {
                         <img
                           className="thumb"
                           style={styles.thumbnailImage}
-                          src={post.communityImages[0] || getRandomDefaultImage()}
+                          src={getCommunityImageUrl(post.communityImages[0])}
                           alt={post.title}
+                          onError={e => {
+                            const target = e.target as HTMLImageElement
+                            console.error('이미지 로드 실패:', target.src)
+                            target.src = getRandomDefaultImage()
+                          }}
                         />
                       </a>
                     </div>
@@ -186,17 +259,25 @@ export function Community() {
                             <a href="#">{new Date(post.regDate).toLocaleDateString()}</a>
                           </li>
                         </ul>
-                        <ul className="meta-details-middle" style={styles.metaDetailsMiddle}>
+                        <ul
+                          className="meta-details-middle"
+                          style={styles.metaDetailsMiddle}>
                           <li>
                             <a href="#">{post.communityCategory}</a>
                           </li>
                         </ul>
-                        <ul className="meta-details-bottom" style={styles.metaDetailsBottom}>
+                        <ul
+                          className="meta-details-bottom"
+                          style={styles.metaDetailsBottom}>
                           <li style={styles.metaItem}>
-                            <a href="#"><i className="lni lni-heart"></i> {post.likes}</a>
+                            <a href="#">
+                              <i className="lni lni-heart"></i> {post.likes}
+                            </a>
                           </li>
                           <li style={styles.metaItem}>
-                            <a href="#"><i className="lni lni-comments"></i> {post.commentCount}</a>
+                            <a href="#">
+                              <i className="lni lni-comments"></i> {post.commentCount}
+                            </a>
                           </li>
                         </ul>
                       </div>
@@ -241,27 +322,32 @@ export function Community() {
                   <span>게시글 검색</span>
                 </h5>
                 <div className="search-form">
-                  <select 
+                  <select
                     value={searchType}
-                    onChange={(e) => setSearchType(e.target.value as 'title' | 'author' | 'content')}
+                    onChange={e =>
+                      setSearchType(e.target.value as 'title' | 'author' | 'content')
+                    }
                     style={{
                       width: '100%',
                       padding: '8px',
                       borderRadius: '4px',
                       border: '1px solid #ddd',
                       marginBottom: '10px'
-                    }}
-                  >
+                    }}>
                     <option value="title">제목</option>
                     <option value="author">작성자</option>
                     <option value="content">내용</option>
                   </select>
-                  <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
-                    <input 
-                      type="text" 
-                      placeholder="검색어를 입력하세요." 
+                  <form
+                    onSubmit={e => {
+                      e.preventDefault()
+                      handleSearch()
+                    }}>
+                    <input
+                      type="text"
+                      placeholder="검색어를 입력하세요."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={e => setSearchTerm(e.target.value)}
                     />
                     <button type="submit">
                       <i className="lni lni-search-alt"></i>
@@ -279,16 +365,21 @@ export function Community() {
                   {posts
                     .sort((a, b) => {
                       // 좋아요와 댓글 수를 합산한 점수로 정렬
-                      const scoreA = a.likes + a.commentCount;
-                      const scoreB = b.likes + b.commentCount;
-                      return scoreB - scoreA;
+                      const scoreA = a.likes + a.commentCount
+                      const scoreB = b.likes + b.commentCount
+                      return scoreB - scoreA
                     })
                     .slice(0, 3)
-                    .map((post) => (
-                      <div key={post.communityId} className="single-popular-feed" style={styles.popularFeedItem}>
+                    .map(post => (
+                      <div
+                        key={post.communityId}
+                        className="single-popular-feed"
+                        style={styles.popularFeedItem}>
                         <div className="feed-desc">
                           <h6 className="post-title">
-                            <a href={`/communitypost/${post.communityId}`}>{post.title}</a>
+                            <a href={`/communitypost/${post.communityId}`}>
+                              {post.title}
+                            </a>
                           </h6>
                           <div className="meta-info" style={styles.popularFeedMeta}>
                             <span className="time">

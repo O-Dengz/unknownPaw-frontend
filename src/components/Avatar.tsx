@@ -1,6 +1,6 @@
 import type {FC} from 'react'
-import {Div} from './Div'
-import type {DivProps} from './Div'
+import {Div} from './ui/Div'
+import type {DivProps} from './ui/Div'
 
 export type AvatarProps = DivProps & {
   size?: string
