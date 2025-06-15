@@ -1,7 +1,7 @@
 /* src/pages/unknownPaw/PetOwner.css */
 
 .pet-owner-page {
-  padding-top: 120px;
+  padding-top: 0;
   min-height: 100vh;
   background-color: #f8f9fa;
 }
@@ -9,7 +9,7 @@
 .po-section-title {
   text-align: center;
   margin-bottom: 50px;
-  padding-top: 20px;
+  padding-top: 100px;
 }
 
 .po-section-title h2 {
