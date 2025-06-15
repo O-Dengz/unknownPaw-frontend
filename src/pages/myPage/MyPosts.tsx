@@ -1,20 +1,27 @@
-// src/pages/myPage/MyPosts.tsx
-
 import React, {useEffect, useState} from 'react'
 import axios from 'axios'
 import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
-import {Link} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 import './myPage.css'
+import {getImageUrl} from '@/utils/getImageUrl'
 
+// 타입 정의 (그대로 사용)
 interface PostItem {
   id: number
   title: string
+  content: string
   regDate: string
   likes: number
   imageUrl?: string
   category?: string
+  images?: {
+    imageId?: number
+    imagePath?: string
+    path?: string
+    thumbnailPath?: string
+    isMain?: boolean
+  }[]
 }
-
 type TabType = 'PET_OWNER' | 'PET_SITTER' | 'COMMUNITY'
 
 interface ApiError {
@@ -28,7 +35,43 @@ export default function MyPosts() {
   const [posts, setPosts] = useState<PostItem[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const navigate = useNavigate()
 
+  // 썸네일 추출 함수
+  const getThumbnail = (post: PostItem) => {
+    if (post.images && post.images.length > 0) {
+      const img = post.images[0]
+      return getImageUrl(img.thumbnailPath ?? img.path ?? img.imagePath ?? '')
+    }
+    if (post.imageUrl) return getImageUrl(post.imageUrl)
+    return '/assets/images/default-thumbnail.jpg'
+  }
+
+  // 게시글 타입 (URL)
+  const getPostType = (post: PostItem) => {
+    if ((post as any).postType) return (post as any).postType
+    if (activeTab === 'PET_OWNER') return 'petowner'
+    if (activeTab === 'PET_SITTER') return 'petsitter'
+    return 'communitypost'
+  }
+
+  // 게시글 상세 페이지 URL 생성
+  const getPostUrl = (post: PostItem) => {
+    if (activeTab === 'COMMUNITY') {
+      return `/communitypost/${post.id}`
+    }
+    return `/posts/${getPostType(post)}/read/${post.id}`
+  }
+
+  // 날짜 포맷 함수 (YYYY.MM.DD)
+  const formatDate = (dateString: string) => {
+    const d = new Date(dateString)
+    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(
+      d.getDate()
+    ).padStart(2, '0')}`
+  }
+
+  // 데이터 가져오기
   const fetchPosts = async (type: TabType) => {
     try {
       setLoading(true)
@@ -37,33 +80,42 @@ export default function MyPosts() {
       const token = sessionStorage.getItem('token')
       const member = memberString ? JSON.parse(memberString) : null
       const mid = member?.mid
-
       if (!mid || !token) throw new Error('로그인이 필요합니다.')
 
       const urlMap: Record<TabType, string> = {
         PET_OWNER: `/api/posts/petowner/${mid}`,
         PET_SITTER: `/api/posts/petsitter/${mid}`,
-        COMMUNITY: `/api/community/${mid}`
+        COMMUNITY: `/api/community/posts`
       }
 
-      const response = await axios.get(urlMap[type], {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+      const res = await axios.get(urlMap[type], {
+        headers: {Authorization: `Bearer ${token}`}
       })
 
-      setPosts(response.data as PostItem[])
+      // postId 만 있고 id 필드가 없는 경우 보완
+      setPosts(
+        (res.data as any[])
+          .map(p => ({
+            ...p,
+            id: p.id ?? p.postId ?? p.communityId
+          }))
+          .filter(post => {
+            // 커뮤니티 게시글인 경우 authorId로 필터링
+            if (type === 'COMMUNITY') {
+              return post.authorId === mid
+            }
+            return true
+          })
+          .sort((a, b) => new Date(b.regDate).getTime() - new Date(a.regDate).getTime())
+      )
     } catch (err) {
-      const apiError = err as ApiError
-      if (apiError.response) {
+      const apiErr = err as ApiError
+      if (apiErr.response)
         setError(
-          `불러오기 실패 (${apiError.response.status}: ${apiError.response.statusText})`
+          `불러오기 실패 (${apiErr.response.status}: ${apiErr.response.statusText})`
         )
-      } else if (apiError.request) {
-        setError('서버에 연결할 수 없습니다.')
-      } else {
-        setError(err instanceof Error ? err.message : '알 수 없는 오류 발생')
-      }
+      else if (apiErr.request) setError('서버에 연결할 수 없습니다.')
+      else setError(err instanceof Error ? err.message : '알 수 없는 오류 발생')
     } finally {
       setLoading(false)
     }
@@ -75,15 +127,14 @@ export default function MyPosts() {
 
   return (
     <div className="page-wrapper">
+      {/* --- Breadcrumb --------------------------------------------------- */}
       <div className="breadcrumbs">
         <div className="container">
           <div className="row align-items-center">
-            <div className="col-lg-6 col-md-6 col-12">
-              <div className="breadcrumbs-content">
-                <h1 className="page-title">내가 쓴 글</h1>
-              </div>
+            <div className="col-lg-6">
+              <h1 className="page-title">내가 쓴 글</h1>
             </div>
-            <div className="col-lg-6 col-md-6 col-12">
+            <div className="col-lg-6">
               <ul className="breadcrumb-nav">
                 <li>
                   <a href="/">홈</a>
@@ -95,6 +146,7 @@ export default function MyPosts() {
         </div>
       </div>
 
+      {/* --- 본문 --------------------------------------------------------- */}
       <section className="dashboard section">
         <div className="container">
           <div className="row">
@@ -103,56 +155,100 @@ export default function MyPosts() {
             </div>
 
             <div className="col-lg-9">
-              <div className="main-content">
-                <h2 className="mb-4">내가 쓴 글</h2>
+              <div className="profile-settings">
+                <div className="profile-settings-block settings-box">
+                  {/* 탭 버튼 */}
+                  <div className="settings-tabs mb-4">
+                    {(['PET_OWNER', 'PET_SITTER', 'COMMUNITY'] as TabType[]).map(tab => (
+                      <button
+                        key={tab}
+                        className={`link-button ${activeTab === tab ? 'active' : ''}`}
+                        onClick={() => setActiveTab(tab)}>
+                        {tab === 'PET_OWNER'
+                          ? '펫오너'
+                          : tab === 'PET_SITTER'
+                          ? '펫시터'
+                          : '커뮤니티'}
+                      </button>
+                    ))}
+                  </div>
 
-                <div className="tab-buttons mb-3 d-flex gap-2">
-                  {(['PET_OWNER', 'PET_SITTER', 'COMMUNITY'] as TabType[]).map(tab => (
-                    <button
-                      key={tab}
-                      className={`btn ${
-                        activeTab === tab ? 'btn-primary' : 'btn-outline-primary'
-                      }`}
-                      onClick={() => setActiveTab(tab)}>
-                      {tab === 'PET_OWNER'
-                        ? '펫오너'
-                        : tab === 'PET_SITTER'
-                        ? '펫시터'
-                        : '커뮤니티'}
-                    </button>
-                  ))}
+                  {/* 목록 */}
+                  {loading ? (
+                    <p>불러오는 중...</p>
+                  ) : error ? (
+                    <p className="text-danger">{error}</p>
+                  ) : posts.length === 0 ? (
+                    <p>작성한 글이 없습니다.</p>
+                  ) : (
+                    posts.map(post => {
+                      const thumb = getThumbnail(post)
+                      return (
+                        <div
+                          key={post.id}
+                          className="post-card p-3 border rounded mb-3 shadow-sm d-flex gap-3 align-items-center"
+                          style={{cursor: 'pointer', transition: 'background 0.2s'}}
+                          onClick={() => navigate(getPostUrl(post))}
+                          tabIndex={0}
+                          onKeyPress={e => {
+                            if (e.key === 'Enter') {
+                              navigate(getPostUrl(post))
+                            }
+                          }}>
+                          <img
+                            src={thumb}
+                            alt={post.title}
+                            style={{
+                              width: 120,
+                              height: 80,
+                              objectFit: 'cover',
+                              flexShrink: 0
+                            }}
+                            onError={e => {
+                              const target = e.target as HTMLImageElement
+                              target.src = '/assets/images/pet/dog-2.jpg'
+                            }}
+                          />
+
+                          <div style={{flex: 1, minWidth: 0}}>
+                            <h5 className="mb-1" style={{fontWeight: 600}}>
+                              {post.title}
+                            </h5>
+                            {/* 글 내용 한 줄 요약, ...처리 */}
+                            <div
+                              className="text-muted"
+                              style={{
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                fontSize: '0.98rem',
+                                marginBottom: '5px',
+                                maxWidth: '100%'
+                              }}>
+                              {post.content}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: '0.92rem',
+                                color: '#888',
+                                marginBottom: 2
+                              }}>
+                              {formatDate(post.regDate)}
+                              <span style={{marginLeft: 16}}>
+                                좋아요 ❤️: {post.likes}
+                              </span>
+                              {post.category && (
+                                <span style={{marginLeft: 16}}>
+                                  카테고리: {post.category}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })
+                  )}
                 </div>
-
-                {loading ? (
-                  <p>불러오는 중...</p>
-                ) : error ? (
-                  <p className="text-danger">{error}</p>
-                ) : posts.length === 0 ? (
-                  <p>작성한 글이 없습니다.</p>
-                ) : (
-                  posts.map(post => (
-                    <div
-                      key={post.id}
-                      className="post-card p-3 border rounded mb-3 shadow-sm d-flex gap-3 align-items-center">
-                      <img
-                        src={post.imageUrl || '/assets/images/default-thumbnail.jpg'}
-                        alt="thumbnail"
-                        style={{width: 120, height: 80, objectFit: 'cover'}}
-                      />
-                      <div>
-                        <h5>{post.title}</h5>
-                        <p>작성일: {post.regDate}</p>
-                        <p>좋아요 ❤️: {post.likes}</p>
-                        {post.category && <p>카테고리: {post.category}</p>}
-                        <Link
-                          to={`/post/${post.id}`}
-                          className="btn btn-sm btn-outline-secondary mt-1">
-                          상세보기
-                        </Link>
-                      </div>
-                    </div>
-                  ))
-                )}
               </div>
             </div>
           </div>

@@ -62,33 +62,34 @@ const convertToPageResultDTO = (springPage: SpringPageResponse): PageResultDTO =
 
 export function Pagination({pageInfo, onPageChange}: PaginationProps) {
   // 디버깅을 위한 콘솔 로그 추가
-  // console.log('Pagination 컴포넌트 렌더링:', {
-  //   pageInfo,
-  //   convertedPageInfo: pageInfo ? convertToPageResultDTO(pageInfo) : null
-  // })
+  console.log('Pagination 컴포넌트 렌더링 - pageInfo:', pageInfo); // Log 10
 
   if (!pageInfo) {
-    console.log('pageInfo가 null입니다.')
+    console.log('pageInfo가 null입니다.'); // Log 11
     return null
   }
 
-  const convertedPageInfo = convertToPageResultDTO(pageInfo)
+  const convertedPageInfo = convertToPageResultDTO(pageInfo);
+  console.log('Converted page info:', convertedPageInfo); // Log 12
 
   if (!convertedPageInfo.pageList || convertedPageInfo.pageList.length === 0) {
     console.log('페이지네이션 렌더링 조건 미충족:', {
       hasPageList: !convertedPageInfo.pageList,
       isPageListEmpty: convertedPageInfo.pageList?.length === 0
-    })
+    }); // Log 13
     return null
   }
 
-  const {pageList, page, start, end, prev, next} = convertedPageInfo
+  const {pageList, page, start, end, prev, next} = convertedPageInfo;
+  console.log('Pagination variables - pageList:', pageList, 'current page:', page, 'start:', start, 'end:', end); // Log 14
 
   // 페이지 변경 핸들러
   const handlePageChange = (newPage: number) => {
+    console.log('Pagination - handlePageChange called with newPage (1-based):', newPage); // Log 15
     // 페이지 번호가 유효한 범위 내에 있는지 확인
     if (newPage >= 1 && newPage <= convertedPageInfo.totalPage) {
       onPageChange(newPage - 1) // Spring은 0-based이므로 1을 빼서 전달
+      console.log('Pagination - Calling onPageChange with 0-based page:', newPage - 1); // Log 16
     }
   }
 

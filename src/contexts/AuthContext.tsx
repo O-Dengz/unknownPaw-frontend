@@ -1,40 +1,78 @@
 // contexts/AuthContext.tsx
 
 import {createContext, useContext, useState, useEffect} from 'react'
+import {useUserStore} from '@/store/userStore'
+
+interface UserProfile {
+  mid: number
+  email: string
+  nickname: string
+  profileImagePath: string | null
+  pawRate: number
+  address: string | null
+  phoneNumber: string | null
+  emailVerified: boolean
+  regDate: string | null
+  role: string
+  status: string
+}
 
 interface AuthContextType {
   isLoggedIn: boolean
   login: () => void
   logout: () => void
+  isLoading: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({children}: {children: React.ReactNode}) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const {setUser} = useUserStore()
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken') // 🌟🌟🌟 'token' -> 'accessToken'으로 변경! 🌟🌟🌟
-    setIsLoggedIn(!!token)
-    console.log('[초기 로그인 상태]', !!token)
-  }, [])
+    const initializeAuth = async () => {
+      const token = sessionStorage.getItem('token')
+      setIsLoggedIn(!!token)
+
+      if (token) {
+        const memberData = sessionStorage.getItem('member')
+        if (memberData) {
+          try {
+            const parsed: UserProfile = JSON.parse(memberData)
+            setUser(parsed)
+          } catch (err) {
+            console.error('[AuthContext] sessionStorage member 파싱 오류:', err)
+          }
+        }
+      }
+      setIsLoading(false)
+    }
+
+    initializeAuth()
+  }, [setUser])
 
   const login = () => {
-    setIsLoggedIn(true) // 'accessToken'이 존재하면 true가 되므로, 이 함수 자체는 단순 상태 변경 역할만 해요.
+    setIsLoggedIn(true)
     console.log('[로그인 성공] isLoggedIn:', true)
   }
 
   const logout = () => {
-    localStorage.removeItem('accessToken') // 🌟🌟🌟 'token' -> 'accessToken'으로 변경! 🌟🌟🌟 // memberNickname과 memberRole도 로그아웃 시 지워주는 게 좋아요!
-    localStorage.removeItem('memberNickname')
-    localStorage.removeItem('memberRole')
+    sessionStorage.removeItem('token')
+    sessionStorage.removeItem('member')
     setIsLoggedIn(false)
+    setUser(null)
     console.log('[로그아웃 성공] isLoggedIn:', false)
   }
 
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
   return (
-    <AuthContext.Provider value={{isLoggedIn, login, logout}}>
-            {children}   {' '}
+    <AuthContext.Provider value={{isLoggedIn, login, logout, isLoading}}>
+      {children}
     </AuthContext.Provider>
   )
 }

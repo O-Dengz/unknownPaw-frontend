@@ -1,0 +1,207 @@
+/* src/pages/unknownPaw/PetOwner.css */
+
+.pet-owner-page {
+  padding-top: 120px;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.po-section-title {
+  text-align: center;
+  margin-bottom: 50px;
+  padding-top: 20px;
+}
+
+.po-section-title h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.po-section-title p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 0;
+}
+
+/* Search Bar */
+.pet-owner-page .search-bar-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+.pet-owner-page .search-input-group {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: nowrap;
+}
+
+.pet-owner-page .search-select {
+  width: 120px;
+  padding: 12px 15px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #f8f9fa;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pet-owner-page .search-select:hover {
+  border-color: #32ADE6;
+}
+
+.pet-owner-page .search-input {
+  flex-grow: 1;
+  padding: 12px 15px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.pet-owner-page .search-input:focus {
+  border-color: #32ADE6;
+  box-shadow: 0 0 0 3px rgba(50, 173, 230, 0.1);
+  outline: none;
+}
+
+.pet-owner-page .search-button {
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #32ADE6;
+  color: white;
+}
+
+.pet-owner-page .search-button:hover {
+  background-color: #2a8fc7;
+  transform: translateY(-2px);
+}
+
+/* Sorting Buttons */
+.pet-owner-page .sorting-buttons {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.pet-owner-page .sort-button {
+  padding: 10px 20px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  background-color: white;
+  color: #495057;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0 5px;
+}
+
+.pet-owner-page .sort-button:hover {
+  border-color: #32ADE6;
+  color: #32ADE6;
+}
+
+.pet-owner-page .sort-button.active {
+  background-color: #32ADE6;
+  color: white;
+  border-color: #32ADE6;
+}
+
+/* Items Found */
+.items-found {
+  margin-bottom: 20px;
+}
+
+.items-found p {
+  font-size: 1.1rem;
+  color: #495057;
+}
+
+.items-found span {
+  font-weight: 600;
+  color: #32ADE6;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .pet-owner-page .po-section-title h2 {
+    font-size: 2rem;
+  }
+  
+  .pet-owner-page .po-section-title p {
+    font-size: 1rem;
+  }
+  
+  .pet-owner-page .search-input-group {
+    flex-wrap: wrap;
+  }
+  
+  .pet-owner-page .search-select {
+    width: 100%;
+  }
+  
+  .pet-owner-page .search-input {
+    width: 100%;
+  }
+  
+  .pet-owner-page .search-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .pet-owner-page {
+    padding-top: 100px;
+  }
+  
+  .pet-owner-page .po-section-title {
+    margin-bottom: 30px;
+  }
+  
+  .pet-owner-page .search-bar-container {
+    padding: 15px;
+  }
+  
+  .pet-owner-page .sorting-buttons {
+    margin-bottom: 20px;
+  }
+  
+  .pet-owner-page .sort-button {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .pet-owner-page .po-section-title h2 {
+    font-size: 1.8rem;
+  }
+  
+  .pet-owner-page .po-section-title p {
+    font-size: 0.9rem;
+  }
+}
+
+.single-grid .title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+} 

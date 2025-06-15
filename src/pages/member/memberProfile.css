@@ -278,6 +278,29 @@
   max-width: 800px;
 }
 
+.profile-one-box {
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #eee;
+}
+
+.btn-danger {
+  background: #dc0e0e;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+  background: #b10b0b;
+}
+
 /* 반응형 스타일 */
 @media (max-width: 768px) {
   .profile-header {

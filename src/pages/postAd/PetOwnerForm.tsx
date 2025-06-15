@@ -1,4 +1,6 @@
 import {useState, useEffect} from 'react'
+import { resolvePreviewSrc } from '@/utils/resolvePreviewSrc'
+
 
 interface Pet {
   petId: number
@@ -21,9 +23,15 @@ interface Member {
   emailVerified: boolean
   pets: Pet[]
 }
+export interface PetOwnerFormProps {
+  onDataChange: (data: PostFormData) => void
+  initialData?: Partial<PostFormData>
+  initialImageUrl?: string | null
+  mode?: 'create' | 'edit'
+}
 
 // Post 기본 인터페이스
-interface PostFormData {
+export interface PostFormData {
   title: string
   content: string
   serviceCategory: string
@@ -34,16 +42,12 @@ interface PostFormData {
   petId?: number
 }
 
-interface PetOwnerFormProps {
-  onDataChange: (data: PostFormData) => void
-}
-
-export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
-  const [member, setMember] = useState<Member | null>(null)
-  const [selectedPet, setSelectedPet] = useState<Pet | null>(null)
-  const [image, setImage] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-
+export default function PetOwnerForm({
+  onDataChange,
+  initialData,
+  initialImageUrl,
+  mode = 'create'
+}: PetOwnerFormProps) {
   const [postData, setPostData] = useState<PostFormData>({
     title: '',
     content: '',
@@ -52,58 +56,28 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
     defaultLocation: '',
     serviceDate: ''
   })
-
+  const [previewUrl, setPreviewUrl] = useState<string | null>(initialImageUrl || null)
   useEffect(() => {
-    // 로그인된 사용자 정보 가져오기
-    const fetchMemberData = async () => {
-      try {
-        const token = sessionStorage.getItem('token') // JWT 토큰 가져오기
-        if (!token) {
-          throw new Error('로그인이 필요합니다.')
-        }
+    setPreviewUrl(initialImageUrl || null)
+  }, [initialImageUrl])
+  const [member, setMember] = useState<Member | null>(null)
+  const [selectedPet, setSelectedPet] = useState<Pet | null>(null)
+  const [image, setImage] = useState<File | null>(null)
 
-        const response = await fetch('/api/member/profile/simple/me', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        })
-
-        if (!response.ok) {
-          throw new Error('사용자 정보를 불러오는데 실패했습니다.')
-        }
-
-        const data = await response.json()
-        console.log('🐶 받은 데이터:', data)
-        setMember(data)
-        if (data?.pets?.length > 0) {
-          setSelectedPet(data.pets[0])
-        }
-      } catch (error) {
-        console.error('Failed to fetch member data:', error)
-        alert(
-          error instanceof Error
-            ? error.message
-            : '사용자 정보를 불러오는데 실패했습니다.'
-        )
-      }
-    }
-
-    fetchMemberData()
-  }, [])
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      const file = event.target.files[0]
-      setImage(file)
-      setPreviewUrl(URL.createObjectURL(file))
-      setPostData(prev => ({...prev, images: [file]}))
-    }
-  }
-
-  // 폼 데이터가 변경될 때마다 부모 컴포넌트에 알림
+  // 1. member와 initialData(수정모드)가 들어오면 폼에 값 채우기
   useEffect(() => {
-    if (selectedPet) {
+    if (member && initialData && mode === 'edit') {
+      // (1) 기존 pet 선택
+      const found = member.pets.find(pet => pet.petId === initialData.petId)
+      if (found) setSelectedPet(found)
+      // (2) postData 채우기
+      setPostData(prev => ({...prev, ...initialData}))
+    }
+  }, [member, initialData, mode])
+
+  // 2. 폼 데이터가 바뀔 때 부모에게 전달
+  useEffect(() => {
+    if (selectedPet && postData.title !== '') {
       onDataChange({
         ...postData,
         petId: selectedPet.petId,
@@ -112,20 +86,114 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
     }
   }, [postData, selectedPet, image, onDataChange])
 
+  // 3. 마운트시 멤버 정보 가져오기
+  useEffect(() => {
+    const fetchMemberData = async () => {
+      try {
+        const token = sessionStorage.getItem('token')
+        if (!token) throw new Error('로그인이 필요합니다.')
+
+        const response = await fetch('/api/member/profile/simple/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+
+        if (!response.ok) throw new Error('사용자 정보를 불러오는데 실패했습니다.')
+
+        const data = await response.json()
+        setMember(data)
+        if (data?.pets?.length > 0) setSelectedPet(data.pets[0])
+      } catch (error) {
+        alert(
+          error instanceof Error
+            ? error.message
+            : '사용자 정보를 불러오는데 실패했습니다.'
+        )
+      }
+    }
+    fetchMemberData()
+  }, [])
+
+  // handleImageUpload 함수 수정
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      alert('10MB를 초과한 파일은 업로드할 수 없습니다.');
+      return;
+    }
+    setImage(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    
+    onDataChange({
+      ...postData,
+      images: [file],
+      petId: selectedPet?.petId,
+    });
+  };
+  
+  // 2️⃣ 폼 데이터가 바뀔 때마다 부모로 전달
+  useEffect(() => {
+    onDataChange({
+      ...postData,
+      petId: selectedPet?.petId,            
+      images: image ? [image] : undefined,
+    });
+  }, [postData, selectedPet, image, onDataChange]);
+
   return (
     <div>
       <div className="main-content bg-white p-8 rounded-xl shadow-lg">
-        {/* 글 제목 */}
-        <div className="form-group mb-6">
-          <label className="text-gray-700 font-medium">제목*</label>
-          <input
-            type="text"
-            value={postData.title}
-            onChange={e => setPostData({...postData, title: e.target.value})}
-            placeholder="제목을 입력하세요"
-            className="form-control"
-          />
+        {/* 글 제목과 서비스 카테고리 */}
+        <div className="grid grid-cols-5 gap-4 mb-6">
+          <div className="col-span-3">
+            <label className="text-gray-700 font-medium">제목*</label>
+            <input
+              type="text"
+              value={postData.title}
+              onChange={e => setPostData({...postData, title: e.target.value})}
+              placeholder="제목을 입력하세요"
+              className="form-control"
+            />
+          </div>
+          <div className="col-span-2 flex items-end">
+            <div className="flex gap-2 w-full">
+              <button
+                type="button"
+                onClick={() => setPostData({...postData, serviceCategory: 'WALK'})}
+                className={`flex-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                  postData.serviceCategory === 'WALK'
+                    ? 'bg-blue-500 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}>
+                🐕 산책
+              </button>
+              <button
+                type="button"
+                onClick={() => setPostData({...postData, serviceCategory: 'HOTEL'})}
+                className={`flex-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                  postData.serviceCategory === 'HOTEL'
+                    ? 'bg-blue-500 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}>
+                🏠 호텔링
+              </button>
+              <button
+                type="button"
+                onClick={() => setPostData({...postData, serviceCategory: 'CARE'})}
+                className={`flex-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                  postData.serviceCategory === 'CARE'
+                    ? 'bg-blue-500 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}>
+                🐾 돌봄
+              </button>
+            </div>
+          </div>
         </div>
+        <br/>
 
         {/* 글 내용 */}
         <div className="form-group mb-6">
@@ -137,20 +205,6 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
             className="form-control"
             rows={4}
           />
-        </div>
-
-        {/* 서비스 카테고리 */}
-        <div className="form-group mb-6">
-          <label className="text-gray-700 font-medium">서비스 카테고리</label>
-          <select
-            value={postData.serviceCategory}
-            onChange={e => setPostData({...postData, serviceCategory: e.target.value})}
-            className="form-control">
-            <option value="">카테고리를 선택하세요</option>
-            <option value="WALK">산책</option>
-            <option value="HOTELING">호텔링</option>
-            <option value="CARE">돌봄</option>
-          </select>
         </div>
 
         {/* 시급 */}
@@ -178,7 +232,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
 
         {/* 기본 위치 */}
         <div className="form-group mb-6">
-          <label className="text-gray-700 font-medium">기본 위치</label>
+          <label className="text-gray-700 font-medium">예약 위치</label>
           <input
             type="text"
             value={postData.defaultLocation}
@@ -210,7 +264,7 @@ export default function PetOwnerForm({onDataChange}: PetOwnerFormProps) {
             <div className="mt-4">
               <p className="text-gray-700 font-medium mb-2">미리보기</p>
               <img
-                src={previewUrl}
+                src={resolvePreviewSrc(previewUrl)}
                 alt="미리보기"
                 className="w-full h-64 object-cover rounded-md border"
               />

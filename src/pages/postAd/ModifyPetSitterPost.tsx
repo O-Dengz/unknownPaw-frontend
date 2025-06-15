@@ -1,0 +1,160 @@
+import {useCallback, useEffect, useState} from 'react'
+import {useParams, useNavigate} from 'react-router-dom'
+import PetSitterForm from './PetSitterForm'
+import type {PostFormData} from './PetSitterForm'
+import {DashboardSidebar} from '../../components/features/dashboard/DashboardSidebar'
+
+export default function ModifySitterPost() {
+  const {postType, postId} = useParams()
+  const [initialData, setInitialData] = useState<Partial<PostFormData> | null>(null)
+  const [initialImageUrl, setInitialImageUrl] = useState<string | null>(null)
+  const [editedData, setEditedData] = useState<PostFormData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate()
+
+  // 🟡 기존 게시글 데이터 불러오기
+  useEffect(() => {
+    const fetchPost = async () => {
+      setLoading(true)
+      try {
+        const res = await fetch(`/api/posts/${postType}/read/${postId}`, {
+          headers: {Authorization: `Bearer ${sessionStorage.getItem('token')}`}
+        })
+        if (!res.ok) throw new Error('게시글을 불러오지 못했습니다.')
+        const data = await res.json()
+        setInitialData({
+          ...data,
+          petExperience: data.petExperience,
+          license: data.license,
+          images: undefined
+        })
+        setInitialImageUrl(data.images?.[0]?.imagePath ? data.images[0].imagePath : null)
+      } catch (e) {
+        setError('게시글 정보를 불러올 수 없습니다.')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchPost()
+  }, [postType, postId])
+
+  // 🟢 폼 데이터 변화 감지
+  const handleFormDataChange = useCallback((data: PostFormData) => {
+    const result = {...data}
+    // serviceDate가 있는 경우 형식 변환
+    if (result.serviceDate) {
+      // YYYY-MM-DD 형식이면 시간 추가
+      if (/^\d{4}-\d{2}-\d{2}$/.test(result.serviceDate)) {
+        result.serviceDate = result.serviceDate + 'T00:00:00'
+      }
+      // 이미 올바른 형식이 아니면 변환
+      else if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(result.serviceDate)) {
+        try {
+          const date = new Date(result.serviceDate)
+          result.serviceDate = date.toISOString().slice(0, 19)
+        } catch (e) {
+          console.error('잘못된 날짜 형식:', result.serviceDate)
+        }
+      }
+    }
+    setEditedData(result)
+  }, [])
+
+  // 🟢 수정 제출
+  const handleSubmit = async () => {
+    if (!editedData) {
+      alert('수정된 내용이 없습니다.')
+      return
+    }
+    try {
+      let response
+      if (editedData.images && editedData.images.length > 0) {
+        const formData = new FormData()
+        formData.append('post', JSON.stringify({...editedData, postId}))
+        for (const file of editedData.images) formData.append('file', file)
+        response = await fetch(
+          `/api/posts/${postType}/modifyWithImage?postId=${postId}`,
+          {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem('token')}`
+            },
+            body: formData
+          }
+        )
+      } else {
+        response = await fetch(`/api/posts/${postType}/modify`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`
+          },
+          body: JSON.stringify({...editedData, postId})
+        })
+      }
+      if (!response.ok) throw new Error('수정 실패')
+      alert('수정되었습니다!')
+      navigate(-1)
+    } catch (e) {
+      alert('수정 중 오류가 발생했습니다.')
+    }
+  }
+
+  if (loading) return <div>로딩 중...</div>
+  if (error) return <div>{error}</div>
+  if (!initialData) return <div>초기 데이터를 불러올 수 없습니다.</div>
+
+  return (
+    <div className="page-wrapper">
+      {/* --- Breadcrumb --------------------------------------------------- */}
+      <div className="breadcrumbs">
+        <div className="container">
+          <div className="row align-items-center">
+            <div className="col-lg-6">
+              <h1 className="page-title">게시글 수정</h1>
+            </div>
+            <div className="col-lg-6">
+              <ul className="breadcrumb-nav">
+                <li>
+                  <a href="/">홈</a>
+                </li>
+                <li>게시글 수정</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* --- 본문 --------------------------------------------------------- */}
+      <section className="dashboard section">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-3 col-md-4 col-12">
+              <DashboardSidebar />
+            </div>
+            <div className="col-lg-9 col-md-8 col-12">
+              <div className="main-content bg-white p-8 rounded-xl shadow-lg">
+                <h2 className="text-xl font-bold mb-6">시터 게시글 수정</h2>
+                <PetSitterForm
+                  onDataChange={handleFormDataChange}
+                  initialData={initialData}
+                  initialImageUrl={initialImageUrl}
+                  mode="edit"
+                />
+                <div className="flex justify-center mt-6">
+                  <button
+                    onClick={handleSubmit}
+                    className="reserve-button"
+                    style={{width: '200px'}}>
+                    수정하기
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}

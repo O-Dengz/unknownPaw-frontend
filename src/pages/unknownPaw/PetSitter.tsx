@@ -2,9 +2,12 @@ import React, {useEffect, useState} from 'react'
 import {Link, useNavigate, useLocation} from 'react-router-dom'
 import {Pagination} from '../../components/Pagination'
 import {formatTimeAgo} from '../../utils/timeAgo'
-import dogImg from '../../../public/assets/images/pet/empty-dog.jpg' // 실제 이미지 경로에 맞게 수정
 import ScrollToTopButton from '../../components/ScrollToTopButton'
 import PawRating from '../../components/PawRating'
+import {getImageUrl} from '@/utils/getImageUrl'
+import { UniversalSkeleton } from '@/components/UniversalSkeleton'
+import './PetOwner.css'
+
 
 interface MemberResponseDTO {
   mid: number
@@ -18,6 +21,13 @@ interface MemberResponseDTO {
   regDate?: string
 }
 
+interface ImageDTO {
+  imageId: number
+  imagePath: string
+  thumbnailPath?: string
+  isMain: boolean
+}
+
 interface Post {
   postId: number
   title: string
@@ -28,12 +38,7 @@ interface Post {
   chatCount?: number
   defaultLocation: string
   regDate: string
-  email?: string
-  image?: {
-    imageId: number
-    imagePath: string
-    isMain: boolean
-  }[]
+  images?: ImageDTO[]
   member?: MemberResponseDTO
 }
 
@@ -116,7 +121,6 @@ export function PetSitter() {
     }
     if (pageRequest.sortBy) {
       searchParams.set('sortBy', pageRequest.sortBy)
-      // sortOrder는 sortBy와 함께 항상 추가
       searchParams.set('sortOrder', pageRequest.sortOrder || 'DESC')
     }
     navigate(`?${searchParams.toString()}`, {replace: true})
@@ -130,7 +134,6 @@ export function PetSitter() {
       const latestToken = sessionStorage.getItem('token')
 
       if (!latestToken) {
-        console.error('No token found in sessionStorage. User is not logged in.')
         setError('로그인이 필요합니다.')
         setLoading(false)
         return
@@ -145,10 +148,7 @@ export function PetSitter() {
       if (pageRequest.keyword) {
         apiUrl += `&keyword=${pageRequest.keyword}`
       }
-
-      // 정렬 파라미터 추가
       if (pageRequest.sortBy) {
-        // 'sort=필드명,정렬방식' 형식으로 파라미터 이름을 'sort'로 변경
         apiUrl += `&sort=${pageRequest.sortBy},${pageRequest.sortOrder || 'DESC'}`
       }
 
@@ -166,9 +166,7 @@ export function PetSitter() {
           return response.json()
         })
         .then((data: PageResultDTO) => {
-          if (data.content) {
-            setPosts(prevPosts => [...data.content] as Post[])
-          }
+          setPosts(data.content || [])
           setPageInfo(data)
         })
         .catch(err => {
@@ -181,13 +179,13 @@ export function PetSitter() {
     }
 
     fetchPosts()
+    // 의존성 배열에 navigate 안 넣는 게 좋습니다! (불필요한 재렌더 방지)
   }, [pageRequest])
 
   const handlePageChange = (page: number) => {
     setPageRequest(prev => ({...prev, page}))
   }
   const handleSortChange = (sortBy: string, sortOrder: 'ASC' | 'DESC') => {
-    // 정렬 기준 변경 시 첫 페이지로 이동
     setPageRequest(prev => ({
       ...prev,
       page: 0,
@@ -196,160 +194,128 @@ export function PetSitter() {
     }))
   }
 
-  if (loading) return <div>로딩 중...</div>
-  if (error) return <div>{error}</div>
+  const handleSearch = () => {
+    setPageRequest(prev => ({
+      ...prev,
+      page: 0,
+      keyword: searchKeyword,
+      type: searchType
+    }))
+  }
 
-  // 검색 결과 없음 안내
-  !loading && posts?.length === 0 && (pageRequest.keyword || pageRequest.type)
+  if (error)
+    return (
+      <div className="pet-owner-page">
+        <ScrollToTopButton />
+        <section className="items-grid section custom-padding page-content">
+          <div className="container">
+            <div className="row">
+              <div className="col-12">
+                <div className="po-section-title">
+                  <h2>돌봐드려요</h2>
+                  <p>서비스를 요청하고 제안을 받아보세요!</p>
+                </div>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-12 po-error-message-container">
+                <h5 className="po-error-title">{error}</h5>
+                <p className="po-error-text">다른 키워드로 다시 시도해보세요.</p>
+                <button
+                  onClick={handleClearSearch}
+                  className="back-to-previous-btn">
+                  ← 이전 페이지로 돌아가기
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
 
   return (
     <div className="pet-owner-page">
-      {/* */}
-      <ScrollToTopButton />
-      <section className="items-grid section custom-padding">
-        <div className="container">
-          <div className="row">
-            <div className="col-12">
-              <div className="section-title">
-                <h2 className="wow fadeInUp" data-wow-delay=".4s">
-                  Pet Sitter
-                </h2>
-                <p className="wow fadeInUp" data-wow-delay=".6s">
-                  서비스를 제안하고 산책 제안을 받아보세요!
-                </p>
-              </div>
+    <ScrollToTopButton />
+    <section className="items-grid section custom-padding page-content">
+      <div className="container">
+        <div className="row">
+          <div className="col-12">
+            <div className="po-section-title">
+              <h2>돌봐드려요</h2>
+              <p>서비스를 요청하고 제안을 받아보세요!</p>
             </div>
           </div>
-          {/* 검색 바 */}
-          <div className="row mb-4">
-            <div className="col-18">
-              <div className="search-bar-wrap">
-                <select
-                  className="search-select"
-                  value={searchType}
-                  onChange={e =>
-                    setSearchType(e.target.value as 'title' | 'content' | 'author')
-                  }
-                  style={{marginRight: '10px'}}>
-                  <option value="title">제목</option>
-                  <option value="content">내용</option>
-                  <option value="author">작성자</option>
-                </select>
-                <input
-                  type="text"
-                  className="search-input"
-                  placeholder="검색어를 입력하세요"
-                  value={searchKeyword}
-                  onChange={e => setSearchKeyword(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') {
-                      setPageRequest(prev => ({
-                        ...prev,
-                        page: 0,
-                        keyword: searchKeyword,
-                        type: searchType
-                      }))
-                    }
-                  }}
-                />
-                <button
-                  className="search-btn"
-                  onClick={() => {
-                    setPageRequest(prev => ({
-                      ...prev,
-                      page: 0,
-                      keyword: searchKeyword,
-                      type: searchType
-                    }))
-                  }}
-                  type="button">
-                  <i className="lni lni-search"></i>
-                </button>
-                {searchKeyword && (
-                  <button
-                    className={`clear-btn visible`}
-                    onClick={handleClearSearch}
-                    type="button">
-                    <i className="lni lni-close"></i>
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-          {/* 정렬 기능 추후 추가 (좋아요 순, 최신 순  현재는 최신순으로 정렬됨)*/}
-          {/* 아이템 개수 / 정렬 조건  */}
-          <div className="row mb-3 align-items-center">
-            {' '}
-            {/* 세로 중앙 정렬 */}
-            <div className="col-md-6 col-12">
-              {/* 총 게시물 개수 표시 */}
-              {pageInfo?.totalElements !== undefined && (
-                <p className="total-items-count" style={{fontSize: '1rem', margin: 0}}>
-                  총{' '}
-                  <strong style={{color: '#F1A852'}}>
-                    {pageInfo.totalElements.toLocaleString()}
-                  </strong>{' '}
-                  건
-                </p>
-              )}
-            </div>
-            <div className="col-md-6 col-12 text-md-end text-start">
-              {' '}
-              {/* 모바일에서는 왼쪽, md 이상에서 오른쪽 정렬 */}
-              {/* 정렬 버튼 영역 */}
-              <div className="sort-options">
-                {/* 최신순 */}
-                <button
-                  className={`sort-button ${
-                    pageRequest.sortBy === 'regDate' && pageRequest.sortOrder === 'DESC'
-                      ? 'active'
-                      : ''
-                  }`}
-                  onClick={() => handleSortChange('regDate', 'DESC')}>
-                  최신순
-                </button>
-                <span className="separator">|</span>
-                {/* 좋아요순 - 백엔드에서 'likes' 필드로 정렬 지원해야 함 */}
-                <button
-                  className={`sort-button ${
-                    pageRequest.sortBy === 'likes' && pageRequest.sortOrder === 'DESC'
-                      ? 'active'
-                      : ''
-                  }`}
-                  onClick={() => handleSortChange('likes', 'DESC')}>
-                  좋아요순
-                </button>
-                <span className="separator">|</span>
-                {/* 낮은 가격순 */}
-                <button
-                  className={`sort-button ${
-                    pageRequest.sortBy === 'hourlyRate' && pageRequest.sortOrder === 'ASC'
-                      ? 'active'
-                      : ''
-                  }`}
-                  onClick={() => handleSortChange('hourlyRate', 'ASC')}>
-                  낮은 가격순
-                </button>
-                <span className="separator">|</span>
-                {/* 높은 가격순 */}
-                <button
-                  className={`sort-button ${
-                    pageRequest.sortBy === 'hourlyRate' &&
-                    pageRequest.sortOrder === 'DESC'
-                      ? 'active'
-                      : ''
-                  }`}
-                  onClick={() => handleSortChange('hourlyRate', 'DESC')}>
-                  높은 가격순
-                </button>
-              </div>
+        </div>
+
+          {/* Search Bar */}
+          <div className="search-bar-container">
+            <div className="search-input-group">
+              <select
+                className="search-select"
+                value={searchType}
+                onChange={e =>
+                  setSearchType(e.target.value as 'title' | 'content' | 'author')
+                }>
+                <option value="title">제목</option>
+                <option value="content">내용</option>
+                <option value="author">작성자</option>
+              </select>
+              <input
+                type="text"
+                className="search-input"
+                placeholder="검색어를 입력하세요"
+                value={searchKeyword}
+                onChange={e => setSearchKeyword(e.target.value)}
+                onKeyPress={e => e.key === 'Enter' && handleSearch()}
+              />
+              <button className="search-button" onClick={handleSearch}>
+                검색
+              </button>
             </div>
           </div>
 
+          {/* Sorting Buttons */}
+          <div className="row sorting-buttons">
+            <div className="col-12">
+              <button
+                className={`sort-button ${pageRequest.sortBy === 'regDate' && pageRequest.sortOrder === 'DESC' ? 'active' : ''}`}
+                onClick={() => handleSortChange('regDate', 'DESC')}>
+                최신순
+              </button>
+              <button
+                className={`sort-button ${pageRequest.sortBy === 'likes' ? 'active' : ''}`}
+                onClick={() => handleSortChange('likes', 'DESC')}>
+                인기순
+              </button>
+              <button
+                className={`sort-button ${pageRequest.sortBy === 'price' && pageRequest.sortOrder === 'ASC' ? 'active' : ''}`}
+                onClick={() => handleSortChange('price', 'ASC')}>
+                낮은 가격순
+              </button>
+              <button
+                className={`sort-button ${pageRequest.sortBy === 'price' && pageRequest.sortOrder === 'DESC' ? 'active' : ''}`}
+                onClick={() => handleSortChange('price', 'DESC')}>
+                높은 가격순
+              </button>
+            </div>
+          </div>
+
+          {/* Remove duplicate buttons section */}
+          <div className="row mb-3 align-items-center">
+            <div className="col-md-6 col-12">
+              <div className="items-found">
+                <p>
+                  총 <span>{pageInfo?.totalElements || 0}</span>개의 게시글
+                </p>
+              </div>
+            </div>
+          </div>
           <div className="single-head">
             <div className="row">
-              {!loading && posts?.length > 0 ? (
-                posts?.map((post, index) => (
+              {loading ? (
+                <UniversalSkeleton type="list" />
+              ) : posts?.length > 0 ? (
+                posts.map((post, index) => (
                   <div key={post.postId} className="col-lg-4 col-md-6 col-12">
                     <div
                       className="single-grid wow fadeInUp"
@@ -357,13 +323,20 @@ export function PetSitter() {
                       <div className="image">
                         <Link
                           to={`/posts/petsitter/read/${post.postId}`}
-                          className="thumbnail">
+                          className="thumbnail block overflow-hidden"
+                          style={{borderRadius: '10px', height: '220px', width: '100%'}}>
                           <img
                             src={
-                              post.image?.[0]?.imagePath ||
-                              '/assets/images/pet/pet-sitter-1.jpg'
+                              post.images?.[0]
+                                ? getImageUrl(
+                                    post.images[0].thumbnailPath ??
+                                      post.images[0].imagePath
+                                  )
+                                : '/assets/images/pet/dog-2.jpg'
                             }
-                            alt="#"
+                            alt={post.title}
+                            className="w-full h-full object-cover object-center"
+                            style={{display: 'block'}}
                           />
                         </Link>
                         <div className="author">
@@ -371,16 +344,15 @@ export function PetSitter() {
                             <Link to={`/profile/simple/${post.member?.mid}`}>
                               <img
                                 src={
-                                  post.member?.profileImagePath ||
-                                  '../assets/images/items-grid/author-1.jpg'
+                                  post.member?.profileImagePath
+                                    ? getImageUrl(post.member.profileImagePath)
+                                    : '/assets/images/items-grid/author-1.jpg'
                                 }
-                                alt="#"
+                                alt={post.member?.nickname}
                               />
                               <span>{post.member?.nickname || 'Unknown'}</span>
                             </Link>
                           </div>
-                          {/* 예약하기 별도 */}
-                          <p className="sale">예약하기</p>
                         </div>
                       </div>
                       <div className="content">
@@ -392,15 +364,12 @@ export function PetSitter() {
                             </Link>
                           </h3>
                           <p className="update-time">{formatTimeAgo(post.regDate)}</p>
-                          {/* 발바닥 지수 */}
                           <ul className="paw-rating">
                             <li>
                               <PawRating rating={post.member?.pawRate || 0} />
-                              {/* <PawRating rating={3.1} /> */}
                               <p>({post.member?.pawRate?.toFixed(1)})</p>
                             </li>
                           </ul>
-
                           <ul className="info-list">
                             <li>
                               <span>
@@ -428,7 +397,7 @@ export function PetSitter() {
                     </div>
                   </div>
                 ))
-              ) : !loading && posts?.length === 0 ? (
+              ) : (
                 <div className="col-12 text-center p-4">
                   <h5 className="mb-3">🔍 검색 결과가 없습니다.</h5>
                   <p className="text-muted">다른 키워드로 다시 시도해보세요.</p>
@@ -438,16 +407,14 @@ export function PetSitter() {
                     ← 이전 페이지로 돌아가기
                   </button>
                 </div>
-              ) : null}
+              )}
             </div>
           </div>
-
           {pageInfo && !loading && (
             <Pagination pageInfo={pageInfo} onPageChange={handlePageChange} />
           )}
         </div>
       </section>
-      {/* */}
     </div>
   )
 }

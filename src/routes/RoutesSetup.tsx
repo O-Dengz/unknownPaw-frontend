@@ -1,29 +1,60 @@
-// src/components/RoutesSetup.tsx
 import {Route, Routes} from 'react-router-dom'
 import {Login} from '../pages/member/Login'
 import {Join} from '../pages/member/Join'
-import PrivateRoute from './PrivateRoute'
 import Layout from '../components/Layout'
 import {List} from '../pages/unknownPaw/List'
-import KakaoCallback from '../pages/member/KakaoCallback'
+import {About} from '../pages/unknownPaw/About'
+import {PetOwner} from '../pages/unknownPaw/PetOwner'
+import {PetSitter} from '../pages/unknownPaw/PetSitter'
+import {ItemDetails} from '../pages/unknownPaw/ItemDetails'
+import {Community} from '../pages/community/Community'
+import CommunityPost from '../pages/community/CommunityPost'
+import Dashboard from '../pages/myPage/Dashboard'
+import {ProfileSettings} from '../pages/myPage/ProfileSettings'
+import Chatting from '../pages/myPage/Chatting'
+import Faq from '../pages/myPage/Faq'
+import ReservationDetails from '../pages/myPage/ReservationDetails'
+import ReservationDetailsView from '../pages/myPage/ReservationDetailsView'
+import MyPosts from '../pages/myPage/MyPosts'
+import MyLikes from '../pages/myPage/MyLikes'
+import MemberProfile from '../pages/member/MemberProfile'
+import PostAd from '../pages/postAd/PostAd'
+import EditPetOwnerPost from '@/pages/postAd/ModifyPetOwnerPost'
+import {PetSettings} from '../pages/myPage/PetSettings'
+import NoMatch from './NoMatch'
+import ModifyPetOwnerPost from '@/pages/postAd/ModifyPetOwnerPost'
 
 export default function RoutesSetup() {
   return (
     <Routes>
-      {/* 🌍 공개 라우트 (로그인 없이 접근 가능한 페이지들) */}
-      <Route path="/list" element={<List />} /> {/* 목록 페이지 */}
-      <Route path="/login" element={<Login />} /> {/* 로그인 페이지 */}
-      <Route path="/join" element={<Join />} /> {/* 회원가입 페이지 */}
-      {/* 🔑 카카오 로그인 콜백을 처리할 라우트예요! */}
-      <Route path="/oauth/callback/kakao" element={<KakaoCallback />} />
-      <Route
-        path="/login-error"
-        element={<div>로그인에 실패했어요 😢 다시 시도해주세요!</div>}
-      />
-      {/* 🔒 보호된 라우트 (로그인이 필요한 페이지들) */}
-      {/* path="/*"는 위에 정의되지 않은 모든 경로를 잡아줘요! */}
-      {/* PrivateRoute가 사용자를 인증하고, 인증되면 Layout을 보여줘요. */}
-      <Route path="/*" element={<PrivateRoute component={Layout} />} />
+      {/* Layout이 감싸는 모든 페이지 */}
+      <Route element={<Layout />}>
+        <Route index element={<List />} />
+        <Route path="/list" element={<List />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/petowner/list" element={<PetOwner />} />
+        <Route path="/petsitter/list" element={<PetSitter />} />
+        <Route path="/community/posts" element={<Community />} />
+        <Route path="/communitypost/:postId" element={<CommunityPost />} />
+        <Route path="/postAd" element={<PostAd />} />
+        <Route path="/posts/:postType/read/:postId" element={<ItemDetails />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile-settings" element={<ProfileSettings />} />
+        <Route path="/chatting" element={<Chatting />} />
+        <Route path="/faq" element={<Faq />} />
+        <Route path="/reservation-details" element={<ReservationDetails />} />
+        <Route path="/reservation-details/:rno" element={<ReservationDetailsView />} />
+        <Route path="/my-posts" element={<MyPosts />} />
+        <Route path="/mylikes" element={<MyLikes />} />
+        <Route path="/pet-settings" element={<PetSettings />} />
+        <Route path="/member/profile/simple/:mid" element={<MemberProfile />} />
+        <Route path="/posts/:postType/edit/:postId" element={<ModifyPetOwnerPost />} />
+      </Route>
+      {/* Layout 없이 보여야 하는 페이지 */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/join" element={<Join />} />
+
+      <Route path="*" element={<NoMatch />} />
     </Routes>
   )
 }
