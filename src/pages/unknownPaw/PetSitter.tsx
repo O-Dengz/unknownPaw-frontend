@@ -5,7 +5,7 @@ import {formatTimeAgo} from '../../utils/timeAgo'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
 import PawRating from '../../components/PawRating'
 import {getImageUrl} from '@/utils/getImageUrl'
-import {UniversalSkeleton} from '../../../src/components/Skeletons/UniversalSkeleton'
+import {UniversalSkeleton} from '../../../src/components/skeletons/UniversalSkeleton'
 
 interface MemberResponseDTO {
   mid: number
@@ -201,7 +201,7 @@ export function PetSitter() {
             <div className="row">
               <div className="col-12">
                 <div className="section-title">
-                  <h2>Pet Sitter</h2>
+                  <h2>돌보미 게시판</h2>
                   <p>서비스를 제안하고 산책 제안을 받아보세요!</p>
                 </div>
               </div>
@@ -225,7 +225,7 @@ export function PetSitter() {
             <div className="col-12">
               <div className="section-title">
                 <h2 className="wow fadeInUp" data-wow-delay=".4s">
-                  Pet Sitter
+                  돌보미 게시판
                 </h2>
                 <p className="wow fadeInUp" data-wow-delay=".6s">
                   서비스를 제안하고 산책 제안을 받아보세요!

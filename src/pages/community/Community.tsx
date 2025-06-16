@@ -45,7 +45,7 @@ export function Community() {
   const [currentPage, setCurrentPage] = useState(1)
   const [memberId, setMemberId] = useState<number | null>(null)
   const totalPages = 20
-  const [viewMode, setViewMode] = useState<'card' | 'list'>('card')
+  const [viewMode, setViewMode] = useState<'card' | 'list'>('list')
   const [sortBy, setSortBy] = useState<'regDate' | 'likes'>('regDate')
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC')
 
