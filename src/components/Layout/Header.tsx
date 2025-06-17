@@ -1,39 +1,41 @@
 import React, {useState, useEffect, useRef} from 'react'
-import {Link, useNavigate} from 'react-router-dom'
+import {Link, useNavigate, useLocation} from 'react-router-dom'
 import './Header.css'
 
 export default function Header() {
-  const [scrollPos, setScrollPos] = useState(0)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const mainNavRef = useRef<HTMLElement | null>(null)
   const navigate = useNavigate()
+  const location = useLocation()
 
+  // 메인 페이지가 아닐 때 헤더 크기 고정
   useEffect(() => {
-    const handleScroll = () => {
-      const mainNav = mainNavRef.current
-      if (!mainNav) return
+    const header = mainNavRef.current
+    if (!header) return
 
-      const currentTop = window.scrollY
-      const headerHeight = mainNav.clientHeight
-
-      if (currentTop < scrollPos) {
-        if (currentTop > 0 && mainNav.classList.contains('is-fixed')) {
-          mainNav.classList.add('is-visible')
-        } else {
-          mainNav.classList.remove('is-visible', 'is-fixed')
-        }
-      } else {
-        mainNav.classList.remove('is-visible')
-        if (currentTop > headerHeight && !mainNav.classList.contains('is-fixed')) {
-          mainNav.classList.add('is-fixed')
-        }
-      }
-      setScrollPos(currentTop)
+    if (location.pathname !== '/') {
+      header.style.height = '100px'
+      header.style.position = 'fixed'
+      header.style.top = '0'
+      header.style.left = '0'
+      header.style.width = '100%'
+      header.style.zIndex = '999'
+      header.style.backgroundColor = '#fff'
+    } else {
+      header.style.height = ''
+      header.style.position = ''
+      header.style.top = ''
+      header.style.left = ''
+      header.style.width = ''
+      header.style.zIndex = ''
+      header.style.backgroundColor = ''
     }
+  }, [location.pathname])
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [scrollPos])
+  // 페이지 전환 시 스크롤 위치 초기화
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
 
   // 메뉴 버튼 클릭 시 상태 토글
   const toggleMenu = () => {
@@ -47,7 +49,7 @@ export default function Header() {
           <div className="col-lg-12">
             <div className="nav-inner">
               <nav className="navbar navbar-expand-lg">
-                <Link className="navbar-brand" to="/">
+                <Link className="navbar-brand" to="/" style={{marginLeft: '20px'}}>
                   <img src="/assets/images/logo/모개로고.png" alt="Logo" />
                 </Link>
                 <button
@@ -71,17 +73,9 @@ export default function Header() {
                     <li className="nav-item">
                       <Link
                         className="nav-link"
-                        to="/"
-                        onClick={() => setIsMenuOpen(false)}>
-                        Home
-                      </Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link
-                        className="nav-link"
                         to="/petowner/list"
                         onClick={() => setIsMenuOpen(false)}>
-                        Pet Owner
+                        돌봐주세요
                       </Link>
                     </li>
                     <li className="nav-item">
@@ -89,33 +83,47 @@ export default function Header() {
                         className="nav-link"
                         to="/petsitter/list"
                         onClick={() => setIsMenuOpen(false)}>
-                        Pet Sitter
+                        돌보고싶어요
                       </Link>
                     </li>
+
                     <li className="nav-item">
                       <Link
                         className="nav-link"
                         to="/community/posts"
                         onClick={() => setIsMenuOpen(false)}>
-                        Community
+                        시끌벅적
                       </Link>
                     </li>
+
                     <li className="nav-item">
                       <Link
                         className="nav-link"
                         to="/about"
                         onClick={() => setIsMenuOpen(false)}>
-                        About
+                        서비스 소개
                       </Link>
                     </li>
                   </ul>
                 </div>
 
                 <div className="header-button">
-                  <a href="/dashboard" className="btn">
+                  <Link
+                    to="/dashboard"
+                    className="reserve-button"
+                    style={{
+                      minWidth: '120px',
+                      fontSize: '15px',
+                      fontWeight: '500',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
+                    }}
+                    onClick={() => setIsMenuOpen(false)}>
                     <i className="fas fa-user-circle"></i>
-                    My Page
-                  </a>
+                    마이페이지
+                  </Link>
                 </div>
               </nav>
             </div>

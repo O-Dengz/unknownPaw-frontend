@@ -1,340 +1,256 @@
-/* Categories Section */
-.categories-section {
-  padding: 80px 0;
-  background-color: #f8f9fa;
-}
-
-.categories-section .section-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 3rem;
-  color: #333;
-  text-align: center;
-}
-
-.categories-section .single-grid {
-  position: relative;
-  height: 400px;
-  border-radius: 15px;
-  overflow: hidden;
-  margin-bottom: 30px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.categories-section .single-grid:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
-
-.categories-section .image {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.categories-section .image::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  transition: all 0.3s ease;
-  z-index: 1;
-}
-
-.categories-section .single-grid:hover .image::before {
-  background: rgba(0, 0, 0, 0.2);
-}
-
-.categories-section .image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.categories-section .single-grid:hover .image img {
-  transform: scale(1.1);
-}
-
-.categories-section .content {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 30px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-  color: #fff;
-  z-index: 2;
-  transform: translateY(20px);
-  opacity: 0.9;
-  transition: all 0.3s ease;
-}
-
-.categories-section .single-grid:hover .content {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.categories-section .title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 15px;
-  color: #fff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.categories-section p {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 0;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-/* Posts Section */
-.posts-section {
-  padding: 60px 0;
-  background-color: #fff;
-}
-
-.posts-section .section-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 2.5rem;
-  color: #333;
-  text-align: center;
-}
-
-.posts-section .random-post-card {
+/* ───────── 기본 ───────── */
+.list-page-wrapper {
   background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-  margin-bottom: 25px;
-  height: 100%;
+  min-height: 100vh;
+}
+
+/* ───────── HERO #1 ───────── */
+.hero-area.baemin-hero {
+  background: #32ade6 !important;
+  width: 100vw;
+  height: 100vh;
+  min-height: 700px;
   display: flex;
   flex-direction: column;
-  max-width: 300px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.posts-section .random-post-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
-}
-
-.posts-section .image {
-  position: relative;
-  height: 200px;
-  background-color: #f5f5f5;
-}
-
-.posts-section .thumbnail {
-  display: block;
-  width: 100%;
-  height: 100%;
   overflow: hidden;
+}
+.baemin-hero-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5vw;
+  padding-left: 4vw;
+  padding-right: 4vw;
+}
+.baemin-hero-image {
+  flex: 0 0 auto;
+  width: 50vw;
+  max-width: 630px;
+  min-width: 320px;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+.baemin-hero-text {
+  flex: 2;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vw;
+  min-width: 440px;
+  word-break: keep-all;
+  white-space: normal;
+}
+.baemin-hero-text h1 {
+  font-size: 4.2vw;
+  font-weight: 900;
+  line-height: 1.13;
+  letter-spacing: -2px;
+  text-shadow: 4px 4px 24px rgba(0, 0, 0, 0.28), 0 4px 14px rgba(0, 0, 0, 0.17);
+}
+.baemin-hero-text p {
+  font-size: 1.55vw;
+  font-weight: 400;
+  opacity: 0.96;
+}
+
+.scroll-down-indicator {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  z-index: 20;
+}
+.scroll-text {
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ───────── HERO #2 ───────── */
+.hero-area.baemin-hero2 {
+  background: #32ade6 !important;
+  width: 100vw;
+  overflow: hidden;
+  padding-top: 0;
+  margin-bottom: 0;
+  padding-bottom: 5vh; /* 버튼까지 파란배경 확보 */
+}
+.hero-area.baemin-hero2 .row.mt-4 {
+  margin-top: 0 !important;
+}
+.main-banner-area {
+  margin: 0 auto 14vh !important;
+  max-width: 1200px;
+}
+
+.baemin-hero2-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 6vw;
   position: relative;
 }
-
-.posts-section .thumbnail::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
+.baemin-hero2-visual {
   width: 100%;
-  height: 100%;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
-  z-index: 1;
-}
-
-.posts-section .thumbnail img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease;
-}
-
-.posts-section .random-post-card:hover .thumbnail img {
-  transform: scale(1.05);
-}
-
-.posts-section .author {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 12px 15px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 2;
-}
-
-.posts-section .author-image {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 6vw;
+  margin-bottom: 3vw;
 }
 
-.posts-section .author-image img {
-  width: 35px;
-  height: 35px;
+.hero2-guide-msg {
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 2.8rem;
+  margin-bottom: 1.6rem;
+  letter-spacing: -0.5px;
+  text-shadow: 2px 2px 10px rgba(30, 120, 170, 0.18);
+}
+
+.baemin-hero-desc {
+  margin-top: 1.4em;
+  font-size: 1.6vw;
+  font-weight: 400;
+  color: #fff;
+}
+.baemin-hero-text h1 {
+  color: #fff !important;
+}
+
+.baemin-hero2-buttons {
+  display: flex;
+  gap: 5vw;
+  justify-content: center;
+  margin-top: 2.8rem;
+  margin-bottom: 2.2rem;
+  position: static;
+}
+.hero-circle-btn {
+  width: 130px;
+  height: 130px;
   border-radius: 50%;
-  border: 2px solid #fff;
-  object-fit: cover;
-  background-color: #f0f0f0;
-}
-
-.posts-section .author-image span {
+  border: 2.5px dashed #fff;
+  background: transparent;
   color: #fff;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.posts-section .sale {
-  background: #ff6b6b;
-  color: #fff;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-.posts-section .content {
-  padding: 20px;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.posts-section .top-content {
-  margin-bottom: 15px;
-  flex-grow: 1;
-}
-
-.posts-section .tag {
-  display: inline-block;
-  padding: 4px 12px;
-  background: #f0f7ff;
-  color: #1976d2;
-  border-radius: 15px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  margin-bottom: 10px;
-}
-
-.posts-section .title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 12px;
-  line-height: 1.4;
-}
-
-.posts-section .title a {
-  color: #333;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.posts-section .title a:hover {
-  color: #1976d2;
-}
-
-.posts-section .update-time,
-.posts-section .location,
-.posts-section .rate {
-  color: #666;
-  font-size: 0.85rem;
-  margin-bottom: 6px;
+  font-size: 1.25rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  transition: 0.2s;
+}
+.hero-circle-btn:hover {
+  color: #f1a852;
+  border-color: #f1a852;
+  background: rgba(241, 168, 82, 0.09);
 }
 
-.posts-section .update-time i,
-.posts-section .location i,
-.posts-section .rate i {
-  color: #1976d2;
-  font-size: 1rem;
+/* ───────── 게시글 영역 ───────── */
+.posts-section {
+  background: #fff;
+  padding: 60px 0;
 }
 
-.posts-section .bottom-content {
-  display: flex;
-  justify-content: space-between;
-  padding-top: 15px;
-  border-top: 1px solid #eee;
-  margin-top: auto;
+/* ───────── Responsive ───────── */
+@media (max-width: 1100px) {
+  .baemin-hero-inner {
+    gap: 3vw;
+    padding: 4vw;
+  }
+  .baemin-hero-image {
+    width: 48vw;
+    max-width: 500px;
+  }
+  .baemin-hero-text h1 {
+    font-size: 3rem;
+  }
+  .baemin-hero-desc {
+    font-size: 1.2rem;
+  }
 }
 
-.posts-section .like,
-.posts-section .chat {
-  color: #666;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  transition: color 0.2s ease;
-}
-
-.posts-section .like:hover,
-.posts-section .chat:hover {
-  color: #1976d2;
-}
-
-.posts-section .like i,
-.posts-section .chat i {
-  color: #ff6b6b;
-  font-size: 1rem;
-}
-
-/* Default Image Styles */
-.posts-section .thumbnail img[src='assets/images/items-grid/2.jpg'],
-.posts-section .author-image img[src='assets/images/items-grid/2.jpg'] {
-  opacity: 0.7;
-  filter: grayscale(20%);
-}
-
-/* Responsive Adjustments */
 @media (max-width: 768px) {
-  .posts-section .random-post-card {
-    margin-bottom: 20px;
-    max-width: 280px;
+  .baemin-hero-inner {
+    flex-direction: column;
+    text-align: center;
   }
+  .baemin-hero-image {
+    width: 70vw;
+    max-width: 380px;
+    margin-bottom: 4vh;
+  }
+  .baemin-hero-text h1 {
+    font-size: 2.2rem;
+  }
+  .baemin-hero-text p {
+    font-size: 1.1rem;
+  }
+  .main-banner-area {
+    margin-bottom: 10vh !important;
+  }
+  .baemin-hero2-visual {
+    flex-direction: column;
+  }
+  .baemin-hero-desc {
+    text-align: center;
+    font-size: 1.05rem;
+  }
+  .baemin-hero2-buttons {
+    bottom: 4vh;
+    gap: 7vw;
+  }
+  .hero-circle-btn {
+    width: 90px;
+    height: 90px;
+    font-size: 0.9rem;
+  }
+  .hero2-guide-msg {
+    font-size: 1.05rem;
+    margin-top: 1.2rem;
+    margin-bottom: 1rem;
+  }
+}
 
-  .posts-section .image {
-    height: 180px;
+@media (max-width: 600px) {
+  .hero-circle-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 0.75rem;
   }
-
-  .posts-section .content {
-    padding: 15px;
+  .baemin-hero2-buttons {
+    flex-direction: column;
+    gap: 12px;
+    bottom: 3vh;
   }
-
-  .posts-section .title {
-    font-size: 1rem;
+  .scroll-text {
+    font-size: 0.9rem;
   }
-  .background-video-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .background-video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* 비디오를 hero-area 크기에 맞게 잘라서 채우도록 */
-  }
+}
+.fadein-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity, transform;
+}
+.fadein-on-scroll.visible {
+  opacity: 1;
+  transform: none;
 }

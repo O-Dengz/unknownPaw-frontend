@@ -7,6 +7,12 @@
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",          
+    "types": ["node"],           // node 타입 전역 활성화
+    "resolveJsonModule": true,               
+    "paths": {
+      "@/*": ["src/*"]
+    }
   }
 }

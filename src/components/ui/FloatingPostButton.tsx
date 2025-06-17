@@ -9,8 +9,7 @@ export default function FloatingPostButton() {
 
   // 메인, 리스트, 각종 상세페이지에서만 숨김
   if (
-    path === '/' ||
-    path.startsWith('/list') ||
+    // path === '/' ||
     path.startsWith('/communitypost') ||
     path.startsWith('/petownerpost') ||
     path.startsWith('/petsitterpost') ||

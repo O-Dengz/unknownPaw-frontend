@@ -44,40 +44,6 @@ const BackgroundVideo: React.FC = () => {
           zIndex: 1
         }}
       />
-      <div
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          textAlign: 'center',
-          color: 'white',
-          zIndex: 2,
-          width: '100%',
-          padding: '0 20px'
-        }}>
-        <h1
-          style={{
-            fontSize: '3rem',
-            fontWeight: 800,
-            marginBottom: '1rem',
-            textShadow: '3px 3px 6px rgba(0,0,0,0.6)',
-            color: 'orange'
-          }}>
-          모르는 개 산책
-        </h1>
-        <p
-          style={{
-            fontSize: '1.5rem',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-            color: '#ffffff',
-            lineHeight: '1.8'
-          }}>
-          산책, 돌봄, 그외 서비스
-          <br />
-          반려견을 사랑하는 사람과 안전하게 연결하는 플랫폼
-        </p>
-      </div>
     </div>
   )
 }

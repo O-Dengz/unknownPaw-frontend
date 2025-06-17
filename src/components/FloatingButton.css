@@ -1,0 +1,41 @@
+.floating-button {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #F1A852;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(241, 168, 82, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  border: none;
+  font-size: 24px;
+}
+
+.floating-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(241, 168, 82, 0.4);
+  background-color: #e69a45;
+}
+
+.floating-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(241, 168, 82, 0.2);
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  .floating-button {
+    right: 20px;
+    bottom: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+} 

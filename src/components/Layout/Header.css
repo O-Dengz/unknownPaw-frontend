@@ -1,162 +1,213 @@
-.auth-buttons {
+/* 기본 헤더 스타일 */
+.navbar-area {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+.navbar {
   display: flex;
-  gap: 10px;
   align-items: center;
+  justify-content: space-between; /* 요소들을 양 끝으로 정렬 */
+  height: 60px;
+  padding: 0 20px; /* 좌우 패딩 */
 }
 
-.login-button {
-  padding: 8px 16px;
-  color: #34b7a7;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.login-button:hover {
-  color: #2da89a;
-}
-
-.join-button {
-  padding: 8px 16px;
-  background-color: #34b7a7;
-  color: white;
-  text-decoration: none;
-  border-radius: 4px;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-}
-
-.join-button:hover {
-  background-color: #2da89a;
-}
-
-.header-button .btn {
-  display: inline-flex; /* 핵심! 한 줄 정렬 */
+/* 로고 스타일 */
+.navbar-brand {
+  height: 40px;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  white-space: nowrap; /* 줄바꿈 금지! */
-  gap: 8px; /* 아이콘과 글자 사이 여백 */
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  margin-right: 30px;
+}
+
+.navbar-brand img {
+  height: 100%;
+  width: auto;
+}
+
+/* 네비게이션 메뉴 스타일 */
+.navbar-nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-nav .nav-item {
+  margin-right: 25px;
+}
+
+.navbar-nav .nav-item:last-child {
+  margin-right: 0;
+}
+
+.navbar-nav .nav-link {
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  padding: 0;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: #F1A852; /* 오댕옐로우 */
+}
+
+/* 우측 섹션 (로그인/회원가입, 마이페이지 버튼) */
+.right-section {
+  display: flex;
+  align-items: center;
+  margin-left: auto; /* 메뉴와 버튼 사이 공간 확보 */
+  gap: 20px;
+}
+
+.auth-links {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.login-link,
+.join-link {
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.login-link:hover,
+.join-link:hover {
+  color: #F1A852; /* 오댕옐로우 */
+}
+
+.separator {
+  color: #ccc;
+  font-size: 14px;
+}
+
+/* 마이페이지 버튼 스타일 */
+.mypage-button {
+  background-color: #32ADE6; /* 오댕블루 */
   color: #fff;
-  padding: 12px 28px;
-  border-radius: 9999px;
-  font-weight: 600;
-  font-size: 13px;
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
   text-decoration: none;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.2);
   border: none;
-  position: relative;
-  overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 5px rgba(50, 173, 230, 0.2);
+}
+
+.mypage-button:hover {
+  background-color: #2a9cd8; /* 오댕블루 hover */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(50, 173, 230, 0.3);
+}
+
+.mypage-button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(50, 173, 230, 0.2);
+}
+
+/* 모바일 메뉴 토글 버튼 */
+.navbar-toggler {
+  display: none; /* 기본적으로 숨김 (데스크톱에서는 사용하지 않음) */
+  border: none;
+  background: transparent;
+  padding: 0;
   cursor: pointer;
 }
-.header-button .btn:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
-  box-shadow: 0 6px 25px rgba(14, 165, 233, 0.3);
+
+.toggler-icon {
+  width: 25px;
+  height: 2px;
+  background-color: #333;
+  display: block;
+  margin: 5px 0;
+  transition: all 0.2s ease-in-out;
 }
 
-.header-button .btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(14, 165, 233, 0.15);
+.navbar-toggler.active .toggler-icon:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.navbar-toggler.active .toggler-icon:nth-child(2) {
+  opacity: 0;
+}
+.navbar-toggler.active .toggler-icon:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
-.header-button .btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: 0.5s;
-}
+/* 모바일 반응형 */
+@media (max-width: 991px) {
+  .navbar-toggler {
+    display: block; /* 모바일에서만 보임 */
+    margin-left: auto; /* 우측 정렬 */
+  }
 
-.header-button .btn:hover::before {
-  left: 100%;
-}
+  .navbar-nav {
+    flex-direction: column;
+    width: 100%;
+    align-items: flex-start;
+    margin-top: 15px;
+  }
 
-.header-button .btn i {
-  font-size: 18px;
-}
+  .navbar-nav .nav-item {
+    margin-right: 0;
+    margin-bottom: 10px;
+    width: 100%;
+  }
 
-/* Floating Button Styles */
-.floating-button {
-  background: #f1a852;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 25px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(241, 168, 82, 0.2);
-  border: none;
-  position: relative;
-  overflow: hidden;
-}
+  .navbar-nav .nav-link {
+    padding: 10px 0;
+    display: block;
+  }
 
-.floating-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(241, 168, 82, 0.3);
-  background: #e89a42;
-}
+  .collapse.navbar-collapse.show {
+    display: flex !important; /* 모바일 메뉴 활성화 시 */
+    flex-direction: column;
+    background-color: #fff;
+    position: absolute;
+    top: 60px; /* 헤더 높이만큼 아래로 */
+    left: 0;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+  }
 
-.floating-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(241, 168, 82, 0.2);
-}
+  .right-section {
+    flex-direction: column;
+    width: 100%;
+    align-items: flex-start;
+    margin-left: 0;
+    gap: 15px;
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+  }
 
-.floating-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: 0.5s;
-}
+  .auth-links {
+    flex-direction: row;
+    width: 100%;
+    justify-content: center; /* 로그인/회원가입 가운데 정렬 */
+  }
+  
+  .header-button {
+    width: 100%;
+  }
 
-.floating-button:hover::before {
-  left: 100%;
-}
-
-.fix-button {
-  background: #f1a852;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 25px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(241, 168, 82, 0.2);
-  border: none;
-  position: relative;
-  overflow: hidden;
-}
-
-.fix-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(241, 168, 82, 0.3);
-  background: #e89a42;
-}
-
-.fix-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(241, 168, 82, 0.2);
-}
-
-.fix-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: 0.5s;
-}
-
-.fix-button:hover::before {
-  left: 100%;
+  .mypage-button {
+    width: 100%;
+    text-align: center;
+  }
 }

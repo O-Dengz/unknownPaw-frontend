@@ -35,6 +35,18 @@ export default function CommunityForm({
     if (savedContent) setContent(savedContent)
   }, [])
 
+  // 카테고리 변경 시 폼 초기화
+  useEffect(() => {
+    if (communityCategory) {
+      setTitle('')
+      setContent('')
+      setImage(null)
+      setPreviewUrl(null)
+      sessionStorage.removeItem('community_title')
+      sessionStorage.removeItem('community_content')
+    }
+  }, [communityCategory])
+
   useEffect(() => {
     sessionStorage.setItem('community_title', title)
     sessionStorage.setItem('community_content', content)
@@ -165,184 +177,239 @@ export default function CommunityForm({
     }
   }, [onSubmitRequest, handleSubmit]) // handleSubmit을 의존성 배열에 추가
 
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const {name, value} = e.target
+
+    // 카테고리가 변경되면 폼 초기화
+    if (name === 'communityCategory') {
+      setTitle('')
+      setContent('')
+      setImage(null)
+      setPreviewUrl(null)
+      sessionStorage.removeItem('community_title')
+      sessionStorage.removeItem('community_content')
+      setCommunityCategory(value) // 이 부분을 먼저 업데이트하여 useEffect가 올바르게 감지하도록 함
+    }
+
+    // 모든 변경사항에 대해 onDataChange 호출
+    // 카테고리 변경 시 초기화 로직 후 호출되어야 함
+    if (name !== 'communityCategory') {
+      onDataChange?.({[name]: value})
+    } else {
+      // 카테고리 변경 시 초기화된 상태로 전달
+      onDataChange?.({
+        communityCategory: value,
+        title: '',
+        content: '',
+        images: undefined
+      })
+    }
+  }
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value)
+    onDataChange?.({title: e.target.value})
+  }
+
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value)
+    onDataChange?.({content: e.target.value})
+  }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0]
+      setImage(file)
+      setPreviewUrl(URL.createObjectURL(file))
+      onDataChange?.({images: [file]})
+    }
+  }
+
+  // 이미지 삭제 핸들러 개선
+  const handleRemoveImage = () => {
+    setImage(null)
+    setPreviewUrl(null)
+    // 부모에게 이미지 삭제 알림 (images: undefined)
+    onDataChange?.({images: undefined})
+    // 파일 입력 필드 초기화 (동일 파일 재선택 위해)
+    const fileInput = document.querySelector('input[type="file"]')
+    if (fileInput) (fileInput as HTMLInputElement).value = ''
+  }
+
   return (
-    <form onSubmit={handleSubmit}>
-      <section className="dashboard section">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-3 col-md-4 col-12"></div>
-            <div className="col-lg-12 col-md-12 col-11 mx-auto">
-              <div className="main-content">
-                <div className="dashboard-stats">
-                  <div className="row">
-                    <div className="col-lg-12 col-md-12 col-12">
-                      <h2 className="text-2xl font-bold text-center text-gray-800 mb-15">
-                        커뮤니티 글쓰기
-                      </h2>
+    <>
+      {' '}
+      {/* Component should only return the inner content */}
+      {/* === 커뮤니티 글쓰기 폼 카드 === */}
+      {/* This card will be placed inside the layout provided by PostAd.tsx */}
+      <div className="main-content bg-white p-8 rounded-xl shadow-lg mb-6">
+        {' '}
+        {/* mb-6 added for spacing */}
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-15">
+          커뮤니티 글쓰기
+        </h2>
+        {/* ✨ 커뮤니티 카테고리 선택 ✨ */}
+        <div className="form-group mb-6">
+          <label className="text-gray-700 font-medium">커뮤니티 카테고리*</label>
+          <select
+            name="communityCategory"
+            value={communityCategory}
+            onChange={handleChange}
+            className="form-control">
+            <option value="" disabled hidden>
+              카테고리 선택
+            </option>
+            <option value="GENERAL">일반 게시글</option>
+            <option value="EVENT">이벤트</option>
+            <option value="ANNOUNCEMENT">공지사항</option>
+            <option value="COMMUNITY">커뮤니티</option>
+          </select>
+          {!communityCategory && (
+            <p className="text-red-500 text-xs mt-1">카테고리를 선택해주세요</p>
+          )}
+        </div>
+        {/* 제목 */}
+        <div className="form-group mb-6">
+          <label className="text-gray-700 font-medium">제목*</label>
+          <input
+            type="text"
+            name="title"
+            value={title}
+            onChange={handleTitleChange}
+            className="form-control"
+            placeholder="제목을 입력하세요"
+          />
+        </div>
+        {/* 내용 */}
+        <div className="form-group mb-6">
+          <label className="text-gray-700 font-medium">내용*</label>
+          <textarea
+            name="content"
+            value={content}
+            onChange={handleContentChange}
+            className="form-control"
+            rows={10}
+            placeholder="내용을 입력하세요"
+          />
+        </div>
+        {/* === 이미지 업로드 섹션 === */}
+        <div className="form-group mb-6">
+          <label className="text-gray-700 font-medium">이미지</label>
+          {/* File selection area */}
+          <div
+            className="border-2 border-dashed border-gray-300 p-4 rounded-lg text-center text-gray-500 relative cursor-pointer hover:border-blue-500 transition-colors"
+            onClick={() => document.getElementById('imageInput')?.click()}>
+            <div className="text-4xl mb-1">+</div>
+            <p style={{marginBottom: '0.5rem'}}>파일 선택</p>
+            {/* Actual file input */}
+            <input
+              id="imageInput"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+            />
+            <p className="text-sm mt-1 text-gray-400">최대 업로드 용량: 5MB</p>
+          </div>
 
-                      {/* ✨ 커뮤니티 카테고리 선택 ✨ */}
-                      <div className="form-group mb-6">
-                        <label className="text-gray-700 font-medium">
-                          커뮤니티 카테고리*
-                        </label>
-                        <select
-                          value={communityCategory}
-                          onChange={e => setCommunityCategory(e.target.value)}
-                          className="form-control">
-                          <option value="" disabled hidden>
-                            카테고리 선택
-                          </option>{' '}
-                          {/* 이 옵션은 선택 불가능 */}
-                          <option value="GENERAL">일반 게시글</option>
-                          <option value="EVENT">이벤트</option>
-                          <option value="ANNOUNCEMENT">공지사항</option>
-                          <option value="COMMUNITY">커뮤니티</option>
-                        </select>
-                        {!communityCategory && (
-                          <p className="text-red-500 text-xs mt-1">
-                            커뮤니티 카테고리를 선택해주세요.
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        {/* 제목 입력 */}
-                        <div className="form-group mb-6">
-                          <label className="text-gray-700 font-medium">제목*</label>
-                          <input
-                            type="text"
-                            value={title}
-                            onChange={e => setTitle(e.target.value)}
-                            placeholder="제목을 입력하세요"
-                            className="form-control"
-                          />
-                        </div>
-
-                        {/* 내용 입력 */}
-                        <div className="form-group mb-6">
-                          <label className="text-gray-700 font-medium">내용</label>
-                          <textarea
-                            value={content}
-                            onChange={e => setContent(e.target.value)}
-                            placeholder="내용을 입력하세요"
-                            className="form-control"
-                            rows={4}
-                          />
-                        </div>
-
-                        {/* 이미지 업로드 */}
-                        <div className="form-group mb-6">
-                          <label className="text-gray-700 font-medium">
-                            이미지 업로드
-                          </label>
-                          <div className="border-2 border-dashed border-gray-300 p-6 rounded-lg text-center text-gray-500 relative">
-                            {/* 숨겨진 파일 인풋 */}
-                            <input
-                              type="file"
-                              id="image-upload-input"
-                              onChange={handleImageUpload}
-                              className="hidden"
-                              accept="image/*"
-                            />
-
-                            {/* + 버튼을 클릭 시 input 트리거 */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const fileInput = document.getElementById(
-                                  'image-upload-input'
-                                ) as HTMLInputElement
-                                fileInput?.click()
-                              }}
-                              className="text-4xl mb-2 hover:text-gray-700 transition-colors duration-200">
-                              +
-                            </button>
-
-                            <p>파일 선택</p>
-                            <p className="text-sm mt-2 text-gray-400">
-                              최대 업로드 용량: 10MB
-                            </p>
-                          </div>
-
-                          {previewUrl && (
-                            <div className="form-group mb-6 mt-4">
-                              <p className="text-gray-700 font-medium mb-2">미리보기</p>
-                              <img
-                                src={previewUrl}
-                                alt="미리보기"
-                                className="w-full h-64 object-cover rounded-md border"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="main-content bg-white p-8 rounded-xl shadow-lg mt-6">
-                  <h4 className="text-xl font-semibold text-gray-800 mb-6">
-                    👤 작성자 정보
-                  </h4>
-                  {member && (
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="form-group">
-                        <label className="text-gray-700">닉네임</label>
-                        <input
-                          type="text"
-                          value={member.nickname}
-                          readOnly
-                          className="form-control bg-gray-100"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label className="text-gray-700">성별</label>
-                        <input
-                          type="text"
-                          value={member.gender ? '남성' : '여성'}
-                          readOnly
-                          className="form-control bg-gray-100"
-                        />
-                      </div>
-                      <div className="form-group col-span-2">
-                        <label className="text-gray-700">소개</label>
-                        <textarea
-                          value={member.introduction}
-                          readOnly
-                          className="form-control bg-gray-100"
-                          rows={3}
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label className="text-gray-700">평점</label>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-yellow-400">⭐</span>
-                          <p>
-                            {member.pawRate !== undefined
-                              ? member.pawRate.toFixed(1)
-                              : '평점 없음'}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="form-group">
-                        <label className="text-gray-700">이메일 인증</label>
-                        <span
-                          className={`ml-2 inline-block px-2 py-1 rounded-full text-sm ${
-                            member.emailVerified
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-red-100 text-red-700'
-                          }`}>
-                          {member.emailVerified ? '인증 완료' : '미인증'}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
+          {/* Image preview and delete button */}
+          {previewUrl && (
+            <div className="mt-4 relative w-full max-w-xs mx-auto">
+              {' '}
+              {/* Preview container */}
+              <img
+                src={previewUrl}
+                alt="미리보기"
+                className="w-full h-auto object-cover rounded-md border"
+                style={{maxHeight: '300px'}} // Height limit
+              />
+              {/* Delete button */}
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-1.5 shadow-md transition-colors">
+                {/* Delete icon (svg) */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>{' '}
+      {/* End of 커뮤니티 글쓰기 폼 카드 */}
+      {/* === 작성자 정보 카드 === */}
+      <div className="main-content bg-white p-8 rounded-xl shadow-lg mt-6">
+        {' '}
+        {/* mt-6 for spacing */}
+        <h4 className="text-xl font-semibold text-gray-800 mb-6">👤 작성자 정보</h4>
+        {member && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {' '}
+            {/* Responsive grid */}
+            <div className="form-group">
+              <label className="text-gray-700">닉네임</label>
+              <input
+                type="text"
+                value={member.nickname}
+                readOnly
+                className="form-control bg-gray-100"
+              />
+            </div>
+            <div className="form-group">
+              <label className="text-gray-700">성별</label>
+              <input
+                type="text"
+                value={member.gender ? '남성' : '여성'}
+                readOnly
+                className="form-control bg-gray-100"
+              />
+            </div>
+            <div className="form-group col-span-1 md:col-span-2">
+              {' '}
+              {/* Responsive col-span */}
+              <label className="text-gray-700">소개</label>
+              <textarea
+                value={member.introduction}
+                readOnly
+                className="form-control bg-gray-100"
+                rows={3}
+              />
+            </div>
+            <div className="form-group">
+              <label className="text-gray-700">평점</label>
+              <div className="flex items-center space-x-2">
+                <span className="text-yellow-400">⭐</span>
+                <p>
+                  {member.pawRate !== undefined ? member.pawRate.toFixed(1) : '평점 없음'}
+                </p>
               </div>
             </div>
+            <div className="form-group">
+              <label className="text-gray-700">이메일 인증</label>
+              <span
+                className={`ml-2 inline-block px-2 py-1 rounded-full text-sm ${
+                  member.emailVerified
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-red-100 text-red-700'
+                }`}>
+                {member.emailVerified ? '인증 완료' : '미인증'}
+              </span>
+            </div>
           </div>
-        </div>
-      </section>
-    </form>
+        )}
+      </div>{' '}
+      {/* End of 작성자 정보 카드 */}
+    </>
   )
 }
