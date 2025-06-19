@@ -1,0 +1,1477 @@
+/* 기본 대시보드 스타일 */
+.dashboard-sidebar {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  height: fit-content;
+}
+
+/* 모든 마이페이지 섹션에 공통으로 적용될 스타일 (패딩은 여기서만 관리) */
+.dashboard.section,
+.dashboard.selection,
+.my-posts-page .dashboard,
+.section.dashboard {
+  /* padding-top: 120px !important; */ /* 페이지별로 관리 */
+  padding-bottom: 60px !important; /* 하단 패딩은 공통 적용 */
+  /* margin-top: 0 !important; */
+  min-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+}
+
+.page-wrapper > section,
+main > section {
+  /* 이 셀렉터에 대한 일반적인 패딩은 제거하고 개별 페이지 CSS에서 관리 */
+  margin-top: 0 !important; /* 이 라인도 확인하고 필요시 조정 또는 제거 */
+  min-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 메인 콘텐츠 */
+.main-content {
+  flex: 1;
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  margin-bottom: 30px;
+  min-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .dashboard.section,
+  .dashbard.selection,
+  .my-posts-page .dashboard,
+  .page-wrapper > section,
+  main > section,
+  .section.dashboard {
+    padding-top: 100px !important;
+    padding-bottom: 60px !important;
+  }
+  .main-content {
+    padding: 20px;
+  }
+}
+
+/* Bootstrap과 Tailwind CSS 클래스 오버라이드 */
+.pt-100,
+.pt-\[100px\],
+[class*='pt-'],
+[class*='mt-'] {
+  padding-top: 100px !important;
+  margin-top: 0 !important;
+}
+
+.dashboard-sidebar .user-image {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.dashboard-sidebar .user-image img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.dashboard-sidebar .user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-sidebar .user-info h3 {
+  font-size: 16px;
+  margin: 0;
+  color: #333;
+  font-weight: 500;
+}
+
+.dashboard-sidebar .user-info .username {
+  font-size: 14px;
+  color: #666;
+  text-decoration: none;
+  margin-top: 2px;
+}
+
+.dashboard-sidebar .user-info .username:hover {
+  color: #32ade6;
+}
+
+.dashboard-sidebar .user-image .username a {
+  color: #666;
+  text-decoration: none;
+}
+
+.dashboard-sidebar .user-image .username a:hover {
+  color: #32ade6;
+}
+
+.dashboard-sidebar .user-image span a {
+  color: #666;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.dashboard-menu ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.dashboard-menu ul li {
+  margin-bottom: 5px;
+}
+
+.dashboard-menu ul li a {
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.dashboard-menu ul li a i {
+  margin-right: 10px;
+  font-size: 18px;
+  width: 20px;
+  color: #666;
+}
+
+.dashboard-menu ul li a:hover {
+  background: #f8f9fa;
+  color: #32ade6;
+}
+
+.dashboard-menu ul li a:hover i {
+  color: #32ade6;
+}
+
+.dashboard-menu ul li a.active {
+  background: #32ade6;
+  color: #fff;
+}
+
+.dashboard-menu ul li a.active i {
+  color: #fff;
+}
+
+.dashboard-menu .button {
+  margin-top: 20px;
+  padding: 0 15px;
+}
+
+.dashboard-menu .button .btn {
+  width: 100%;
+  padding: 12px;
+  background: #fff0f0;
+  color: #ff0000;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dashboard-menu .button .btn:hover {
+  background: #ffe0e0;
+}
+
+/* 프로필 설정 폼 */
+.profile-settings {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.profile-settings h2 {
+  font-size: 24px;
+  margin-bottom: 30px;
+  font-weight: 500;
+}
+
+.form-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.image-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.image-row img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.image-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.form-group input[type='text'],
+.form-group input[type='number'],
+.form-group input[type='email'],
+.form-group input[type='password'],
+.form-group input[type='tel'],
+.form-group textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.form-group input[type='text']:focus,
+.form-group input[type='email']:focus,
+.form-group input[type='password']:focus,
+.form-group input[type='tel']:focus,
+.form-group textarea:focus {
+  border-color: #32ade6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(50, 173, 230, 0.1);
+}
+
+.form-group textarea {
+  height: 120px;
+  resize: none;
+}
+
+.form-group input[type='file'] {
+  display: none;
+}
+
+.form-group .file-upload {
+  display: inline-block;
+  padding: 12px 20px;
+  background: #f8f9fa;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+}
+.form-group input[type='password'],
+.form-group input[type='text'] {
+  /* type이 text일 때도 동일하게 적용 */
+  padding-right: 45px; /* 눈 모양 아이콘이 들어갈 공간 확보. 아이콘 너비 + 여백 */
+  width: 100%; /* 필드 너비 100% */
+  box-sizing: border-box; /* 패딩이 너비에 포함되도록 */
+}
+
+.form-group .file-upload:hover {
+  background: #f0f0f0;
+}
+
+.password-toggle-button {
+  position: absolute; /* 부모인 .form-group을 기준으로 위치 지정 */
+  right: 10px; /* 오른쪽에서 10px 떨어진 위치 */
+  top: 50%; /* 상단에서 50% 위치 */
+  transform: translateY(-50%); /* 버튼 자체 높이의 절반만큼 위로 이동하여 중앙 정렬 */
+  background: none; /* 배경 제거 */
+  border: none; /* 테두리 제거 */
+  cursor: pointer; /* 마우스 오버 시 포인터 변경 */
+  padding: 0; /* 내부 패딩 제거 */
+  display: flex; /* 아이콘 중앙 정렬을 위해 flex 사용 */
+  align-items: center; /* 수직 중앙 정렬 */
+  justify-content: center; /* 수평 중앙 정렬 */
+  width: 30px; /* 버튼 너비 */
+  height: 30px; /* 버튼 높이 */
+  color: #888; /* 아이콘 색상 (회색 계열) */
+  z-index: 10; /* 인풋 필드 위에 오도록 z-index 설정 */
+}
+.password-toggle-button:hover {
+  color: #555; /* 호버 시 색상 변경 */
+}
+
+/* 아이콘 크기 조정 (Tailwind CSS h-5 w-5에 해당하는 크기) */
+.password-toggle-button svg {
+  width: 20px; /* h-5, w-5는 보통 1.25rem = 20px */
+  height: 20px;
+}
+
+/* 모바일 등 작은 화면에서의 반응형 디자인 (선택 사항) */
+@media (max-width: 768px) {
+  .password-toggle-button {
+    right: 8px; /* 작은 화면에서 오른쪽 여백 조정 */
+  }
+  .form-group input {
+    padding-right: 40px;
+  }
+}
+
+.update-profile-btn {
+  background: #32ade6;
+  color: #fff;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.update-profile-btn:hover {
+  background: #1f97cd;
+}
+
+/* 프로필 이미지 미리보기 */
+.profile-image-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.profile-image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 상세 목록 */
+.details-lists .single-list {
+  position: relative;
+  padding-left: 80px;
+  margin-bottom: 30px;
+}
+
+.details-lists .single-list .list-icon {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  border-radius: 50%;
+  background: #32ade6;
+  color: #fff;
+  font-size: 24px;
+}
+
+.details-lists .single-list h3 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.details-lists .single-list h3 span {
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+  color: #888;
+  margin-top: 5px;
+}
+
+/* 반려견 프로필 & 비밀번호 변경 */
+.pet-profile-settings,
+.password-change {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  margin-top: 30px;
+}
+
+.pet-profile-settings h2,
+.password-change h2 {
+  font-size: 24px;
+  margin-bottom: 30px;
+  font-weight: 500;
+}
+
+.pet-profile-image-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.pet-profile-image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.toggle-group {
+  margin-bottom: 20px;
+}
+
+.toggle-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.toggle-buttons {
+  display: flex;
+  gap: 30px;
+}
+
+.toggle-buttons .toggle-button {
+  padding: 4px 20px;
+  font-size: 0.8rem;
+  min-width: 50px;
+}
+
+.toggle-button {
+  padding: 4px 10px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fff;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-button.active {
+  background: #32ade6;
+  color: #fff;
+  border-color: #32ade6;
+}
+
+.update-password-btn {
+  background: #32ade6;
+  color: #fff;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.update-password-btn:hover {
+  background: #1f97cd;
+}
+
+/* Messages Container */
+.messages-container {
+  background: #fff;
+  border-radius: 8px;
+  height: calc(100vh - 300px);
+  display: flex;
+  flex-direction: column;
+}
+
+.messages-header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+}
+
+.messages-header h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.search-box {
+  position: relative;
+}
+
+.chat-search-form {
+  display: flex;
+  align-items: center;
+}
+
+.chat-search-form input {
+  width: 100%;
+  padding: 12px 40px 12px 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #f8f9fa;
+}
+
+.chat-search-form input:focus {
+  outline: none;
+  border-color: #32ade6;
+  background: #fff;
+}
+
+.chat-search-form button {
+  position: absolute;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+}
+
+/* 메시지 콘텐츠 */
+.messages-content {
+  display: flex;
+  height: calc(100% - 80px);
+  background: #fff;
+}
+
+/* 사용자 목록 */
+.users-list {
+  width: 320px;
+  border-right: 1px solid #eee;
+  overflow: hidden;
+  background: #fff;
+}
+
+.users-list-inner {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.user-item:hover {
+  background: #f8f9fa;
+}
+
+.user-item.active {
+  background: #f0f2f5;
+}
+
+.user-item img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  margin-right: 15px;
+  object-fit: cover;
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-info h4 {
+  margin: 0;
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+}
+
+.user-info p {
+  margin: 5px 0 0;
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.message-count {
+  background: #32ade6;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.time {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+}
+
+/* 채팅 컨테이너 */
+.chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.chat-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+}
+
+.chat-user-info {
+  display: flex;
+  align-items: center;
+}
+
+.chat-user-info img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 15px;
+  object-fit: cover;
+}
+
+.chat-user-info h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 채팅 메시지 */
+.chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #f8f9fa;
+}
+
+.message {
+  display: flex;
+  margin-bottom: 20px;
+  align-items: flex-start;
+}
+
+.message.received {
+  justify-content: flex-start;
+}
+
+.message.sent {
+  justify-content: flex-end;
+}
+
+.message img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.message-content {
+  max-width: 60%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  position: relative;
+}
+
+.message.received .message-content {
+  background: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.message.sent .message-content {
+  background: #32ade6;
+  color: white;
+}
+
+.message-content p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.message-content .time {
+  font-size: 11px;
+  margin-top: 5px;
+  display: block;
+}
+
+.message.sent .message-content .time {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* 채팅 입력 */
+.chat-input {
+  padding: 15px 20px;
+  background: white;
+  border-top: 1px solid #eee;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 24px;
+  padding: 6px;
+}
+
+.btn-attachment {
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-attachment:hover {
+  color: #32ade6;
+}
+
+.input-group input {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 8px 15px;
+  font-size: 14px;
+  color: #333;
+}
+
+.input-group input:focus {
+  outline: none;
+}
+
+.input-group input::placeholder {
+  color: #999;
+}
+
+.btn-send {
+  background: #32ade6;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(50, 173, 230, 0.2);
+}
+
+.btn-send:hover {
+  background: #1f97cd;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(50, 173, 230, 0.3);
+}
+
+/* 스크롤바 스타일링 */
+.users-list-inner::-webkit-scrollbar,
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.users-list-inner::-webkit-scrollbar-track,
+.chat-messages::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.users-list-inner::-webkit-scrollbar-thumb,
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 3px;
+}
+
+.users-list-inner::-webkit-scrollbar-thumb:hover,
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #ccc;
+}
+
+/* FAQ 스타일 */
+.accordion {
+  margin-bottom: 40px;
+}
+
+.accordion-item {
+  border: 1px solid #eee;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.accordion-button {
+  padding: 20px;
+  background: #fff;
+  border: none;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.accordion-button:not(.collapsed) {
+  background: #32ade6;
+  color: #fff;
+}
+
+.accordion-button span {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.accordion-button i {
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.accordion-button:not(.collapsed) i {
+  transform: rotate(45deg);
+  color: #fff;
+}
+
+.accordion-body {
+  padding: 20px;
+  background: #fff;
+}
+
+.accordion-body p {
+  margin-bottom: 15px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.accordion-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* 연락처 섹션 */
+.contact-section {
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 1px solid #eee;
+}
+
+.contact-info {
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.contact-info-content {
+  margin-bottom: 30px;
+}
+
+.contact-info-content h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.contact-info-content p {
+  color: #666;
+}
+
+.contact-form-wrapper {
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.map-section {
+  margin-top: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* 대시보드 통계 */
+.dashboard-stats {
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  background: rgba(50, 173, 230, 0.1);
+}
+
+.stat-icon i {
+  font-size: 24px;
+  color: #32ade6;
+}
+
+.stat-card.featured .stat-icon {
+  background: rgba(241, 168, 82, 0.1);
+}
+
+.stat-card.featured .stat-icon i {
+  color: #f1a852;
+}
+
+.stat-card.expired .stat-icon {
+  background: rgba(255, 73, 97, 0.1);
+}
+
+.stat-card.expired .stat-icon i {
+  color: #ff4961;
+}
+
+.stat-info h3 {
+  font-size: 28px;
+  margin: 0;
+  font-weight: 600;
+  color: #333;
+}
+
+.stat-info p {
+  margin: 5px 0 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* 활동 로그 */
+.activity-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background: #fff;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.activity-item:hover {
+  background: #f8f9fa;
+}
+
+.activity-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(50, 173, 230, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
+
+.activity-icon i {
+  color: #32ade6;
+  font-size: 18px;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-content h4 {
+  margin: 0;
+  font-size: 15px;
+  color: #333;
+}
+
+.activity-content p {
+  margin: 5px 0 0;
+  font-size: 13px;
+  color: #666;
+}
+
+/* 최근 광고 */
+.ad-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background: #fff;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.ad-item:hover {
+  background: #f8f9fa;
+}
+
+.ad-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-right: 15px;
+}
+
+.ad-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ad-content {
+  flex: 1;
+}
+
+.ad-content h4 {
+  margin: 0;
+  font-size: 15px;
+  color: #333;
+}
+
+.ad-content p {
+  margin: 5px 0 0;
+  font-size: 13px;
+  color: #666;
+}
+
+/* 삭제 버튼 */
+.remove-btn {
+  opacity: 0;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #666;
+}
+
+.activity-item:hover .remove-btn,
+.ad-item:hover .remove-btn {
+  opacity: 1;
+}
+
+.remove-btn:hover {
+  background: #ff4961;
+  color: #fff;
+}
+
+/* 대시보드 블록 */
+.dashboard-block {
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  flex: 1; /* 남은 공간 채우기 */
+  display: flex;
+  flex-direction: column;
+}
+
+.block-title {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* MyItems 게시판 */
+.service-list {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.service-header {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.header-info {
+  display: flex;
+  gap: 15px;
+  font-size: 14px;
+}
+
+.header-info span {
+  padding: 5px 10px;
+  border-radius: 15px;
+  background: #f8f9fa;
+  color: #666;
+}
+
+.service-items {
+  border-top: 2px solid #32ade6;
+}
+
+.service-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.service-item .row {
+  width: 100%;
+  margin: 0;
+  align-items: center;
+}
+
+.service-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.service-title img {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+.item-list-title {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  color: #000000;
+}
+
+.title-info {
+  flex: 1;
+}
+
+.title-info h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+}
+
+.title-info .price {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: #32ade6;
+}
+
+.title-info .location {
+  margin: 2px 0 0 0;
+  font-size: 12px;
+  color: #888;
+}
+
+.service-category {
+  text-align: center;
+}
+
+.service-category span {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 13px;
+  background: #f0f7ff;
+  color: #32ade6;
+}
+
+.service-status {
+  text-align: center;
+}
+
+.service-status span {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 13px;
+}
+
+.service-status .status-text.진행중 {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.service-status .status-text.완료 {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.service-status .status-text.예약중 {
+  background: #fff3e0;
+  color: #f1a852;
+}
+
+.service-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.action-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: #666;
+  background: #f8f9fa;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: #32ade6;
+  color: #fff;
+}
+
+.action-btn i {
+  font-size: 14px;
+}
+
+/* 페이지네이션 */
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.pagination-mgt {
+  margin-top: 80px;
+  display: flex;
+  justify-content: center;
+}
+
+.pagination-list {
+  display: flex;
+  gap: 5px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.pagination-list li button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #666;
+  background: #f8f9fa;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid #eee;
+}
+
+.pagination-list li.active button {
+  background: #32ade6;
+  color: #fff;
+  border-color: #32ade6;
+}
+
+.pagination-list li button:hover {
+  background: #32ade6;
+  color: #fff;
+  border-color: #32ade6;
+}
+
+.link-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #f0f0f0;
+  color: #333;
+  font-size: 14px;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  margin: 0;
+}
+
+.link-button:hover {
+  background-color: #ddd;
+}
+
+.link-button:active {
+  background-color: #ccc;
+}
+
+.link-button.active {
+  background-color: #f1a852;
+  color: white;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .service-item {
+    padding: 12px 0;
+  }
+
+  .service-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .service-category,
+  .service-status {
+    text-align: left;
+    margin-top: 8px;
+  }
+
+  .service-actions {
+    justify-content: flex-start;
+    margin-top: 8px;
+  }
+
+  .header-info {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .service-item .row > [class*='col-'] {
+    margin-bottom: 8px;
+  }
+}
+
+/* 메인 콘텐츠 영역 */
+.main-content {
+  flex: 1;
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  margin-bottom: 30px;
+  min-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 대시보드 블록 */
+.dashboard-block {
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  flex: 1; /* 남은 공간 채우기 */
+  display: flex;
+  flex-direction: column;
+}
+
+/* 페이지 래퍼 */
+.page-wrapper {
+  position: relative;
+  min-height: 100vh;
+  padding-top: 0 !important;
+}
+
+/* 브레드크럼 */
+.breadcrumbs {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #fff;
+  padding: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 컨테이너 */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* 행 */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -15px;
+}
+
+/* 컬럼 */
+.col-lg-3,
+.col-lg-9,
+.col-md-4,
+.col-md-8,
+.col-12 {
+  padding: 0 15px;
+}
+
+/* 탭 버튼 스타일 */
+.settings-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1rem;
+}
+
+.settings-tabs .tab-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  color: #6b7280;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 0.375rem;
+}
+
+.settings-tabs .tab-button:hover {
+  color: var(--primary);
+  background-color: #f3f4f6;
+}
+
+.settings-tabs .tab-button.active {
+  color: var(--primary);
+  background-color: #f3f4f6;
+  font-weight: 600;
+}
+
+/* Common padding for all pages */
+.section {
+  padding-bottom: 60px !important; /* 하단 패딩만 유지 */
+}

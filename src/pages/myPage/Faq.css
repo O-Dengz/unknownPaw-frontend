@@ -1,0 +1,311 @@
+.contact-section {
+  margin-top: 3rem;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contact-info {
+  padding: 2rem;
+  background-color: #f8fafc;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.contact-info-content {
+  margin-bottom: 2rem;
+}
+
+.contact-info-content h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.contact-info-content p {
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.single-info {
+  margin-bottom: 2rem;
+}
+
+.single-info h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.single-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.single-info ul li {
+  color: #4b5563;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.single-info ul li:last-child {
+  margin-bottom: 0;
+}
+
+.single-info ul li a {
+  color: #3b82f6;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.single-info ul li a:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.map-section {
+  margin-top: 2rem;
+}
+
+.map-container {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mapouter {
+  position: relative;
+  text-align: right;
+  width: 100%;
+  height: 400px;
+}
+
+.gmap_canvas {
+  overflow: hidden;
+  background: none !important;
+  width: 100%;
+  height: 100%;
+}
+
+.gmap_canvas iframe {
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+}
+
+/* 문의하기 폼 스타일 */
+.inquiry-form {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+}
+
+.inquiry-form h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+}
+
+.inquiry-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.inquiry-form label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.inquiry-form .form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.inquiry-form .form-control:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.inquiry-form textarea.form-control {
+  min-height: 150px;
+  resize: vertical;
+}
+
+/* 문의하기 버튼 그룹 스타일 */
+.inquiry-button-group {
+  display: flex;
+  gap: 1rem; /* 버튼 간격 */
+  margin-top: 1.5rem; /* 상단 여백 */
+  align-items: center; /* 세로 중앙 정렬 */
+  flex-wrap: wrap; /* 작은 화면에서 줄바꿈 허용 */
+}
+
+/* 문의하기 버튼 스타일 */
+.inquiry-submit-btn,
+.inquiry-history-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  height: 42px;
+  white-space: nowrap;
+  border: none; /* 테두리 제거 */
+  text-decoration: none; /* 텍스트 밑줄 제거 */
+  box-sizing: border-box; /* 패딩과 보더가 너비에 포함되도록 설정 */
+}
+
+.inquiry-submit-btn {
+  background-color: rgb(50, 173, 230) !important; /* 오댕블루 적용 */
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(50, 173, 230, 0.2) !important;
+}
+
+.inquiry-submit-btn:hover {
+  background-color: rgb(40, 140, 200) !important; /* 오댕블루 호버 색상 */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(50, 173, 230, 0.3) !important;
+}
+
+.inquiry-history-btn {
+  background-color: rgb(241, 168, 82) !important; /* 오댕옐로우 적용 */
+  color: white !important;
+  border: none !important; /* 테두리 제거 */
+  box-shadow: 0 2px 4px rgba(241, 168, 82, 0.2) !important;
+}
+
+.inquiry-history-btn:hover {
+  background-color: rgb(210, 140, 60) !important; /* 오댕옐로우 호버 색상 */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(241, 168, 82, 0.3) !important;
+}
+
+.inquiry-submit-btn:active,
+.inquiry-history-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .contact-section {
+    padding: 1rem;
+  }
+
+  .contact-info {
+    padding: 1.5rem;
+  }
+
+  .mapouter {
+    height: 300px;
+  }
+
+  .inquiry-form {
+    padding: 1.5rem;
+  }
+
+  .inquiry-button-group {
+    flex-direction: column; /* 모바일에서 세로로 정렬 */
+    align-items: stretch; /* 너비 전체 사용 */
+  }
+
+  .inquiry-submit-btn,
+  .inquiry-history-btn {
+    font-size: 14px;
+    padding: 10px 20px;
+    min-width: unset; /* 최소 너비 제한 해제 */
+    width: 100%; /* 너비 전체 사용 */
+  }
+}
+
+.contact-form-wrapper .form .button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  align-items: center;
+}
+
+.contact-form-wrapper .form .btn {
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 0.5rem !important;
+  font-weight: 500 !important;
+  transition: all 0.2s !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 120px !important;
+  height: 42px !important;
+  font-size: 0.9375rem !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+  border: none !important;
+}
+
+.contact-form-wrapper .form .btn-primary {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2) !important;
+}
+
+.contact-form-wrapper .form .btn-primary:hover {
+  background-color: #2563eb !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3) !important;
+}
+
+.contact-form-wrapper .form .btn-outline-secondary {
+  background-color: white !important;
+  color: #4b5563 !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+.contact-form-wrapper .form .btn-outline-secondary:hover {
+  background-color: #f3f4f6 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.contact-form-wrapper .form .btn:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 반응형 스타일 수정 */
+@media (max-width: 768px) {
+  .contact-form-wrapper .form .button-group {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+  }
+
+  .contact-form-wrapper .form .btn {
+    flex: 1 !important;
+    min-width: 0 !important;
+    font-size: 0.875rem !important;
+  }
+} 

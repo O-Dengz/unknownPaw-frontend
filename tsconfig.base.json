@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "strict": true,
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",          
+    "types": ["node"],           // node 타입 전역 활성화
+    "resolveJsonModule": true,               
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}

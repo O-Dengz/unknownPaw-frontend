@@ -1,0 +1,334 @@
+.member-profile-container {
+  background: #fff;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  max-width: 800px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 30px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 30px;
+}
+
+.profile-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #32ade6;
+  flex-shrink: 0;
+}
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-top {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.profile-info .nickname {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.verification-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.verification-badges .badge {
+  background: #e8f7ff;
+  color: #32ade6;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.introduction {
+  color: #666;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.profile-details {
+  display: flex;
+  gap: 20px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+}
+
+.detail-item i {
+  color: #32ade6;
+  font-size: 18px;
+}
+
+/* 산책 통계 섹션 */
+.walk-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 30px;
+  background: #f9f9fa;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: #32ade6;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 14px;
+}
+
+/* 반려견 정보 섹션 */
+.section-title {
+  font-size: 20px;
+  /* font-size: clamp(1.2rem, 2.5vw, 2rem); */
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #32ade6;
+  line-height: 1.3;
+  text-wrap: balance;
+
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.pets-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.pet-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.pet-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(50, 173, 230, 0.1);
+}
+
+.pet-image {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+}
+
+.pet-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pet-info {
+  padding: 15px;
+}
+
+.pet-info h4 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.pet-info p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* 후기 섹션 */
+.reviews-list {
+  display: grid;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.review-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.review-author {
+  font-weight: 500;
+  color: #333;
+}
+
+.review-rating {
+  color: #f1a852;
+}
+
+.review-content {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 게시글 섹션 */
+.posts-list {
+  display: grid;
+  gap: 15px;
+}
+
+.post-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.post-card:hover {
+  transform: translateX(5px);
+  border-color: #32ade6;
+  background: #f8fcff;
+}
+
+.post-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.post-stats {
+  display: flex;
+  gap: 15px;
+  color: #666;
+  font-size: 14px;
+}
+
+.post-stats span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.post-stats i {
+  color: #32ade6;
+}
+
+.error-message {
+  text-align: center;
+  color: #ff4961;
+  padding: 20px;
+  background: #fff0f0;
+  border-radius: 8px;
+  margin: 20px auto;
+  max-width: 800px;
+}
+
+.loading {
+  text-align: center;
+  color: #666;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 800px;
+}
+
+.profile-one-box {
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #eee;
+}
+
+.btn-danger {
+  background: #dc0e0e;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+  background: #b10b0b;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-top {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .profile-details {
+    justify-content: center;
+  }
+
+  .walk-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .walk-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .pets-list {
+    grid-template-columns: 1fr;
+  }
+}

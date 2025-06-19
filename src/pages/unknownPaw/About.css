@@ -1,0 +1,158 @@
+.pet-owner-page {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+  min-height: 100vh;
+  padding: 80px 0 60px;
+}
+
+.page-content {
+  position: relative;
+  margin-top: 40px;
+}
+
+.po-section-title {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.po-section-title h2 {
+  color: #F1A852;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: -0.5px;
+}
+
+.po-section-title p {
+  color: #636e72;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.content-left {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.content-left:hover {
+  transform: translateY(-10px);
+}
+
+.content-left img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.content-left:hover img {
+  transform: scale(1.05);
+}
+
+.content-left .video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: rgba(50, 173, 230, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.content-left .video i {
+  color: white;
+  font-size: 2rem;
+  margin-left: 5px;
+}
+
+.content-left .video:hover {
+  background: #F1A852;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.content-right {
+  padding: 2rem;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.content-right .sub-heading {
+  color: #32ADE6;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.content-right h2 {
+  color: #2d3436;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+}
+
+.content-right h3 {
+  color: #F1A852;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 2rem 0 1rem;
+}
+
+.content-right p {
+  color: #636e72;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #32ADE6, transparent);
+  margin: 3rem 0;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 991px) {
+  .content-right {
+    margin-top: 2rem;
+  }
+  
+  .po-section-title h2 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .pet-owner-page {
+    padding: 100px 0 40px;
+  }
+  
+  .content-right {
+    padding: 1.5rem;
+  }
+  
+  .content-right h2 {
+    font-size: 1.75rem;
+  }
+  
+  .content-right h3 {
+    font-size: 1.3rem;
+  }
+  
+  .content-right p {
+    font-size: 1rem;
+  }
+} 

@@ -1,0 +1,256 @@
+/* ───────── 기본 ───────── */
+.list-page-wrapper {
+  background: #fff;
+  min-height: 100vh;
+}
+
+/* ───────── HERO #1 ───────── */
+.hero-area.baemin-hero {
+  background: #32ade6 !important;
+  width: 100vw;
+  height: 100vh;
+  min-height: 700px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.baemin-hero-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5vw;
+  padding-left: 4vw;
+  padding-right: 4vw;
+}
+.baemin-hero-image {
+  flex: 0 0 auto;
+  width: 50vw;
+  max-width: 630px;
+  min-width: 320px;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+.baemin-hero-text {
+  flex: 2;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vw;
+  min-width: 440px;
+  word-break: keep-all;
+  white-space: normal;
+}
+.baemin-hero-text h1 {
+  font-size: 4.2vw;
+  font-weight: 900;
+  line-height: 1.13;
+  letter-spacing: -2px;
+  text-shadow: 4px 4px 24px rgba(0, 0, 0, 0.28), 0 4px 14px rgba(0, 0, 0, 0.17);
+}
+.baemin-hero-text p {
+  font-size: 1.55vw;
+  font-weight: 400;
+  opacity: 0.96;
+}
+
+.scroll-down-indicator {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  z-index: 20;
+}
+.scroll-text {
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ───────── HERO #2 ───────── */
+.hero-area.baemin-hero2 {
+  background: #32ade6 !important;
+  width: 100vw;
+  overflow: hidden;
+  padding-top: 0;
+  margin-bottom: 0;
+  padding-bottom: 5vh; /* 버튼까지 파란배경 확보 */
+}
+.hero-area.baemin-hero2 .row.mt-4 {
+  margin-top: 0 !important;
+}
+.main-banner-area {
+  margin: 0 auto 14vh !important;
+  max-width: 1200px;
+}
+
+.baemin-hero2-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 6vw;
+  position: relative;
+}
+.baemin-hero2-visual {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6vw;
+  margin-bottom: 3vw;
+}
+
+.hero2-guide-msg {
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 2.8rem;
+  margin-bottom: 1.6rem;
+  letter-spacing: -0.5px;
+  text-shadow: 2px 2px 10px rgba(30, 120, 170, 0.18);
+}
+
+.baemin-hero-desc {
+  margin-top: 1.4em;
+  font-size: 1.6vw;
+  font-weight: 400;
+  color: #fff;
+}
+.baemin-hero-text h1 {
+  color: #fff !important;
+}
+
+.baemin-hero2-buttons {
+  display: flex;
+  gap: 5vw;
+  justify-content: center;
+  margin-top: 2.8rem;
+  margin-bottom: 2.2rem;
+  position: static;
+}
+.hero-circle-btn {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: 2.5px dashed #fff;
+  background: transparent;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+.hero-circle-btn:hover {
+  color: #f1a852;
+  border-color: #f1a852;
+  background: rgba(241, 168, 82, 0.09);
+}
+
+/* ───────── 게시글 영역 ───────── */
+.posts-section {
+  background: #fff;
+  padding: 60px 0;
+}
+
+/* ───────── Responsive ───────── */
+@media (max-width: 1100px) {
+  .baemin-hero-inner {
+    gap: 3vw;
+    padding: 4vw;
+  }
+  .baemin-hero-image {
+    width: 48vw;
+    max-width: 500px;
+  }
+  .baemin-hero-text h1 {
+    font-size: 3rem;
+  }
+  .baemin-hero-desc {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .baemin-hero-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+  .baemin-hero-image {
+    width: 70vw;
+    max-width: 380px;
+    margin-bottom: 4vh;
+  }
+  .baemin-hero-text h1 {
+    font-size: 2.2rem;
+  }
+  .baemin-hero-text p {
+    font-size: 1.1rem;
+  }
+  .main-banner-area {
+    margin-bottom: 10vh !important;
+  }
+  .baemin-hero2-visual {
+    flex-direction: column;
+  }
+  .baemin-hero-desc {
+    text-align: center;
+    font-size: 1.05rem;
+  }
+  .baemin-hero2-buttons {
+    bottom: 4vh;
+    gap: 7vw;
+  }
+  .hero-circle-btn {
+    width: 90px;
+    height: 90px;
+    font-size: 0.9rem;
+  }
+  .hero2-guide-msg {
+    font-size: 1.05rem;
+    margin-top: 1.2rem;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-circle-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 0.75rem;
+  }
+  .baemin-hero2-buttons {
+    flex-direction: column;
+    gap: 12px;
+    bottom: 3vh;
+  }
+  .scroll-text {
+    font-size: 0.9rem;
+  }
+}
+.fadein-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity, transform;
+}
+.fadein-on-scroll.visible {
+  opacity: 1;
+  transform: none;
+}
