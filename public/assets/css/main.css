@@ -1925,7 +1925,7 @@ ol {
 
 .hero-area.overlay::before {
   z-index: -1;
-  background: #081828;
+  background: #32ade6;
   opacity: 0.9;
 }
 

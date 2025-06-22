@@ -130,14 +130,14 @@ export function Login() {
         <div className="login-container">
           <div className="login-box">
             <div className="login-header">
-              <h2>Welcome Back!</h2>
-              <p>Please login to your account</p>
+              <h2>모르는 개 산책</h2>
+              <p>아이디, 비밀번호를 입력해주세요!</p>
             </div>
 
             <form className="login-form" onSubmit={onSubmit}>
               {/* email */}
               <div className="form-group">
-                <label htmlFor="email">Email</label>
+                <label htmlFor="email">이메일</label>
                 <div className="input-group">
                   <i className="lni lni-envelope" />
                   <input
@@ -155,7 +155,7 @@ export function Login() {
 
               {/* password */}
               <div className="form-group">
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">비밀번호</label>
                 <div className="input-group">
                   <i className="lni lni-lock-alt" />
                   <input
@@ -183,19 +183,19 @@ export function Login() {
                   <label htmlFor="rememberMe">Remember me</label>
                 </div>
                 <Link to="/find-password" className="forgot-password">
-                  Forgot Password?
+                  비밀번호를 잊으셨나요?
                 </Link>
               </div>
 
               {/* submit */}
               <button type="submit" className="login-button">
-                Sign In
+                로그인
               </button>
 
               {/* social */}
               <div className="social-login">
                 <p className="divider">
-                  <span>Or continue with</span>
+                  <span></span>
                 </p>
                 <div className="social-buttons">
                   <button type="button" className="social-button facebook">

@@ -5,8 +5,8 @@ import '../../../public/assets/css/bootstrap.min.css'
 import '../../../public/assets/css/glightbox.min.css'
 import '../../../public/assets/css/main.css'
 import '../../../public/assets/css/tiny-slider.css'
+import {UniversalSkeleton} from '@/components/skeletons/UniversalSkeleton'
 import {getImageUrl} from '@/utils/getImageUrl'
-import {UniversalSkeleton} from '@/components/UniversalSkeleton'
 
 // 기본 이미지 배열
 const defaultImages = [
@@ -405,3 +405,4 @@ export function Community() {
     </section>
   )
 }
+// 충돌

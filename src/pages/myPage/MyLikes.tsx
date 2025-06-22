@@ -61,7 +61,7 @@ export default function MyLikes() {
       })
 
       if (!response.ok) {
-        throw new Error('좋아요한 게시글을 불러오는데 실패했습니다.')
+        throw new Error('좋아요한 게시글이 없습니다.')
       }
 
       const data = await response.json()

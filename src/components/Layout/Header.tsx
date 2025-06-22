@@ -73,17 +73,9 @@ export default function Header() {
                     <li className="nav-item">
                       <Link
                         className="nav-link"
-                        to="/"
-                        onClick={() => setIsMenuOpen(false)}>
-                        Home
-                      </Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link
-                        className="nav-link"
                         to="/petowner/list"
                         onClick={() => setIsMenuOpen(false)}>
-                        Pet Owner
+                        돌봐주세요
                       </Link>
                     </li>
                     <li className="nav-item">
@@ -91,23 +83,25 @@ export default function Header() {
                         className="nav-link"
                         to="/petsitter/list"
                         onClick={() => setIsMenuOpen(false)}>
-                        Pet Sitter
+                        돌보고싶어요
                       </Link>
                     </li>
+
                     <li className="nav-item">
                       <Link
                         className="nav-link"
                         to="/community/posts"
                         onClick={() => setIsMenuOpen(false)}>
-                        Community
+                        시끌벅적
                       </Link>
                     </li>
+
                     <li className="nav-item">
                       <Link
                         className="nav-link"
                         to="/about"
                         onClick={() => setIsMenuOpen(false)}>
-                        About
+                        서비스 소개
                       </Link>
                     </li>
                   </ul>

@@ -5,7 +5,7 @@ import {formatTimeAgo} from '../../utils/timeAgo'
 import ScrollToTopButton from '../../components/ScrollToTopButton'
 import PawRating from '../../components/PawRating'
 import {getImageUrl} from '@/utils/getImageUrl'
-import {UniversalSkeleton} from "../../components/UniversalSkeleton"
+import {UniversalSkeleton} from '../../../src/components/skeletons/UniversalSkeleton'
 
 interface MemberResponseDTO {
   mid: number
@@ -217,7 +217,7 @@ export function PetOwner() {
             <div className="row">
               <div className="col-12">
                 <div className="section-title">
-                  <h2>Pet Owner</h2>
+                  <h2>보호자 게시판</h2>
                   <p>서비스를 요청하고 제안을 받아보세요!</p>
                 </div>
               </div>
@@ -240,7 +240,7 @@ export function PetOwner() {
           <div className="row">
             <div className="col-12">
               <div className="section-title">
-                <h2>Pet Owner</h2>
+                <h2>보호자 게시판</h2>
                 <p>서비스를 요청하고 제안을 받아보세요!</p>
               </div>
             </div>
