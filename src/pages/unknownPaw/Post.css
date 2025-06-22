@@ -335,9 +335,10 @@ html {
 }
 
 .main-image img {
-  max-width: 900px;
+  max-width: 100%;
   width: 100%;
-  height: auto;
+  /* height: auto; ← 자동으로 비율 유지 */
+  object-fit: cover; /* 또는 contain */
   border-radius: 12px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
   background: #fff;
